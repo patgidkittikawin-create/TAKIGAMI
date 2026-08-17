@@ -3,10 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>TAKIGAMI (TTC) - Store Requisition System</title>
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="ระบบเบิกจ่ายสินค้า สโตร์">
-  <meta name="theme-color" content="#1D2088">
+  <title>TAKIGAMI (TTC) - Store Requisition</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -14,252 +11,190 @@
   <style>
     :root { 
       --ttc-primary: #1B2188; 
-      --ttc-accent-yellow: #FFC107; 
-      --ttc-bg: #F4F6F9; 
-      --ttc-stock-green: #198754;
-      --ttc-card-border: #E8ECEF;
+      --ttc-bg: #F0F4F8; 
+      --ttc-border: #E2E8F0;
     }
-    body { font-family: 'Kanit', sans-serif; background-color: var(--ttc-bg); padding-bottom: 110px; }
-    
-    .top-header {
-      background-color: var(--ttc-primary);
-      color: white;
-      text-align: center;
+    body { 
+      font-family: 'Kanit', sans-serif; 
+      background-color: var(--ttc-bg); 
+      padding-bottom: 90px;
+    }
+
+    .main-container {
+      max-width: 900px;
+      margin: 0 auto;
       padding: 16px;
-      font-weight: 600;
-      font-size: 1.15rem;
     }
 
     .section-card {
       background: #ffffff;
-      border-radius: 16px;
+      border-radius: 12px;
       padding: 20px;
       margin-bottom: 16px;
-      border: 1px solid var(--ttc-card-border);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      border: 1px solid var(--ttc-border);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
 
     .section-title {
       color: var(--ttc-primary);
       font-weight: 700;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       margin-bottom: 16px;
       display: flex;
       align-items: center;
-      border-left: 4px solid var(--ttc-primary);
-      padding-left: 10px;
+      gap: 8px;
     }
 
-    /* Part Card Design */
-    .part-card {
+    /* Part Card Design (Match Image) */
+    .part-item {
       background: #ffffff;
-      border-radius: 14px;
-      border: 1px solid #E0E5EC;
-      padding: 16px;
-      margin-bottom: 14px;
-      position: relative;
+      padding: 14px 16px;
+      border-bottom: 1px solid #EDF2F7;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .part-item:last-child {
+      border-bottom: none;
     }
 
-    .part-title {
+    .part-info {
+      flex-grow: 1;
+      padding-right: 12px;
+    }
+
+    .part-title-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+
+    .part-name {
       font-weight: 700;
-      font-size: 1.05rem;
-      color: #111;
-      margin-bottom: 6px;
-      padding-right: 80px;
+      font-size: 0.95rem;
+      color: #1A202C;
     }
 
-    .stock-badge {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      background-color: var(--ttc-stock-green);
+    .part-id-badge {
+      background-color: #718096;
       color: white;
-      border-radius: 20px;
-      padding: 4px 12px;
-      font-size: 0.82rem;
-      font-weight: 500;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 12px;
+      display: inline-block;
     }
 
-    .part-meta {
-      font-size: 0.88rem;
-      color: #555;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .category-tag {
+    .part-subtext {
       font-size: 0.85rem;
-      color: #4A5568;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      color: #718096;
+    }
+
+    /* Action Button / Counter */
+    .btn-select-part {
+      border: 1.5px solid #3182CE;
+      color: #3182CE;
+      background: white;
+      border-radius: 8px;
+      padding: 6px 16px;
+      font-size: 0.9rem;
       font-weight: 500;
-    }
-
-    /* Counter Control UI */
-    .counter-control {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 12px;
-      margin-top: 4px;
-    }
-
-    .btn-minus {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      border: 1.5px solid #CBD5E1;
-      background-color: #FFFFFF;
-      color: #64748B;
-      font-size: 1.3rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-select-part:hover {
+      background: #EBF8FF;
     }
 
-    .btn-plus {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      border: none;
-      background-color: var(--ttc-accent-yellow);
-      color: #000;
-      font-size: 1.3rem;
+    .qty-counter {
       display: flex;
       align-items: center;
-      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-qty {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: 1px solid #CBD5E0;
+      background: #EDF2F7;
       font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
     }
 
-    .counter-value {
-      font-size: 1.25rem;
+    .qty-val {
       font-weight: 700;
+      font-size: 1rem;
       color: var(--ttc-primary);
-      min-width: 24px;
+      min-width: 20px;
       text-align: center;
     }
 
-    /* Form Inputs */
-    .form-label-custom {
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: #222;
-      margin-bottom: 6px;
-    }
-    .form-label-custom span {
-      color: #DC3545;
-    }
-
+    /* Form Controls */
     .form-control-custom, .form-select-custom {
-      border-radius: 10px;
+      border-radius: 8px;
       padding: 12px 14px;
       border: 1px solid #CBD5E1;
       font-size: 0.95rem;
     }
-
-    /* Pickup Option Cards */
-    .pickup-options {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+    .form-control-custom::placeholder {
+      color: #A0AEC0;
     }
 
-    .pickup-card {
-      border: 1.5px solid #CBD5E1;
-      border-radius: 12px;
-      padding: 16px;
-      text-align: center;
-      cursor: pointer;
-      background: #fff;
-      transition: all 0.2s ease;
-    }
-
-    .pickup-card.active {
-      border-color: var(--ttc-primary);
-      background-color: #F0F4FF;
-    }
-
-    .pickup-card i {
-      font-size: 1.5rem;
-      margin-bottom: 8px;
-      display: block;
-    }
-
-    .pickup-card.active i {
-      color: var(--ttc-accent-yellow);
-    }
-
-    .pickup-card span {
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: #333;
-    }
-
-    /* Fixed Submit Bar */
+    /* Fixed Bottom Button */
     .fixed-bottom-bar {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      background: #ffffff;
-      padding: 14px 16px;
-      box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+      background: var(--ttc-primary);
+      padding: 14px;
       z-index: 1040;
     }
 
     .btn-submit-main {
       width: 100%;
-      height: 52px;
-      background-color: var(--ttc-primary);
+      background: transparent;
       color: white;
       border: none;
-      border-radius: 12px;
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
     }
   </style>
 </head>
 <body>
 
-  <div class="top-header">
-    ระบบเบิกจ่ายสินค้า สโตร์
-  </div>
-
-  <div class="container px-3 mt-3">
+  <div class="main-container">
     <form id="requisitionForm" onsubmit="handleFormSubmit(event)">
       
-      <!-- 1. รายการสินค้า -->
-      <div id="loadingSpinner" class="text-center py-4">
-        <div class="spinner-border text-primary" role="status"></div>
-        <p class="small text-muted mt-2">กำลังโหลดข้อมูลสินค้า...</p>
+      <!-- 1. List Items Card -->
+      <div class="section-card p-0" style="overflow: hidden;">
+        <div id="loadingSpinner" class="text-center py-4">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="small text-muted mt-2">กำลังโหลดข้อมูลรายการสินค้า...</p>
+        </div>
+        <div id="catalogContainer"></div>
       </div>
-
-      <div id="catalogContainer"></div>
 
       <!-- 2. ข้อมูลผู้เบิก -->
       <div class="section-card">
         <div class="section-title">
-          <i class="fa-solid fa-address-card me-2"></i> 2. ข้อมูลผู้เบิก
+          <i class="fa-solid fa-id-card"></i> 2. ข้อมูลผู้เบิก
         </div>
 
         <div class="mb-3">
-          <label class="form-label-custom">ชื่อ-นามสกุล <span>*</span></label>
-          <input type="text" id="userName" class="form-control form-control-custom" placeholder="ระบุชื่อผู้เบิกสินค้า" required>
+          <input type="text" id="userName" class="form-control form-control-custom" placeholder="ชื่อ-นามสกุล ผู้เบิก" required>
         </div>
 
         <div class="mb-3">
-          <label class="form-label-custom">แผนก / ฝ่าย <span>*</span></label>
           <select id="department" class="form-select form-select-custom" required>
-            <option value="" disabled selected>-- เลือกแผนก/ฝ่าย --</option>
+            <option value="" disabled selected>-- เลือกแผนก --</option>
             <option value="Electrical">Electrical</option>
             <option value="Maintenance">Maintenance</option>
             <option value="Machine Assembly">Machine Assembly</option>
@@ -268,47 +203,15 @@
           </select>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label-custom">วัตถุประสงค์การใช้งาน <span>*</span></label>
-          <select id="purpose" class="form-select form-select-custom" required>
-            <option value="" disabled selected>-- เลือกวัตถุประสงค์ --</option>
-            <option value="ซ่อมบำรุง / Maintenance">ซ่อมบำรุง / Maintenance</option>
-            <option value="ประกอบเครื่องจักร / Machine Assembly">ประกอบเครื่องจักร / Machine Assembly</option>
-            <option value="ติดตั้งไฟฟ้า / Electrical Work">ติดตั้งไฟฟ้า / Electrical Work</option>
-            <option value="ใช้งานทั่วไป / General Use">ใช้งานทั่วไป / General Use</option>
-          </select>
-        </div>
-
-        <div class="mb-2">
-          <label class="form-label-custom">ชื่อโปรเจกต์ / รหัสช็อบงาน (Project / Job ID) <span>*</span></label>
-          <input type="text" id="projectJobId" class="form-control form-control-custom" placeholder="ระบุชื่อโปรเจกต์ หรือ รหัสช็อบงาน" required>
+        <div class="mb-1">
+          <input type="text" id="projectJobId" class="form-control form-control-custom" placeholder="รหัส Job / Project ID" required>
         </div>
       </div>
 
-      <!-- 3. รูปแบบการรับสินค้า -->
-      <div class="section-card">
-        <div class="section-title">
-          <i class="fa-solid fa-box-open me-2"></i> 3. รูปแบบการรับสินค้า
-        </div>
-
-        <label class="form-label-custom mb-2">ประเภทการรับ <span>*</span></label>
-        <div class="pickup-options">
-          <div class="pickup-card active" id="opt-now" onclick="selectPickup('รับทันทีที่คลัง', 'opt-now')">
-            <i class="fa-solid fa-bolt" style="color: #FFC107;"></i>
-            <span>รับทันทีที่คลัง</span>
-          </div>
-          <div class="pickup-card" id="opt-schedule" onclick="selectPickup('นัดเวลารับล่วงหน้า', 'opt-schedule')">
-            <i class="fa-solid fa-clock" style="color: #1B2188;"></i>
-            <span>นัดเวลารับล่วงหน้า</span>
-          </div>
-        </div>
-        <input type="hidden" id="pickupType" value="รับทันทีที่คลัง">
-      </div>
-
-      <!-- Fixed Bottom Button -->
-      <div class="fixed-bottom-bar">
-        <button type="submit" class="btn btn-submit-main">
-          <i class="fa-solid fa-paper-plane"></i> ส่งคำขอเบิกสินค้า (TTC Store)
+      <!-- Fixed Bottom Submit -->
+      <div class="fixed-bottom-bar text-center">
+        <button type="submit" class="btn-submit-main">
+          ส่งคำขอเบิกสินค้า
         </button>
       </div>
 
@@ -343,27 +246,34 @@
       
       data.forEach(item => {
         const qty = selectedCart[item.partId] || 0;
-        container.innerHTML += `
-          <div class="part-card">
-            <div class="stock-badge">คงเหลือ ${item.qtyStock}</div>
-            <div class="part-title">${item.partName}</div>
-            
-            <div class="part-meta">
-              <span><i class="fa-solid fa-barcode me-1"></i> ${item.partId}</span>
-              ${item.location ? `<span><i class="fa-solid fa-location-dot me-1 text-danger"></i> ${item.location}</span>` : ''}
-            </div>
+        
+        let actionUI = `
+          <button type="button" class="btn-select-part" onclick="updateQty('${item.partId}', 1, ${item.qtyStock})">
+            + เลือก
+          </button>
+        `;
 
-            <div class="d-flex justify-content-between align-items-center mt-2">
-              <div class="category-tag">
-                <i class="fa-solid fa-tag text-primary"></i> ${item.category || 'ทั่วไป'}
-              </div>
-              
-              <div class="counter-control">
-                <button type="button" class="btn-minus" onclick="updateQty('${item.partId}', -1, ${item.qtyStock})">-</button>
-                <span class="counter-value" id="qty-${item.partId}">${qty}</span>
-                <button type="button" class="btn-plus" onclick="updateQty('${item.partId}', 1, ${item.qtyStock})">+</button>
-              </div>
+        if (qty > 0) {
+          actionUI = `
+            <div class="qty-counter">
+              <button type="button" class="btn-qty" onclick="updateQty('${item.partId}', -1, ${item.qtyStock})">-</button>
+              <span class="qty-val">${qty}</span>
+              <button type="button" class="btn-qty" onclick="updateQty('${item.partId}', 1, ${item.qtyStock})">+</button>
             </div>
+          `;
+        }
+
+        container.innerHTML += `
+          <div class="part-item">
+            <div class="part-info">
+              <div class="part-title-container">
+                <span class="part-name">${item.partName}</span>
+                <span class="part-id-badge">${item.partId}</span>
+              </div>
+              <div class="part-subtext">คงเหลือ: ${item.qtyStock}</div>
+              ${item.location ? `<div class="part-subtext text-muted" style="font-size:0.8rem;">ตำแหน่ง: ${item.location}</div>` : ''}
+            </div>
+            <div>${actionUI}</div>
           </div>
         `;
       });
@@ -385,13 +295,8 @@
         selectedCart[partId] = next;
       }
       
-      document.getElementById(`qty-${partId}`).innerText = next;
-    }
-
-    function selectPickup(type, elementId) {
-      document.querySelectorAll('.pickup-card').forEach(card => card.classList.remove('active'));
-      document.getElementById(elementId).classList.add('active');
-      document.getElementById('pickupType').value = type;
+      // Reload UI state for current list
+      loadCatalogJSONP();
     }
 
     function handleFormSubmit(e) {
@@ -418,9 +323,7 @@
           formData: {
             userName: document.getElementById("userName").value,
             department: document.getElementById("department").value,
-            purpose: document.getElementById("purpose").value,
             projectJobId: document.getElementById("projectJobId").value,
-            pickupType: document.getElementById("pickupType").value,
             items: itemsToSubmit
           }
         })
