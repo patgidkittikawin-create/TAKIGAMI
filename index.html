@@ -45,7 +45,7 @@
       gap: 8px;
     }
 
-    /* Part Card Design (Match Image) */
+    /* Part Card Design */
     .part-item {
       background: #ffffff;
       padding: 14px 16px;
@@ -92,7 +92,7 @@
       color: #718096;
     }
 
-    /* Action Button / Counter */
+    /* Action Buttons */
     .btn-select-part {
       border: 1.5px solid #3182CE;
       color: #3182CE;
@@ -116,8 +116,8 @@
     }
 
     .btn-qty {
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       border-radius: 6px;
       border: 1px solid #CBD5E0;
       background: #EDF2F7;
@@ -126,6 +126,9 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
+    }
+    .btn-qty:active {
+      background: #E2E8F0;
     }
 
     .qty-val {
@@ -173,7 +176,7 @@
   <div class="main-container">
     <form id="requisitionForm" onsubmit="handleFormSubmit(event)">
       
-      <!-- 1. List Items Card -->
+      <!-- 1. รายการสินค้า -->
       <div class="section-card p-0" style="overflow: hidden;">
         <div id="loadingSpinner" class="text-center py-4">
           <div class="spinner-border text-primary" role="status"></div>
@@ -222,6 +225,7 @@
   <script>
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxFErgGRvsSxsnqxBRjUmkp8FFHCso5u3ltNLUuJTAL6nlezjq7GSlSc2nRtd95SYpo/exec"; 
     let selectedCart = {};
+    let globalCatalogData = [];
 
     document.addEventListener("DOMContentLoaded", loadCatalogJSONP);
 
@@ -234,7 +238,8 @@
     function onCatalogLoaded(res) {
       document.getElementById("loadingSpinner").style.display = "none";
       if (res && res.success) {
-        renderCatalog(res.data);
+        globalCatalogData = res.data;
+        renderCatalog(globalCatalogData);
       } else {
         document.getElementById("catalogContainer").innerHTML = "<p class='text-danger text-center py-3'>ไม่สามารถดึงข้อมูลรายการสินค้าได้</p>";
       }
@@ -271,7 +276,7 @@
                 <span class="part-id-badge">${item.partId}</span>
               </div>
               <div class="part-subtext">คงเหลือ: ${item.qtyStock}</div>
-              ${item.location ? `<div class="part-subtext text-muted" style="font-size:0.8rem;">ตำแหน่ง: ${item.location}</div>` : ''}
+              ${item.location ? `<div class="part-subtext">ตำแหน่ง: ${item.location}</div>` : ''}
             </div>
             <div>${actionUI}</div>
           </div>
@@ -295,8 +300,8 @@
         selectedCart[partId] = next;
       }
       
-      // Reload UI state for current list
-      loadCatalogJSONP();
+      // อัปเดตหน้าจอทันทีจาก Memory
+      renderCatalog(globalCatalogData);
     }
 
     function handleFormSubmit(e) {
