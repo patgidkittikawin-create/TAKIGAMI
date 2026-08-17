@@ -275,7 +275,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-  const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzUUN35g-fF6TS_tJ_hnNCJBq9LQCri-uerMqsCVbi9T8N0Basjmt7tsYpzmlb2o7da/exec";
+  const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxUa_nYrOfboQjRV1d2I9RzteciD5LWnW3cn78vySFNDmxOjQvxBp5i-J9hlAWXjl6_/exec";
   let catalog = [];
   let cart = {};
   let currentCategory = 'All';
@@ -360,16 +360,17 @@
 
     listContainer.innerHTML = filtered.map(item => {
       const qty = cart[item.partId] || 0;
+      const stockVal = Number(item.stock) || 0;
       return `
         <div class="card-product">
           <div class="product-info">
             <h6>${item.partName}</h6>
-            <small><i class="fa-solid fa-barcode me-1"></i> ${item.partId} | ตำแหน่ง: <b>${item.location || '-'}</b></small>
+            <small><i class="fa-solid fa-barcode me-1"></i> ${item.partId} | ตำแหน่ง: <b>${item.location || '-'}</b> | คงเหลือ: <b class="text-primary">${stockVal}</b></small>
           </div>
           <div class="counter-box">
-            <button type="button" class="btn-qty" onclick="updateCart('${item.partId}', -1)">-</button>
+            <button type="button" class="btn-qty" onclick="updateCart('${item.partId}', -1, ${stockVal})">-</button>
             <span class="cart-qty" id="qty-${item.partId}">${qty}</span>
-            <button type="button" class="btn-qty btn-qty-plus" onclick="updateCart('${item.partId}', 1)">+</button>
+            <button type="button" class="btn-qty btn-qty-plus" onclick="updateCart('${item.partId}', 1, ${stockVal})">+</button>
           </div>
         </div>
       `;
@@ -380,11 +381,15 @@
     renderCatalog();
   }
 
-  function updateCart(partId, change) {
+  function updateCart(partId, change, maxStock) {
     const current = cart[partId] || 0;
     const next = current + change;
 
     if (next < 0) return;
+    if (next > maxStock) {
+      Swal.fire('แจ้งเตือน', 'จำนวนเบิกเกินจำนวนคงเหลือในคลัง', 'warning');
+      return;
+    }
 
     if (next === 0) {
       delete cart[partId];
@@ -474,7 +479,7 @@
 
     Swal.fire({
       title: 'กำลังส่งข้อมูล...',
-      text: 'กรุณารอสักครู่ ระบบกำลังบันทึกคำขอเบิกสินค้า',
+      text: 'กรุณารอสักครู่ ระบบจะบันทึกคำขอเบิกสินค้า',
       allowOutsideClick: false,
       didOpen: () => { Swal.showLoading(); }
     });
