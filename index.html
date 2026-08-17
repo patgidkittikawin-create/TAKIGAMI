@@ -135,7 +135,6 @@
       color: var(--navy);
     }
 
-    /* Step Navigation Buttons */
     .step-actions {
       display: flex;
       gap: 10px;
@@ -203,18 +202,15 @@
     <div class="section-card">
       <h5 class="fw-bold mb-3" style="color: var(--navy);">2. รายการขอเบิกสินค้า</h5>
       
-      <!-- Search Input -->
       <div class="input-group mb-3">
         <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
         <input type="text" id="searchInput" class="form-control" placeholder="ค้นหาชื่อพาร์ท หรือ รหัสสินค้า..." oninput="filterProducts()">
       </div>
 
-      <!-- Category Tabs -->
       <div class="category-scroll" id="categoryTabs">
         <button class="cat-chip active" onclick="filterCategory('All', this)">ทั้งหมด</button>
       </div>
 
-      <!-- Product List Container -->
       <div id="loadingSpinner" class="text-center py-4">
         <div class="spinner-border text-primary" role="status"></div>
         <p class="small text-muted mt-2">กำลังโหลดรายการสินค้า...</p>
@@ -235,9 +231,7 @@
       
       <div class="mb-4">
         <h6 class="fw-semibold text-secondary mb-2">รายการที่เลือกเบิก:</h6>
-        <div id="summaryList" class="border rounded p-3 bg-light" style="max-height: 220px; overflow-y: auto;">
-          <!-- Summary items injected here -->
-        </div>
+        <div id="summaryList" class="border rounded p-3 bg-light" style="max-height: 220px; overflow-y: auto;"></div>
       </div>
 
       <hr class="text-muted">
@@ -255,7 +249,6 @@
           </div>
         </div>
 
-        <!-- Time Slot Dropdown -->
         <div id="timeSlotContainer" style="display: none;" class="mt-2">
           <label class="form-label small text-muted">เลือกช่วงเวลารับสินค้า:</label>
           <select id="timeSlot" class="form-select">
@@ -282,23 +275,34 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+  const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxdW57Sl2sPMJJs5gKZco1n-evtoFAA3tl-K3xcvL3xeJqDXUooYtFKHbOGS4zsx30B/exec";
   let catalog = [];
   let cart = {};
   let currentCategory = 'All';
 
-  window.onload = () => {
-    google.script.run
-      .withSuccessHandler(data => {
-        document.getElementById('loadingSpinner').style.display = 'none';
-        catalog = data || [];
-        initCategories();
-        renderCatalog();
-      })
-      .withFailureHandler(err => {
-        document.getElementById('loadingSpinner').innerHTML = '<p class="text-danger small">ไม่สามารถโหลดข้อมูลสินค้าได้</p>';
-      })
-      .getCatalogData();
-  };
+  document.addEventListener("DOMContentLoaded", () => {
+    loadCatalogJSONP();
+  });
+
+  function loadCatalogJSONP() {
+    const script = document.createElement('script');
+    script.src = `${GAS_WEB_APP_URL}?action=getCatalog&callback=onCatalogLoaded`;
+    script.onerror = () => {
+      document.getElementById('loadingSpinner').innerHTML = '<p class="text-danger small">ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้</p>';
+    };
+    document.body.appendChild(script);
+  }
+
+  function onCatalogLoaded(res) {
+    document.getElementById('loadingSpinner').style.display = 'none';
+    if (res && res.success) {
+      catalog = res.data || [];
+      initCategories();
+      renderCatalog();
+    } else {
+      document.getElementById('catalogList').innerHTML = '<p class="text-center text-danger py-4 small">ไม่พบข้อมูลสินค้าในระบบ</p>';
+    }
+  }
 
   function goToPage(pageNumber) {
     document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
@@ -363,9 +367,9 @@
             <small><i class="fa-solid fa-barcode me-1"></i> ${item.partId} | คงเหลือ: <b>${item.stock}</b></small>
           </div>
           <div class="counter-box">
-            <button class="btn-qty" onclick="updateCart('${item.partId}', -1, ${item.stock})">-</button>
+            <button type="button" class="btn-qty" onclick="updateCart('${item.partId}', -1, ${item.stock})">-</button>
             <span class="cart-qty" id="qty-${item.partId}">${qty}</span>
-            <button class="btn-qty btn-qty-plus" onclick="updateCart('${item.partId}', 1, ${item.stock})">+</button>
+            <button type="button" class="btn-qty btn-qty-plus" onclick="updateCart('${item.partId}', 1, ${item.stock})">+</button>
           </div>
         </div>
       `;
@@ -479,21 +483,25 @@
       didOpen: () => { Swal.showLoading(); }
     });
 
-    google.script.run
-      .withSuccessHandler(res => {
-        Swal.fire({
-          icon: 'success',
-          title: 'ส่งคำขอสำเร็จ!',
-          text: `รหัสคำขอ: ${res.id}`,
-          confirmButtonColor: '#1D2088'
-        }).then(() => {
-          location.reload();
-        });
+    fetch(GAS_WEB_APP_URL, {
+      method: "POST",
+      mode: "no-cors",
+      body: JSON.stringify({
+        action: "submitForm",
+        formData: formData
       })
-      .withFailureHandler(err => {
-        Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง', 'error');
-      })
-      .submitRequisition(formData);
+    }).then(() => {
+      Swal.fire({
+        icon: 'success',
+        title: 'ส่งคำขอสำเร็จ!',
+        text: 'ระบบได้บันทึกคำขอเบิกสินค้าเรียบร้อยแล้ว',
+        confirmButtonColor: '#1D2088'
+      }).then(() => {
+        location.reload();
+      });
+    }).catch(err => {
+      Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเพื่อส่งข้อมูลได้', 'error');
+    });
   }
 </script>
 </body>
