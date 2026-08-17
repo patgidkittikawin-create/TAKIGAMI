@@ -275,7 +275,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-  const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxecW6_e58PVj9h0QcF4mRTE1GSJxkk9VZsIOg0BRY-Xr8fmgrxmptNEVE9LIs8PgIC/exec";
+  const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzUUN35g-fF6TS_tJ_hnNCJBq9LQCri-uerMqsCVbi9T8N0Basjmt7tsYpzmlb2o7da/exec";
   let catalog = [];
   let cart = {};
   let currentCategory = 'All';
@@ -364,12 +364,12 @@
         <div class="card-product">
           <div class="product-info">
             <h6>${item.partName}</h6>
-            <small><i class="fa-solid fa-barcode me-1"></i> ${item.partId} | คงเหลือ: <b>${item.stock}</b></small>
+            <small><i class="fa-solid fa-barcode me-1"></i> ${item.partId} | ตำแหน่ง: <b>${item.location || '-'}</b></small>
           </div>
           <div class="counter-box">
-            <button type="button" class="btn-qty" onclick="updateCart('${item.partId}', -1, ${item.stock})">-</button>
+            <button type="button" class="btn-qty" onclick="updateCart('${item.partId}', -1)">-</button>
             <span class="cart-qty" id="qty-${item.partId}">${qty}</span>
-            <button type="button" class="btn-qty btn-qty-plus" onclick="updateCart('${item.partId}', 1, ${item.stock})">+</button>
+            <button type="button" class="btn-qty btn-qty-plus" onclick="updateCart('${item.partId}', 1)">+</button>
           </div>
         </div>
       `;
@@ -380,15 +380,11 @@
     renderCatalog();
   }
 
-  function updateCart(partId, change, maxStock) {
+  function updateCart(partId, change) {
     const current = cart[partId] || 0;
     const next = current + change;
 
     if (next < 0) return;
-    if (next > maxStock) {
-      Swal.fire('แจ้งเตือน', 'จำนวนเบิกเกินสต็อกที่มีอยู่ในคลัง', 'warning');
-      return;
-    }
 
     if (next === 0) {
       delete cart[partId];
