@@ -60,22 +60,24 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz1kFwbxcvRISjuqXdUYniifoyEd7rXqGtGfMzbxvxFe8v6wkcJGJRbq8byzgGv44EK/exec"; 
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxeMsDwBM7ayRfzYhwkHah9qrWT8B1SutIw-f1PldxzQBCpF7cGtb91N2mK6svlBmzT/exec"; 
     let selectedCart = {};
 
-    document.addEventListener("DOMContentLoaded", loadCatalog);
+    document.addEventListener("DOMContentLoaded", loadCatalogJSONP);
 
-    function loadCatalog() {
-      fetch(GAS_WEB_APP_URL + "?action=getCatalog")
-      .then(res => res.json())
-      .then(res => {
-        document.getElementById("loadingSpinner").style.display = "none";
-        if (res.success) { renderCatalog(res.data); }
-      })
-      .catch(err => {
-        console.error(err);
-        document.getElementById("loadingSpinner").innerHTML = "<span class='text-danger'>ดึงข้อมูลไม่สำเร็จ ตรวจสอบสิทธิ์ Apps Script</span>";
-      });
+    function loadCatalogJSONP() {
+      const script = document.createElement('script');
+      script.src = `${GAS_WEB_APP_URL}?action=getCatalog&callback=onCatalogLoaded`;
+      document.body.appendChild(script);
+    }
+
+    function onCatalogLoaded(res) {
+      document.getElementById("loadingSpinner").style.display = "none";
+      if (res && res.success) {
+        renderCatalog(res.data);
+      } else {
+        document.getElementById("catalogList").innerHTML = "<p class='text-danger text-center'>โหลดข้อมูลไม่สำเร็จ</p>";
+      }
     }
 
     function renderCatalog(data) {
