@@ -199,7 +199,7 @@
           <div id="mainCategoryTabs" class="category-scroll"></div>
         </div>
 
-        <!-- หมวดหมู่ย่อย (จะซ่อนไว้ก่อน และแสดงเมื่อเลือกหมวดหลัก) -->
+        <!-- หมวดหมู่ย่อย -->
         <div id="subCategoryContainer" class="mb-3" style="display: none;">
           <label class="form-label fw-semibold text-secondary small mb-1">
             <i class="fa-solid fa-list-check me-1 text-warning"></i>หมวดหมู่ย่อย (Sub Category):
@@ -317,24 +317,36 @@
     function loadCatalogJSONP() {
       const script = document.createElement('script');
       script.src = `${GAS_WEB_APP_URL}?action=getCatalog&callback=onCatalogLoaded`;
+      
+      const timeout = setTimeout(() => {
+        document.getElementById('loadingSpinner').innerHTML = `
+          <div class="text-danger py-3">
+            <i class="fa-solid fa-triangle-exclamation fa-2x mb-2"></i>
+            <p class="small mb-0">การเชื่อมต่อใช้เวลานานเกินไป กรุณาลองใหม่อีกครั้ง</p>
+            <button class="btn btn-sm btn-outline-secondary mt-2" onclick="location.reload()">โหลดใหม่</button>
+          </div>`;
+      }, 12000);
+
+      window.onCatalogLoaded = (res) => {
+        clearTimeout(timeout);
+        document.getElementById('loadingSpinner').style.display = 'none';
+        if (res && res.success) {
+          catalog = res.data || [];
+          initCategorySystem();
+          renderCatalog();
+        } else {
+          document.getElementById('catalogList').innerHTML = '<p class="text-center text-danger py-4 small">ไม่พบข้อมูลสินค้าในระบบ</p>';
+        }
+      };
+
       script.onerror = () => {
+        clearTimeout(timeout);
         document.getElementById('loadingSpinner').innerHTML = '<p class="text-danger small">ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้</p>';
       };
+      
       document.body.appendChild(script);
     }
 
-    function onCatalogLoaded(res) {
-      document.getElementById('loadingSpinner').style.display = 'none';
-      if (res && res.success) {
-        catalog = res.data || [];
-        initCategorySystem();
-        renderCatalog();
-      } else {
-        document.getElementById('catalogList').innerHTML = '<p class="text-center text-danger py-4 small">ไม่พบข้อมูลสินค้าในระบบ</p>';
-      }
-    }
-
-    // สร้างปุ่มหมวดหมู่หลักทั้งหมดแบบไดนามิกจาก Sheets
     function initCategorySystem() {
       const mainCategories = ['All', ...new Set(catalog.map(item => item.category).filter(Boolean))];
       
@@ -348,10 +360,9 @@
       renderSubCategories();
     }
 
-    // เมื่อกดเลือกหมวดหมู่หลัก
     function selectMainCategory(mainCat, btnElement) {
       currentMainCategory = mainCat;
-      currentSubCategory = 'All'; // รีเซ็ตหมวดหมู่ย่อย
+      currentSubCategory = 'All';
 
       document.querySelectorAll('#mainCategoryTabs .cat-chip').forEach(el => el.classList.remove('active'));
       btnElement.classList.add('active');
@@ -360,7 +371,6 @@
       renderCatalog();
     }
 
-    // สร้างปุ่มหมวดหมู่ย่อยตามหมวดหลักที่ถูกเลือก
     function renderSubCategories() {
       const subContainer = document.getElementById('subCategoryContainer');
       const subTabs = document.getElementById('subCategoryTabs');
@@ -381,7 +391,6 @@
       `).join('');
     }
 
-    // เมื่อกดเลือกหมวดหมู่ย่อย
     function selectSubCategory(subCat, btnElement) {
       currentSubCategory = subCat;
       document.querySelectorAll('#subCategoryTabs .cat-chip').forEach(el => el.classList.remove('active'));
@@ -389,7 +398,6 @@
       renderCatalog();
     }
 
-    // กรองและแสดงผลสินค้า พร้อมคำนวณสต็อก Real-time
     function renderCatalog() {
       const keyword = String(document.getElementById('searchInput').value || '').toLowerCase().trim();
       const listContainer = document.getElementById('catalogList');
@@ -416,7 +424,9 @@
           ${filtered.map(item => {
             const qty = cart[item.partId] || 0;
             const stockVal = Number(item.stock) || 0;
-            const currentStock = stockVal - qty; // คำนวณสต็อกคงเหลือ Real-time
+            const currentStock = stockVal - qty;
+            const isOut = currentStock <= 0;
+
             return `
               <div class="col">
                 <div class="card card-product h-100 rounded-4 p-3 d-flex flex-column justify-content-between bg-white shadow-sm">
@@ -435,7 +445,7 @@
                         <i class="fa-solid fa-minus fa-xs"></i>
                       </button>
                       <span class="cart-qty fw-bold text-navy px-1" id="qty-${item.partId}" style="font-size: 0.9rem;">${qty}</span>
-                      <button type="button" class="btn btn-sm rounded-circle shadow-sm fw-bold d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: var(--gold); color: #000;" onclick="updateCart('${item.partId}', 1, ${stockVal})">
+                      <button type="button" id="btn-plus-${item.partId}" class="btn btn-sm rounded-circle shadow-sm fw-bold d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: var(--gold); color: #000;" ${isOut ? 'disabled' : ''} onclick="updateCart('${item.partId}', 1, ${stockVal})">
                         <i class="fa-solid fa-plus fa-xs"></i>
                       </button>
                     </div>
@@ -448,7 +458,6 @@
       `;
     }
 
-    // อัปเดตตะกร้าและตัด/เพิ่มสต็อกในหน้าจอ Real-time
     function updateCart(partId, change, maxStock) {
       const current = cart[partId] || 0;
       const next = current + change;
@@ -470,16 +479,20 @@
         cart[partId] = next;
       }
 
-      // อัปเดตตัวเลขจำนวนที่เลือกเบิก
       const qtyEl = document.getElementById(`qty-${partId}`);
       if (qtyEl) qtyEl.innerText = next;
 
-      // อัปเดตจำนวนสต็อกคงเหลือในคลัง Real-time บน Badge
       const remainingStock = maxStock - next;
       const stockBadge = document.getElementById(`stock-badge-${partId}`);
+      const plusBtn = document.getElementById(`btn-plus-${partId}`);
+      
       if (stockBadge) {
         stockBadge.innerText = `คลัง: ${remainingStock}`;
         stockBadge.className = `badge ${remainingStock > 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'} rounded-pill px-2`;
+      }
+
+      if (plusBtn) {
+        plusBtn.disabled = remainingStock <= 0;
       }
     }
 
@@ -539,7 +552,7 @@
                 <span class="fw-semibold text-dark small">${name}</span><br>
                 <small class="text-muted font-monospace" style="font-size: 0.75rem;">ID: ${id}</small>
               </div>
-              <span class="badge bg-primary rounded-pill px-3 py-2" style="background-color: var(--navy) !important;">จำนวน: ${cart[id]}</span>
+              <span class="badge rounded-pill px-3 py-2" style="background-color: var(--navy) !important;">จำนวน: ${cart[id]}</span>
             </div>
           `;
         }
