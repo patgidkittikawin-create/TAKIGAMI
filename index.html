@@ -189,23 +189,18 @@
 
         <!-- Step 3: หน้าแสดงรายการสินค้า + แถบ Filter หมวดหมู่ย่อยแนวนอนด้านบน -->
         <div id="step3Container" style="display: none;">
-          <!-- แถบเลือกหมวดหมู่ย่อยแบบแนวนอน (Filter Pills) -->
           <div class="mb-3 pb-2 border-bottom">
             <label class="form-label fw-semibold text-secondary small mb-2">
               <i class="fa-solid fa-list-check text-warning me-1"></i> หมวดหมู่ย่อย (Sub Category):
             </label>
-            <div id="subCategoryPills" class="d-flex gap-2 overflow-auto pb-2" style="white-space: nowrap; scrollbar-width: thin;">
-              <!-- ปุ่มหมวดหมู่ย่อยจะถูก Render มาใส่ตรงนี้ -->
-            </div>
+            <div id="subCategoryPills" class="d-flex gap-2 overflow-auto pb-2" style="white-space: nowrap; scrollbar-width: thin;"></div>
           </div>
 
-          <!-- ช่องค้นหาภายในหมวด -->
           <div class="search-container mb-3">
             <i class="fa-solid fa-magnifying-glass search-icon"></i>
             <input type="text" id="searchInput" class="form-control" placeholder="ค้นหาชื่อพาร์ท, ขนาด หรือ รหัสสินค้า..." oninput="renderStep3()">
           </div>
 
-          <!-- รายการสินค้าจริง -->
           <div id="productList" class="row row-cols-2 g-2"></div>
         </div>
       </div>
@@ -300,7 +295,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxeaXrjZ6Ct-flcTrbJvPqly58bXruOBXVOyRWf1PbJHbDAS2-o5wGtQrHu1O8v-lX_/exec";
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyZCVka0RKHU_x-xPKrAqccePcqW9jTyu3XhK3RvyRk0DMJWHq76xAJfH4dPsDk8maj/exec";
     let catalog = [], cart = {};
     
     let currentStep = 1;
