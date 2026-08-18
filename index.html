@@ -92,22 +92,33 @@
   </div>
 
   <div class="container px-3 mt-3">
-    <!-- หน้า 1: ข้อมูลผู้เบิก -->
+    <!-- หน้า 1: ข้อมูลผู้เบิก (ครบถ้วนทุกแผนก วัตถุประสงค์ และวันที่นัด) -->
     <div id="page1" class="page active">
       <div class="section-card">
         <h5 class="fw-bold mb-3" style="color: var(--navy);"><i class="fa-solid fa-user-pen me-2 text-warning"></i>1. ข้อมูลผู้เบิก</h5>
         <input type="text" id="userName" class="form-control mb-3" placeholder="ชื่อ-นามสกุล">
+        
         <select id="dept" class="form-select mb-3">
           <option value="" disabled selected>-- เลือกแผนก --</option>
           <option value="Production">Production</option>
           <option value="Maintenance">Maintenance</option>
+          <option value="Quality Control">Quality Control</option>
+          <option value="Engineering">Engineering</option>
+          <option value="Warehouse">Warehouse</option>
         </select>
+
         <select id="purpose" class="form-select mb-3">
           <option value="" disabled selected>-- เลือกวัตถุประสงค์ --</option>
-          <option value="ซ่อมบำรุง">ซ่อมบำรุง</option>
+          <option value="ซ่อมบำรุงเครื่องจักร">ซ่อมบำรุงเครื่องจักร</option>
+          <option value="ประกอบชิ้นงาน/โปรเจกต์">ประกอบชิ้นงาน/โปรเจกต์</option>
+          <option value="เปลี่ยนทดแทนของเดิมที่ชำรุด">เปลี่ยนทดแทนของเดิมที่ชำรุด</option>
           <option value="ใช้งานทั่วไป">ใช้งานทั่วไป</option>
         </select>
-        <input type="text" id="project" class="form-control" placeholder="ชื่อโปรเจกต์ / Job ID">
+
+        <input type="text" id="project" class="form-control mb-3" placeholder="ชื่อโปรเจกต์ / Job ID">
+        
+        <label class="form-label small text-muted fw-bold mb-1">วันที่ต้องการใช้ / นัดรับของ</label>
+        <input type="date" id="needDate" class="form-control">
       </div>
       <button class="btn btn-gold w-100 py-3" onclick="validatePage1()">ถัดไป <i class="fa-solid fa-arrow-right ms-2"></i></button>
     </div>
@@ -154,7 +165,7 @@
         <p class="text-muted small mb-4">ระบบได้บันทึกข้อมูลการเบิกของคุณเรียบร้อยแล้ว</p>
         <div id="slipDetails" class="text-start border-top pt-3 small"></div>
       </div>
-      <button class="btn btn-navy w-100 py-3 mt-3" onclick="location.reload()">1. ทำรายการใหม่อีกครั้ง</button>
+      <button class="btn btn-navy w-100 py-3 mt-3" onclick="location.reload()">ทำรายการใหม่อีกครั้ง</button>
     </div>
   </div>
 
@@ -381,9 +392,10 @@
       const dept = document.getElementById('dept').value;
       const purpose = document.getElementById('purpose').value;
       const project = document.getElementById('project').value.trim();
+      const needDate = document.getElementById('needDate').value;
 
-      if (!name || !dept || !purpose || !project) {
-        Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณากรอกข้อมูลผู้เบิกให้ครบถ้วน', confirmButtonColor: '#1D2088' });
+      if (!name || !dept || !purpose || !project || !needDate) {
+        Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณากรอกข้อมูลและวันนัดหมายให้ครบถ้วน', confirmButtonColor: '#1D2088' });
         return;
       }
       goToPage(2);
@@ -435,7 +447,9 @@
         document.getElementById('slipDetails').innerHTML = `
           <p class="mb-1"><strong>ผู้เบิก:</strong> ${document.getElementById('userName').value}</p>
           <p class="mb-1"><strong>แผนก:</strong> ${document.getElementById('dept').value}</p>
+          <p class="mb-1"><strong>วัตถุประสงค์:</strong> ${document.getElementById('purpose').value}</p>
           <p class="mb-1"><strong>โปรเจกต์:</strong> ${document.getElementById('project').value}</p>
+          <p class="mb-1"><strong>วันที่ต้องการใช้:</strong> ${document.getElementById('needDate').value}</p>
           <p class="mb-0 text-success fw-bold mt-2">สถานะ: บันทึกสำเร็จ</p>
         `;
       }, 1000);
