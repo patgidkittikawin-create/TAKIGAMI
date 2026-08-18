@@ -66,18 +66,6 @@
     }
     .btn-navy:hover { background-color: var(--navy-dark); color: #fff; }
     
-    .main-category-header {
-      background-color: rgba(29, 32, 136, 0.06);
-      border-left: 4px solid var(--navy);
-      padding: 10px 14px;
-      border-radius: 6px;
-    }
-    .main-category-title {
-      color: var(--navy);
-      font-weight: 700;
-      font-size: 0.95rem;
-    }
-
     .category-scroll {
       display: flex;
       overflow-x: auto;
@@ -203,14 +191,21 @@
           <input type="text" id="searchInput" class="form-control" placeholder="ค้นหาชื่อพาร์ท, ขนาด หรือ รหัสสินค้า..." oninput="renderCatalog()">
         </div>
 
-        <div class="main-category-header d-flex align-items-center justify-content-between mb-2">
-          <span class="main-category-title">
-            <i class="fa-solid fa-layer-group me-2"></i>Pneumatic & Brass Fittings
-          </span>
-          <span class="badge bg-white text-dark border rounded-pill px-2 py-1" style="font-size: 0.7rem;">หมวดหลัก</span>
+        <!-- หมวดหมู่หลัก -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-secondary small mb-1">
+            <i class="fa-solid fa-layer-group me-1 text-primary"></i>หมวดหมู่หลัก (Main Category):
+          </label>
+          <div id="mainCategoryTabs" class="category-scroll"></div>
         </div>
 
-        <div id="subCategoryTabs" class="category-scroll mb-3"></div>
+        <!-- หมวดหมู่ย่อย (จะซ่อนไว้ก่อน และแสดงเมื่อเลือกหมวดหลัก) -->
+        <div id="subCategoryContainer" class="mb-3" style="display: none;">
+          <label class="form-label fw-semibold text-secondary small mb-1">
+            <i class="fa-solid fa-list-check me-1 text-warning"></i>หมวดหมู่ย่อย (Sub Category):
+          </label>
+          <div id="subCategoryTabs" class="category-scroll"></div>
+        </div>
 
         <div id="loadingSpinner" class="text-center py-5">
           <div class="spinner-border text-primary" role="status" style="color: var(--navy) !important;"></div>
@@ -312,13 +307,7 @@
   <script>
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzcuIHtwcKMW7cmjiMjrlpywEc70M7vIkkDKQW1pVUHswBotZxef-INj_aWJHnqB5MB/exec";
     let catalog = [], cart = {};
-
-    const SUB_CATEGORIES = [
-      { id: 'All', label: 'ทั้งหมด (All)' },
-      { id: 'Brass Fittings & Nipples', label: 'Brass Fittings & Nipples' },
-      { id: 'Straight Fittings', label: 'Straight Fittings' },
-      { id: 'Elbow Fittings', label: 'Elbow Fittings (90°)' }
-    ];
+    let currentMainCategory = 'All';
     let currentSubCategory = 'All';
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -338,47 +327,87 @@
       document.getElementById('loadingSpinner').style.display = 'none';
       if (res && res.success) {
         catalog = res.data || [];
-        initSubCategories();
+        initCategorySystem();
         renderCatalog();
       } else {
         document.getElementById('catalogList').innerHTML = '<p class="text-center text-danger py-4 small">ไม่พบข้อมูลสินค้าในระบบ</p>';
       }
     }
 
-    function initSubCategories() {
-      const container = document.getElementById('subCategoryTabs');
-      container.innerHTML = SUB_CATEGORIES.map(cat => `
-        <button type="button" class="cat-chip ${cat.id === currentSubCategory ? 'active' : ''}" onclick="filterSubCategory('${cat.id}', this)">
-          ${cat.label}
+    // สร้างปุ่มหมวดหมู่หลักทั้งหมดแบบไดนามิกจาก Sheets
+    function initCategorySystem() {
+      const mainCategories = ['All', ...new Set(catalog.map(item => item.category).filter(Boolean))];
+      
+      const mainContainer = document.getElementById('mainCategoryTabs');
+      mainContainer.innerHTML = mainCategories.map(cat => `
+        <button type="button" class="cat-chip ${cat === currentMainCategory ? 'active' : ''}" onclick="selectMainCategory('${cat}', this)">
+          ${cat === 'All' ? 'ทั้งหมด (All)' : cat}
+        </button>
+      `).join('');
+
+      renderSubCategories();
+    }
+
+    // เมื่อกดเลือกหมวดหมู่หลัก
+    function selectMainCategory(mainCat, btnElement) {
+      currentMainCategory = mainCat;
+      currentSubCategory = 'All'; // รีเซ็ตหมวดหมู่ย่อย
+
+      document.querySelectorAll('#mainCategoryTabs .cat-chip').forEach(el => el.classList.remove('active'));
+      btnElement.classList.add('active');
+
+      renderSubCategories();
+      renderCatalog();
+    }
+
+    // สร้างปุ่มหมวดหมู่ย่อยตามหมวดหลักที่ถูกเลือก
+    function renderSubCategories() {
+      const subContainer = document.getElementById('subCategoryContainer');
+      const subTabs = document.getElementById('subCategoryTabs');
+
+      if (currentMainCategory === 'All') {
+        subContainer.style.display = 'none';
+        return;
+      }
+
+      const itemsInMain = catalog.filter(item => item.category === currentMainCategory);
+      const subCategories = ['All', ...new Set(itemsInMain.map(item => item.subCategory).filter(Boolean))];
+
+      subContainer.style.display = 'block';
+      subTabs.innerHTML = subCategories.map(subCat => `
+        <button type="button" class="cat-chip ${subCat === currentSubCategory ? 'active' : ''}" onclick="selectSubCategory('${subCat}', this)">
+          ${subCat === 'All' ? 'ทั้งหมดในหมวดนี้' : subCat}
         </button>
       `).join('');
     }
 
-    function filterSubCategory(subCatId, btnElement) {
-      currentSubCategory = subCatId;
+    // เมื่อกดเลือกหมวดหมู่ย่อย
+    function selectSubCategory(subCat, btnElement) {
+      currentSubCategory = subCat;
       document.querySelectorAll('#subCategoryTabs .cat-chip').forEach(el => el.classList.remove('active'));
       btnElement.classList.add('active');
       renderCatalog();
     }
 
+    // กรองและแสดงผลสินค้า
     function renderCatalog() {
       const keyword = String(document.getElementById('searchInput').value || '').toLowerCase().trim();
       const listContainer = document.getElementById('catalogList');
 
       const filtered = catalog.filter(item => {
-        const itemSubCat = String(item.subCategory || '');
-        const matchSubCat = (currentSubCategory === 'All' || itemSubCat === currentSubCategory);
+        const matchMain = (currentMainCategory === 'All' || item.category === currentMainCategory);
+        const matchSub = (currentSubCategory === 'All' || item.subCategory === currentSubCategory);
         
         const nameStr = String(item.partName || '').toLowerCase();
         const idStr = String(item.partId || '').toLowerCase();
         const sizeStr = String(item.size || '').toLowerCase();
-        
         const matchKey = nameStr.includes(keyword) || idStr.includes(keyword) || sizeStr.includes(keyword);
-        return matchSubCat && matchKey;
+
+        return matchMain && matchSub && matchKey;
       });
 
       if (filtered.length === 0) {
-        listContainer.innerHTML = '<p class="text-center text-muted py-5 small">ไม่พบรายการสินค้าที่ตรงเงื่อนไข</p>';
+        listContainer.innerHTML = '<p class="text-center text-muted py-5 small">ไม่พบรายการสินค้าในหมวดหมู่นี้</p>';
         return;
       }
 
