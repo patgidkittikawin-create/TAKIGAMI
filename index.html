@@ -17,7 +17,6 @@
     }
     body { font-family: 'Kanit', sans-serif; background-color: var(--bg-color); color: #333; padding-bottom: 95px; }
     
-    /* Header Modern Style */
     .nav-header { 
       background: linear-gradient(135deg, var(--navy), #2d32c9); 
       color: white; 
@@ -43,7 +42,6 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.03); 
     }
     
-    /* Buttons */
     .btn-gold { 
       background-color: var(--gold); 
       color: #000; 
@@ -68,7 +66,6 @@
     }
     .btn-navy:hover { background-color: var(--navy-dark); color: #fff; }
     
-    /* Category Pill Tabs (Scrollable) */
     .category-scroll {
       display: flex;
       overflow-x: auto;
@@ -97,7 +94,6 @@
       box-shadow: 0 2px 8px rgba(29, 32, 136, 0.25); 
     }
     
-    /* Search Bar */
     .search-container { position: relative; }
     .search-container .form-control {
       border-radius: 14px;
@@ -105,7 +101,6 @@
       border: 1px solid #dee2e6;
       font-size: 0.95rem;
       background-color: #fafbfc;
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
     }
     .search-container .search-icon {
       position: absolute;
@@ -116,17 +111,11 @@
       z-index: 10;
     }
     
-    /* Product Card Grid */
     .card-product { 
       transition: transform 0.2s, box-shadow 0.2s; 
       border: 1px solid #eef2f6 !important;
     }
-    .card-product:hover { 
-      transform: translateY(-2px); 
-      box-shadow: 0 6px 16px rgba(0,0,0,0.06) !important; 
-    }
 
-    /* Success Receipt Slip Style */
     .success-slip {
       background: linear-gradient(to bottom, #ffffff, #fafbfc);
       border: 2px dashed #cbd5e1;
@@ -189,20 +178,18 @@
       </button>
     </div>
 
-    <!-- หน้าที่ 2: เลือกรายการสินค้า (Card Grid View) -->
+    <!-- หน้าที่ 2: เลือกรายการสินค้า -->
     <div id="page2" class="page">
       <div class="section-card">
         <h5 class="fw-bold mb-3" style="color: var(--navy);">
           <i class="fa-solid fa-boxes-stacked me-2 text-warning"></i>2. รายการขอเบิกสินค้า
         </h5>
         
-        <!-- Search Bar -->
         <div class="search-container mb-3">
           <i class="fa-solid fa-magnifying-glass search-icon"></i>
-          <input type="text" id="searchInput" class="form-control" placeholder="ค้นหาชื่อพาร์ท หรือ รหัสสินค้า..." oninput="filterProducts()">
+          <input type="text" id="searchInput" class="form-control" placeholder="ค้นหาชื่อพาร์ท, ขนาด หรือ รหัสสินค้า..." oninput="filterProducts()">
         </div>
 
-        <!-- Category Scroll Tabs -->
         <div id="categoryTabs" class="category-scroll mb-3"></div>
 
         <div id="loadingSpinner" class="text-center py-5">
@@ -210,7 +197,6 @@
           <p class="small text-muted mt-2">กำลังโหลดรายการสินค้า...</p>
         </div>
 
-        <!-- Catalog Card Grid Container -->
         <div id="catalogList"></div>
       </div>
 
@@ -270,7 +256,7 @@
       </div>
     </div>
 
-    <!-- หน้าที่ 4: ใบยืนยันการเบิก (Success Slip) -->
+    <!-- หน้าที่ 4: ใบยืนยันการเบิก -->
     <div id="page4" class="page">
       <div class="section-card success-slip text-center p-4">
         <div class="mb-2">
@@ -304,71 +290,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    const GAS_WEB_APP_URL = "function doGet(e) {
-  const action = e.parameter.action;
-  if (action === 'getCatalog') {
-    const callback = e.parameter.callback;
-    const data = getCatalogDataInternal();
-    const result = { success: true, data: data };
-    const output = callback + '(' + JSON.stringify(result) + ');';
-    return ContentService.createTextOutput(output).setMimeType(ContentService.MimeType.JAVASCRIPT);
-  }
-  return ContentService.createTextOutput("TAKIGAMI Store API is running.");
-}
-
-function getCatalogDataInternal() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName('Master_Parts');
-  if (!sheet) return [];
-  const data = sheet.getDataRange().getValues();
-  data.shift(); // ตัดหัวตารางออก
-  return data.map(row => ({
-    partId: row[0],    // คอลัมน์ A (Part_ID)
-    partName: row[1],  // คอลัมน์ B (Part_Name)
-    size: row[2],      // คอลัมน์ C (Size) -> เพิ่มใหม่
-    category: row[3],  // คอลัมน์ D (Category)
-    location: row[4],  // คอลัมน์ E (Location_Code)
-    stock: row[5]      // คอลัมน์ F (Qty_Stock)
-  }));
-}
-
-function doPost(e) {
-  try {
-    const contents = JSON.parse(e.postData.contents);
-    if (contents.action === 'submitForm') {
-      const formData = contents.formData;
-      const ss = SpreadsheetApp.getActiveSpreadsheet();
-      const logSheet = ss.getSheetByName('Requisition_Orders');
-      const stockSheet = ss.getSheetByName('Master_Parts');
-      
-      // 1. บันทึกข้อมูลลงหน้าประวัติ
-      const itemsSummary = formData.cart.map(item => `${item.partId} (${item.partName}) x${item.qty}`).join(', ');
-      logSheet.appendRow([
-        formData.orderId, formData.userName, formData.dept, formData.purpose, 
-        formData.pickupType, formData.timeSlot, 'Pending', itemsSummary, formData.project, new Date()
-      ]);
-      
-      // 2. หักลบสต็อกในหน้า Master_Parts (อัปเดตคอลัมน์ F / Index 5)
-      const stockData = stockSheet.getDataRange().getValues();
-      formData.cart.forEach(item => {
-        for (let i = 1; i < stockData.length; i++) {
-          if (stockData[i][0] == item.partId) { 
-            let currentStock = Number(stockData[i][5]); // คอลัมน์ F คือ index 5
-            let newStock = currentStock - item.qty;
-            stockSheet.getRange(i + 1, 6).setValue(newStock); // อัปเดตช่องสต็อก (คอลัมน์ 6)
-            break;
-          }
-        }
-      });
-      
-      return ContentService.createTextOutput(JSON.stringify({ success: true }))
-                           .setMimeType(ContentService.MimeType.JSON);
-    }
-  } catch(err) {
-    return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.message }))
-                         .setMimeType(ContentService.MimeType.JSON);
-  }
-}";
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwzVcK9MQGAYUsC2x5EWiYOb8_vLVsOhes_XKUybNvlEz7hPIdcrWF2hnlc_gHelbYI/exec";
     let catalog = [], cart = {}, currentCategory = 'All';
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -396,7 +318,7 @@ function doPost(e) {
     }
 
     function initCategories() {
-      const categories = ['All', ...new Set(catalog.map(item => item.category).filter(Boolean))];
+      const categories = ['All', ...new Set(catalog.map(item => String(item.category || '')).filter(Boolean))];
       const container = document.getElementById('categoryTabs');
       container.innerHTML = categories.map(cat => `
         <button class="cat-chip ${cat === 'All' ? 'active' : ''}" onclick="filterCategory('${cat}', this)">
@@ -413,12 +335,18 @@ function doPost(e) {
     }
 
     function renderCatalog() {
-      const keyword = document.getElementById('searchInput').value.toLowerCase().trim();
+      const keyword = String(document.getElementById('searchInput').value || '').toLowerCase().trim();
       const listContainer = document.getElementById('catalogList');
 
       const filtered = catalog.filter(item => {
-        const matchCat = (currentCategory === 'All' || item.category === currentCategory);
-        const matchKey = (item.partName || '').toLowerCase().includes(keyword) || (item.partId || '').toLowerCase().includes(keyword) || (item.size || '').toLowerCase().includes(keyword);
+        const itemCat = String(item.category || '');
+        const matchCat = (currentCategory === 'All' || itemCat === currentCategory);
+        
+        const nameStr = String(item.partName || '').toLowerCase();
+        const idStr = String(item.partId || '').toLowerCase();
+        const sizeStr = String(item.size || '').toLowerCase();
+        
+        const matchKey = nameStr.includes(keyword) || idStr.includes(keyword) || sizeStr.includes(keyword);
         return matchCat && matchKey;
       });
 
@@ -427,7 +355,6 @@ function doPost(e) {
         return;
       }
 
-      // Render as 2-column Card Grid View for mobile
       listContainer.innerHTML = `
         <div class="row row-cols-2 g-2">
           ${filtered.map(item => {
@@ -541,7 +468,7 @@ function doPost(e) {
       for (let id in cart) {
         if (cart[id] > 0) {
           hasItems = true;
-          let item = catalog.find(i => i.partId === id);
+          let item = catalog.find(i => String(i.partId) === String(id));
           let name = item ? item.partName : id;
           html += `
             <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
@@ -582,7 +509,7 @@ function doPost(e) {
       const cartArray = [];
       for (let id in cart) {
         if (cart[id] > 0) {
-          let item = catalog.find(i => i.partId === id);
+          let item = catalog.find(i => String(i.partId) === String(id));
           cartArray.push({
             partId: id,
             partName: item ? item.partName : '',
