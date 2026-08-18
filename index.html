@@ -304,7 +304,71 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxs_JCVNrlZV3IJa3ZUiQ-njwgqM8jBXJ1rxOIcw-NSVti0mtKRueEDznXh6sdFU4tE/exec";
+    const GAS_WEB_APP_URL = "function doGet(e) {
+  const action = e.parameter.action;
+  if (action === 'getCatalog') {
+    const callback = e.parameter.callback;
+    const data = getCatalogDataInternal();
+    const result = { success: true, data: data };
+    const output = callback + '(' + JSON.stringify(result) + ');';
+    return ContentService.createTextOutput(output).setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService.createTextOutput("TAKIGAMI Store API is running.");
+}
+
+function getCatalogDataInternal() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName('Master_Parts');
+  if (!sheet) return [];
+  const data = sheet.getDataRange().getValues();
+  data.shift(); // ตัดหัวตารางออก
+  return data.map(row => ({
+    partId: row[0],    // คอลัมน์ A (Part_ID)
+    partName: row[1],  // คอลัมน์ B (Part_Name)
+    size: row[2],      // คอลัมน์ C (Size) -> เพิ่มใหม่
+    category: row[3],  // คอลัมน์ D (Category)
+    location: row[4],  // คอลัมน์ E (Location_Code)
+    stock: row[5]      // คอลัมน์ F (Qty_Stock)
+  }));
+}
+
+function doPost(e) {
+  try {
+    const contents = JSON.parse(e.postData.contents);
+    if (contents.action === 'submitForm') {
+      const formData = contents.formData;
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      const logSheet = ss.getSheetByName('Requisition_Orders');
+      const stockSheet = ss.getSheetByName('Master_Parts');
+      
+      // 1. บันทึกข้อมูลลงหน้าประวัติ
+      const itemsSummary = formData.cart.map(item => `${item.partId} (${item.partName}) x${item.qty}`).join(', ');
+      logSheet.appendRow([
+        formData.orderId, formData.userName, formData.dept, formData.purpose, 
+        formData.pickupType, formData.timeSlot, 'Pending', itemsSummary, formData.project, new Date()
+      ]);
+      
+      // 2. หักลบสต็อกในหน้า Master_Parts (อัปเดตคอลัมน์ F / Index 5)
+      const stockData = stockSheet.getDataRange().getValues();
+      formData.cart.forEach(item => {
+        for (let i = 1; i < stockData.length; i++) {
+          if (stockData[i][0] == item.partId) { 
+            let currentStock = Number(stockData[i][5]); // คอลัมน์ F คือ index 5
+            let newStock = currentStock - item.qty;
+            stockSheet.getRange(i + 1, 6).setValue(newStock); // อัปเดตช่องสต็อก (คอลัมน์ 6)
+            break;
+          }
+        }
+      });
+      
+      return ContentService.createTextOutput(JSON.stringify({ success: true }))
+                           .setMimeType(ContentService.MimeType.JSON);
+    }
+  } catch(err) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.message }))
+                         .setMimeType(ContentService.MimeType.JSON);
+  }
+}";
     let catalog = [], cart = {}, currentCategory = 'All';
 
     document.addEventListener("DOMContentLoaded", () => {
