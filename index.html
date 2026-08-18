@@ -65,34 +65,16 @@
       box-shadow: 0 4px 10px rgba(29, 32, 136, 0.25); 
     }
     .btn-navy:hover { background-color: var(--navy-dark); color: #fff; }
-    
-    .category-scroll {
-      display: flex;
-      overflow-x: auto;
-      gap: 8px;
-      padding-bottom: 6px;
-      scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
+
+    .drill-card {
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid #eef2f6 !important;
+      background: #fff;
     }
-    .category-scroll::-webkit-scrollbar { display: none; }
-    
-    .cat-chip { 
-      background: #f1f3f5; 
-      border: 1px solid #e9ecef; 
-      padding: 8px 16px; 
-      border-radius: 30px; 
-      font-size: 0.82rem; 
-      font-weight: 500;
-      color: #495057; 
-      white-space: nowrap; 
-      cursor: pointer; 
-      transition: all 0.2s ease;
-    }
-    .cat-chip.active { 
-      background: var(--navy); 
-      color: white; 
-      border-color: var(--navy); 
-      box-shadow: 0 3px 8px rgba(29, 32, 136, 0.25); 
+    .drill-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.08);
     }
     
     .search-container { position: relative; }
@@ -179,32 +161,19 @@
       </button>
     </div>
 
-    <!-- หน้าที่ 2: เลือกรายการสินค้า -->
+    <!-- หน้าที่ 2: ระบบ 3-Step Visual Drill-down -->
     <div id="page2" class="page">
       <div class="section-card">
-        <h5 class="fw-bold mb-3" style="color: var(--navy);">
-          <i class="fa-solid fa-boxes-stacked me-2 text-warning"></i>2. รายการขอเบิกสินค้า
-        </h5>
-        
-        <div class="search-container mb-3">
-          <i class="fa-solid fa-magnifying-glass search-icon"></i>
-          <input type="text" id="searchInput" class="form-control" placeholder="ค้นหาชื่อพาร์ท, ขนาด หรือ รหัสสินค้า..." oninput="renderCatalog()">
-        </div>
-
-        <!-- หมวดหมู่หลัก -->
-        <div class="mb-3">
-          <label class="form-label fw-semibold text-secondary small mb-1">
-            <i class="fa-solid fa-layer-group me-1 text-primary"></i>หมวดหมู่หลัก (Main Category):
-          </label>
-          <div id="mainCategoryTabs" class="category-scroll"></div>
-        </div>
-
-        <!-- หมวดหมู่ย่อย -->
-        <div id="subCategoryContainer" class="mb-3" style="display: none;">
-          <label class="form-label fw-semibold text-secondary small mb-1">
-            <i class="fa-solid fa-list-check me-1 text-warning"></i>หมวดหมู่ย่อย (Sub Category):
-          </label>
-          <div id="subCategoryTabs" class="category-scroll"></div>
+        <!-- Header & Navigation Bar สำหรับ Drill-down -->
+        <div class="d-flex align-items-center mb-3">
+          <div id="backBtnContainer" class="me-2" style="display: none;">
+            <button class="btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center" style="width:38px; height:38px;" onclick="navigateBack()">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+          </div>
+          <h5 class="fw-bold m-0" id="stepTitle" style="color: var(--navy);">
+            <i class="fa-solid fa-boxes-stacked me-2 text-warning"></i>2. เลือกหมวดหมู่หลัก
+          </h5>
         </div>
 
         <div id="loadingSpinner" class="text-center py-5">
@@ -212,7 +181,20 @@
           <p class="small text-muted mt-2">กำลังโหลดรายการสินค้า...</p>
         </div>
 
-        <div id="catalogList"></div>
+        <!-- Step 1: หน้าเลือกหมวดหมู่หลัก -->
+        <div id="step1Container" class="row row-cols-2 g-3"></div>
+
+        <!-- Step 2: หน้าเลือกหมวดหมู่ย่อย -->
+        <div id="step2Container" class="row row-cols-2 g-3" style="display: none;"></div>
+
+        <!-- Step 3: หน้าแสดงรายการสินค้าจริง -->
+        <div id="step3Container" style="display: none;">
+          <div class="search-container mb-3">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="searchInput" class="form-control" placeholder="ค้นหาชื่อพาร์ท, ขนาด หรือ รหัสสินค้า..." oninput="renderStep3()">
+          </div>
+          <div id="productList" class="row row-cols-2 g-2"></div>
+        </div>
       </div>
 
       <div class="d-flex gap-2">
@@ -305,10 +287,13 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzQrMZ8mVNYpXSJLMgO77opxVAXE2SQnW0Wsp4A_AML2WCFu0k8nU-nCSbANN53BzWO/exec";
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwFCOldBJF6JRP82jK9dKvFEinZiy6of5P2gh5TdouXPULji-8XGOexnDz0hdJzurdo/exec";
     let catalog = [], cart = {};
-    let currentMainCategory = 'All';
-    let currentSubCategory = 'All';
+    
+    // State สำหรับระบบ 3-Step Drill-down
+    let currentStep = 1;
+    let selectedMainCategory = null;
+    let selectedSubCategory = null;
 
     document.addEventListener("DOMContentLoaded", () => {
       loadCatalogJSONP();
@@ -332,10 +317,9 @@
         document.getElementById('loadingSpinner').style.display = 'none';
         if (res && res.success) {
           catalog = res.data || [];
-          initCategorySystem();
-          renderCatalog();
+          initDrillDown();
         } else {
-          document.getElementById('catalogList').innerHTML = '<p class="text-center text-danger py-4 small">ไม่พบข้อมูลสินค้าในระบบ</p>';
+          document.getElementById('step1Container').innerHTML = '<p class="text-center text-danger py-4 small col-12">ไม่พบข้อมูลสินค้าในระบบ</p>';
         }
       };
 
@@ -347,64 +331,100 @@
       document.body.appendChild(script);
     }
 
-    function initCategorySystem() {
-      const mainCategories = ['All', ...new Set(catalog.map(item => item.category).filter(Boolean))];
-      
-      const mainContainer = document.getElementById('mainCategoryTabs');
-      mainContainer.innerHTML = mainCategories.map(cat => `
-        <button type="button" class="cat-chip ${cat === currentMainCategory ? 'active' : ''}" onclick="selectMainCategory('${cat}', this)">
-          ${cat === 'All' ? 'ทั้งหมด (All)' : cat}
-        </button>
-      `).join('');
-
-      renderSubCategories();
+    // --- ระบบ 3-Step Drill-down Logic ---
+    function initDrillDown() {
+      navigateToStep(1);
     }
 
-    function selectMainCategory(mainCat, btnElement) {
-      currentMainCategory = mainCat;
-      currentSubCategory = 'All';
+    function navigateToStep(step, val = null) {
+      currentStep = step;
+      if (step === 2) selectedMainCategory = val;
+      if (step === 3) selectedSubCategory = val;
 
-      document.querySelectorAll('#mainCategoryTabs .cat-chip').forEach(el => el.classList.remove('active'));
-      btnElement.classList.add('active');
+      const step1El = document.getElementById('step1Container');
+      const step2El = document.getElementById('step2Container');
+      const step3El = document.getElementById('step3Container');
+      const backBtnEl = document.getElementById('backBtnContainer');
+      const titleEl = document.getElementById('stepTitle');
 
-      renderSubCategories();
-      renderCatalog();
+      step1El.style.display = (step === 1) ? 'flex' : 'none';
+      step2El.style.display = (step === 2) ? 'flex' : 'none';
+      step3El.style.display = (step === 3) ? 'block' : 'none';
+      backBtnEl.style.display = (step === 1) ? 'none' : 'block';
+
+      if (step === 1) {
+        titleEl.innerHTML = '<i class="fa-solid fa-boxes-stacked me-2 text-warning"></i>2. เลือกหมวดหมู่หลัก';
+        renderStep1();
+      } else if (step === 2) {
+        titleEl.innerHTML = `<i class="fa-solid fa-layer-group me-2 text-warning"></i>${selectedMainCategory}`;
+        renderStep2();
+      } else if (step === 3) {
+        titleEl.innerHTML = `<i class="fa-solid fa-list-check me-2 text-warning"></i>${selectedSubCategory}`;
+        renderStep3();
+      }
     }
 
-    function renderSubCategories() {
-      const subContainer = document.getElementById('subCategoryContainer');
-      const subTabs = document.getElementById('subCategoryTabs');
+    function navigateBack() {
+      if (currentStep === 3) {
+        navigateToStep(2, selectedMainCategory);
+      } else if (currentStep === 2) {
+        navigateToStep(1);
+      }
+    }
 
-      if (currentMainCategory === 'All') {
-        subContainer.style.display = 'none';
+    // Step 1: แสดงหมวดหลัก (Main Categories)
+    function renderStep1() {
+      const mainCategories = [...new Set(catalog.map(item => item.category).filter(Boolean))];
+      const container = document.getElementById('step1Container');
+
+      if (mainCategories.length === 0) {
+        container.innerHTML = '<p class="text-center text-muted py-4 small col-12">ไม่พบหมวดหมู่สินค้า</p>';
         return;
       }
 
-      const itemsInMain = catalog.filter(item => item.category === currentMainCategory);
-      const subCategories = ['All', ...new Set(itemsInMain.map(item => item.subCategory).filter(Boolean))];
-
-      subContainer.style.display = 'block';
-      subTabs.innerHTML = subCategories.map(subCat => `
-        <button type="button" class="cat-chip ${subCat === currentSubCategory ? 'active' : ''}" onclick="selectSubCategory('${subCat}', this)">
-          ${subCat === 'All' ? 'ทั้งหมดในหมวดนี้' : subCat}
-        </button>
+      container.innerHTML = mainCategories.map(cat => `
+        <div class="col">
+          <div class="card drill-card h-100 rounded-4 p-3 text-center d-flex flex-column align-items-center justify-content-center" onclick="navigateToStep(2, '${cat}')">
+            <div class="mb-2 text-primary" style="font-size: 2.2rem;">
+              <i class="fa-solid fa-folder-open"></i>
+            </div>
+            <h6 class="fw-bold text-dark mb-0" style="font-size: 0.95rem;">${cat}</h6>
+          </div>
+        </div>
       `).join('');
     }
 
-    function selectSubCategory(subCat, btnElement) {
-      currentSubCategory = subCat;
-      document.querySelectorAll('#subCategoryTabs .cat-chip').forEach(el => el.classList.remove('active'));
-      btnElement.classList.add('active');
-      renderCatalog();
+    // Step 2: แสดงหมวดหมู่ย่อย (Sub Categories)
+    function renderStep2() {
+      const itemsInMain = catalog.filter(item => item.category === selectedMainCategory);
+      const subCategories = [...new Set(itemsInMain.map(item => item.subCategory).filter(Boolean))];
+      const container = document.getElementById('step2Container');
+
+      if (subCategories.length === 0) {
+        container.innerHTML = '<p class="text-center text-muted py-4 small col-12">ไม่พบหมวดหมู่ย่อยในหมวดนี้</p>';
+        return;
+      }
+
+      container.innerHTML = subCategories.map(subCat => `
+        <div class="col">
+          <div class="card drill-card h-100 rounded-4 p-3 text-center d-flex flex-column align-items-center justify-content-center" onclick="navigateToStep(3, '${subCat}')">
+            <div class="mb-2 text-warning" style="font-size: 2.2rem;">
+              <i class="fa-solid fa-boxes-packing"></i>
+            </div>
+            <h6 class="fw-bold text-dark mb-0" style="font-size: 0.9rem;">${subCat}</h6>
+          </div>
+        </div>
+      `).join('');
     }
 
-    function renderCatalog() {
+    // Step 3: แสดงรายการสินค้าจริงตามหมวด และ Search
+    function renderStep3() {
       const keyword = String(document.getElementById('searchInput').value || '').toLowerCase().trim();
-      const listContainer = document.getElementById('catalogList');
+      const listContainer = document.getElementById('productList');
 
       const filtered = catalog.filter(item => {
-        const matchMain = (currentMainCategory === 'All' || item.category === currentMainCategory);
-        const matchSub = (currentSubCategory === 'All' || item.subCategory === currentSubCategory);
+        const matchMain = item.category === selectedMainCategory;
+        const matchSub = item.subCategory === selectedSubCategory;
         
         const nameStr = String(item.partName || '').toLowerCase();
         const idStr = String(item.partId || '').toLowerCase();
@@ -415,47 +435,43 @@
       });
 
       if (filtered.length === 0) {
-        listContainer.innerHTML = '<p class="text-center text-muted py-5 small">ไม่พบรายการสินค้าในหมวดหมู่นี้</p>';
+        listContainer.innerHTML = '<p class="text-center text-muted py-5 small col-12">ไม่พบรายการสินค้าที่ค้นหา</p>';
         return;
       }
 
-      listContainer.innerHTML = `
-        <div class="row row-cols-2 g-2">
-          ${filtered.map(item => {
-            const qty = cart[item.partId] || 0;
-            const stockVal = Number(item.stock) || 0;
-            const currentStock = stockVal - qty;
-            const isOut = currentStock <= 0;
+      listContainer.innerHTML = filtered.map(item => {
+        const qty = cart[item.partId] || 0;
+        const stockVal = Number(item.stock) || 0;
+        const currentStock = stockVal - qty;
+        const isOut = currentStock <= 0;
 
-            return `
-              <div class="col">
-                <div class="card card-product h-100 rounded-4 p-3 d-flex flex-column justify-content-between bg-white shadow-sm">
-                  <div>
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                      <span class="badge bg-light text-dark font-monospace px-2 py-1 rounded-pill" style="font-size: 0.7rem;">${item.partId}</span>
-                      <span id="stock-badge-${item.partId}" class="badge ${currentStock > 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'} rounded-pill px-2" style="font-size: 0.65rem;">คลัง: ${currentStock}</span>
-                    </div>
-                    <h6 class="fw-bold text-dark mb-1" style="font-size: 0.88rem; line-height: 1.3;">${item.partName}</h6>
-                    <p class="text-muted mb-1" style="font-size: 0.75rem;">ขนาด: <span class="text-secondary fw-medium">${item.size || '-'}</span></p>
-                    <div class="text-muted mb-3" style="font-size: 0.7rem;"><i class="fa-solid fa-location-dot me-1 text-danger"></i>${item.location || '-'}</div>
-                  </div>
-                  <div>
-                    <div class="d-flex align-items-center justify-content-between bg-light rounded-pill p-1 border">
-                      <button type="button" class="btn btn-sm btn-white rounded-circle shadow-sm fw-bold text-dark d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" onclick="updateCart('${item.partId}', -1, ${stockVal})">
-                        <i class="fa-solid fa-minus fa-xs"></i>
-                      </button>
-                      <span class="cart-qty fw-bold text-navy px-1" id="qty-${item.partId}" style="font-size: 0.9rem;">${qty}</span>
-                      <button type="button" id="btn-plus-${item.partId}" class="btn btn-sm rounded-circle shadow-sm fw-bold d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: var(--gold); color: #000;" ${isOut ? 'disabled' : ''} onclick="updateCart('${item.partId}', 1, ${stockVal})">
-                        <i class="fa-solid fa-plus fa-xs"></i>
-                      </button>
-                    </div>
-                  </div>
+        return `
+          <div class="col">
+            <div class="card card-product h-100 rounded-4 p-3 d-flex flex-column justify-content-between bg-white shadow-sm">
+              <div>
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <span class="badge bg-light text-dark font-monospace px-2 py-1 rounded-pill" style="font-size: 0.7rem;">${item.partId}</span>
+                  <span id="stock-badge-${item.partId}" class="badge ${currentStock > 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'} rounded-pill px-2" style="font-size: 0.65rem;">คลัง: ${currentStock}</span>
+                </div>
+                <h6 class="fw-bold text-dark mb-1" style="font-size: 0.88rem; line-height: 1.3;">${item.partName}</h6>
+                <p class="text-muted mb-1" style="font-size: 0.75rem;">ขนาด: <span class="text-secondary fw-medium">${item.size || '-'}</span></p>
+                <div class="text-muted mb-3" style="font-size: 0.7rem;"><i class="fa-solid fa-location-dot me-1 text-danger"></i>${item.location || '-'}</div>
+              </div>
+              <div>
+                <div class="d-flex align-items-center justify-content-between bg-light rounded-pill p-1 border">
+                  <button type="button" class="btn btn-sm btn-white rounded-circle shadow-sm fw-bold text-dark d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" onclick="updateCart('${item.partId}', -1, ${stockVal})">
+                    <i class="fa-solid fa-minus fa-xs"></i>
+                  </button>
+                  <span class="cart-qty fw-bold text-navy px-1" id="qty-${item.partId}" style="font-size: 0.9rem;">${qty}</span>
+                  <button type="button" id="btn-plus-${item.partId}" class="btn btn-sm rounded-circle shadow-sm fw-bold d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: var(--gold); color: #000;" ${isOut ? 'disabled' : ''} onclick="updateCart('${item.partId}', 1, ${stockVal})">
+                    <i class="fa-solid fa-plus fa-xs"></i>
+                  </button>
                 </div>
               </div>
-            `;
-          }).join('')}
-        </div>
-      `;
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     function updateCart(partId, change, maxStock) {
