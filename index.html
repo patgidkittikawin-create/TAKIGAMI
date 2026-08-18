@@ -77,6 +77,22 @@
       box-shadow: 0 6px 15px rgba(0,0,0,0.08);
     }
     
+    .sub-cat-btn {
+      text-align: left;
+      font-weight: 500;
+      border-radius: 12px;
+      padding: 12px 16px;
+      border: 1px solid #dee2e6;
+      background: #fff;
+      color: #333;
+      transition: all 0.2s;
+    }
+    .sub-cat-btn:hover, .sub-cat-btn.active {
+      background-color: var(--navy);
+      color: #fff;
+      border-color: var(--navy);
+    }
+
     .search-container { position: relative; }
     .search-container .form-control {
       border-radius: 14px;
@@ -161,7 +177,7 @@
       </button>
     </div>
 
-    <!-- หน้าที่ 2: เลือกหมวดหมู่หลัก และแสดงรายการสินค้าทั้งหมดทันที -->
+    <!-- หน้าที่ 2: เลือกหมวดหมู่หลัก, หมวดหมู่ย่อย และแสดงรายการพาร์ท -->
     <div id="page2" class="page">
       <div class="section-card">
         <div class="d-flex align-items-center mb-3">
@@ -180,22 +196,27 @@
           <p class="small text-muted mt-2">กำลังโหลดรายการสินค้า...</p>
         </div>
 
-        <!-- หน้าเลือกหมวดหมู่หลัก -->
+        <!-- 2.1 หน้าเลือกหมวดหมู่หลัก -->
         <div id="step1Container" class="row row-cols-2 g-3"></div>
 
-        <!-- หน้าแสดงรายการสินค้าทั้งหมดในหมวดนั้นทันที -->
+        <!-- 2.2 หน้าเลือกหมวดหมู่ย่อย (Sub Category) -->
         <div id="step2Container" style="display: none;">
+          <label class="form-label fw-semibold text-secondary small mb-2"><i class="fa-solid fa-list-ul me-1"></i> หมวดหมู่ย่อย (Sub Category):</label>
+          <div id="subCategoryList" class="d-flex flex-column gap-2 mb-3"></div>
+        </div>
+
+        <!-- 2.3 หน้าแสดงรายการสินค้า (Product List) -->
+        <div id="step3Container" style="display: none;">
           <div class="search-container mb-3">
             <i class="fa-solid fa-magnifying-glass search-icon"></i>
             <input type="text" id="searchInput" class="form-control" placeholder="ค้นหาชื่อพาร์ท, ขนาด หรือ รหัสสินค้า..." oninput="renderProductList()">
           </div>
-
           <div id="productList" class="row row-cols-2 g-2"></div>
         </div>
       </div>
 
       <div class="d-flex gap-2">
-        <button type="button" class="btn btn-outline-secondary w-50 py-3 rounded-3" onclick="goToPage(1)">
+        <button type="button" class="btn btn-outline-secondary w-50 py-3 rounded-3" onclick="handleMainBack()">
           <i class="fa-solid fa-arrow-left me-1"></i> ย้อนกลับ
         </button>
         <button type="button" class="btn btn-navy w-50 py-3 rounded-3" onclick="validatePage2()">
@@ -287,8 +308,9 @@
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyZCVka0RKHU_x-xPKrAqccePcqW9jTyu3XhK3RvyRk0DMJWHq76xAJfH4dPsDk8maj/exec";
     let catalog = [], cart = {};
     
-    let currentView = 1; // 1 = เลือกหมวดหมู่หลัก, 2 = แสดงรายการสินค้า
+    let currentStepLevel = 1; // 1 = เลือกหมวดหลัก, 2 = เลือกหมวดหมู่ย่อย, 3 = แสดงรายการพาร์ท
     let selectedMainCategory = null;
+    let selectedSubCategory = null;
 
     document.addEventListener("DOMContentLoaded", () => {
       loadCatalogJSONP();
@@ -326,34 +348,48 @@
       document.body.appendChild(script);
     }
 
-    function switchView(view, cat = null) {
-      currentView = view;
-      if (view === 2) {
-        selectedMainCategory = cat;
-      }
+    function setStepLevel(level, mainCat = null, subCat = null) {
+      currentStepLevel = level;
+      if (mainCat !== null) selectedMainCategory = mainCat;
+      if (subCat !== null) selectedSubCategory = subCat;
 
       const step1El = document.getElementById('step1Container');
       const step2El = document.getElementById('step2Container');
+      const step3El = document.getElementById('step3Container');
       const backBtnEl = document.getElementById('backBtnContainer');
       const titleEl = document.getElementById('stepTitle');
 
-      step1El.style.display = (view === 1) ? 'flex' : 'none';
-      step2El.style.display = (view === 2) ? 'block' : 'none';
-      backBtnEl.style.display = (view === 1) ? 'none' : 'block';
+      step1El.style.display = (level === 1) ? 'flex' : 'none';
+      step2El.style.display = (level === 2) ? 'block' : 'none';
+      step3El.style.display = (level === 3) ? 'block' : 'none';
+      backBtnEl.style.display = (level === 1) ? 'none' : 'block';
 
-      if (view === 1) {
+      if (level === 1) {
         titleEl.innerHTML = '<i class="fa-solid fa-boxes-stacked me-2 text-warning"></i>2. เลือกหมวดหมู่หลัก';
         renderMainCategories();
-      } else if (view === 2) {
-        titleEl.innerHTML = `<i class="fa-solid fa-layer-group me-2 text-warning"></i>${selectedMainCategory}`;
+      } else if (level === 2) {
+        titleEl.innerHTML = `<i class="fa-solid fa-folder-open me-2 text-warning"></i>${selectedMainCategory}`;
+        renderSubCategories();
+      } else if (level === 3) {
+        titleEl.innerHTML = `<i class="fa-solid fa-layer-group me-2 text-warning"></i>${selectedSubCategory}`;
         document.getElementById('searchInput').value = '';
         renderProductList();
       }
     }
 
     function navigateBack() {
-      if (currentView === 2) {
-        switchView(1);
+      if (currentStepLevel === 3) {
+        setStepLevel(2);
+      } else if (currentStepLevel === 2) {
+        setStepLevel(1);
+      }
+    }
+
+    function handleMainBack() {
+      if (currentStepLevel > 1) {
+        navigateBack();
+      } else {
+        goToPage(1);
       }
     }
 
@@ -368,7 +404,7 @@
 
       container.innerHTML = mainCategories.map(cat => `
         <div class="col">
-          <div class="card drill-card h-100 rounded-4 p-3 text-center d-flex flex-column align-items-center justify-content-center" onclick="switchView(2, '${cat}')">
+          <div class="card drill-card h-100 rounded-4 p-3 text-center d-flex flex-column align-items-center justify-content-center" onclick="setStepLevel(2, '${cat}')">
             <div class="mb-2 text-primary" style="font-size: 2.2rem;">
               <i class="fa-solid fa-folder-open"></i>
             </div>
@@ -378,18 +414,41 @@
       `).join('');
     }
 
+    function renderSubCategories() {
+      // ดึง Sub Category ของหมวดหลักนี้
+      const subCategories = [...new Set(catalog
+        .filter(item => item.category === selectedMainCategory)
+        .map(item => item.subCategory || item.partName)
+        .filter(Boolean))];
+
+      const container = document.getElementById('subCategoryList');
+      if (subCategories.length === 0) {
+        container.innerHTML = '<p class="text-center text-muted py-4 small">ไม่พบหมวดหมู่ย่อย</p>';
+        return;
+      }
+
+      container.innerHTML = subCategories.map(sub => `
+        <button type="button" class="sub-cat-btn d-flex justify-content-between align-items-center shadow-sm" onclick="setStepLevel(3, null, '${sub}')">
+          <span><i class="fa-solid fa-box me-2 text-warning"></i>${sub}</span>
+          <i class="fa-solid fa-chevron-right small text-muted"></i>
+        </button>
+      `).join('');
+    }
+
     function renderProductList() {
       const keyword = String(document.getElementById('searchInput').value || '').toLowerCase().trim();
       const listContainer = document.getElementById('productList');
 
       const filtered = catalog.filter(item => {
         const matchMain = item.category === selectedMainCategory;
+        const matchSub = (item.subCategory === selectedSubCategory) || (item.partName === selectedSubCategory);
+        
         const nameStr = String(item.partName || '').toLowerCase();
         const idStr = String(item.partId || '').toLowerCase();
         const sizeStr = String(item.size || '').toLowerCase();
         const matchKey = nameStr.includes(keyword) || idStr.includes(keyword) || sizeStr.includes(keyword);
 
-        return matchMain && matchKey;
+        return matchMain && matchSub && matchKey;
       });
 
       if (filtered.length === 0) {
