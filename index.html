@@ -1,6 +1,165 @@
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>TAKIGAMI (TTC) - Store Requisition System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { 
+      --navy: #1D2088; 
+      --navy-dark: #121458;
+      --gold: #E6B400; 
+      --gold-hover: #cf9f00;
+      --bg-color: #F4F6F9; 
+    }
+    body { font-family: 'Kanit', sans-serif; background-color: var(--bg-color); color: #333; padding-bottom: 95px; }
+    
+    .nav-header { 
+      background: linear-gradient(135deg, var(--navy), #2d32c9); 
+      color: white; 
+      padding: 20px 16px; 
+      text-align: center; 
+      font-weight: 700; 
+      font-size: 1.25rem;
+      box-shadow: 0 4px 12px rgba(29, 32, 136, 0.15); 
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+    }
+    
+    .page { display: none; padding: 16px; animation: fadeIn 0.25s ease-in-out; }
+    .page.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .section-card { 
+      background: #ffffff; 
+      border-radius: 16px; 
+      padding: 20px; 
+      margin-bottom: 16px; 
+      border: 1px solid rgba(0,0,0,0.04); 
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03); 
+    }
+    
+    .btn-gold { background-color: var(--gold); color: #000; font-weight: 600; border: none; border-radius: 12px; padding: 14px; transition: all 0.2s; box-shadow: 0 4px 10px rgba(230, 180, 0, 0.25); }
+    .btn-gold:hover { background-color: var(--gold-hover); color: #000; }
+    
+    .btn-navy { background-color: var(--navy); color: #fff; font-weight: 600; border: none; border-radius: 12px; padding: 14px; transition: all 0.2s; box-shadow: 0 4px 10px rgba(29, 32, 136, 0.25); }
+    .btn-navy:hover { background-color: var(--navy-dark); color: #fff; }
+
+    /* ปรับแต่งการ์ดหมวดหมู่ รูปสูง 230px เต็มตา */
+    .drill-card {
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid #eef2f6 !important;
+      background: #fff;
+      overflow: hidden;
+      border-radius: 16px;
+    }
+    .drill-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+    
+    .drill-img-container {
+      width: 100%;
+      height: 230px; 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #ffffff;
+      border-bottom: 1px solid #f1f3f5;
+      padding: 15px;
+      overflow: hidden;
+    }
+    .drill-img-container img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      transition: transform 0.3s;
+    }
+    .drill-card:hover .drill-img-container img { transform: scale(1.08); }
+    
+    .search-container { position: relative; }
+    .search-container .form-control { border-radius: 14px; padding: 12px 16px 12px 46px; border: 1px solid #dee2e6; background-color: #fafbfc; }
+    
+    .card-product { transition: transform 0.2s; border: 1px solid #eef2f6 !important; }
+    .success-slip { background: linear-gradient(to bottom, #ffffff, #fafbfc); border: 2px dashed #cbd5e1; border-radius: 16px; }
+  </style>
+</head>
+<body>
+
+  <div class="nav-header">
+    <i class="fa-solid fa-screwdriver-wrench me-2"></i> TAKIGAMI (TTC) STORE
+  </div>
+
+  <div class="container px-3 mt-3">
+    <!-- หน้า 1: ข้อมูลผู้เบิก -->
+    <div id="page1" class="page active">
+      <div class="section-card">
+        <h5 class="fw-bold mb-3" style="color: var(--navy);"><i class="fa-solid fa-user-pen me-2 text-warning"></i>1. ข้อมูลผู้เบิก</h5>
+        <input type="text" id="userName" class="form-control mb-3" placeholder="ชื่อ-นามสกุล">
+        <select id="dept" class="form-select mb-3">
+          <option value="" disabled selected>-- เลือกแผนก --</option>
+          <option value="Production">Production</option>
+          <option value="Maintenance">Maintenance</option>
+        </select>
+        <select id="purpose" class="form-select mb-3">
+          <option value="" disabled selected>-- เลือกวัตถุประสงค์ --</option>
+          <option value="ซ่อมบำรุง">ซ่อมบำรุง</option>
+          <option value="ใช้งานทั่วไป">ใช้งานทั่วไป</option>
+        </select>
+        <input type="text" id="project" class="form-control" placeholder="ชื่อโปรเจกต์ / Job ID">
+      </div>
+      <button class="btn btn-gold w-100 py-3" onclick="validatePage1()">ถัดไป <i class="fa-solid fa-arrow-right ms-2"></i></button>
+    </div>
+
+    <!-- หน้า 2: เลือกหมวดหมู่สินค้า -->
+    <div id="page2" class="page">
+      <div class="section-card">
+        <div class="d-flex align-items-center mb-3">
+          <div id="backBtnContainer" class="me-2" style="display: none;">
+            <button class="btn btn-outline-secondary rounded-circle" style="width:38px; height:38px;" onclick="navigateBack()"><i class="fa-solid fa-arrow-left"></i></button>
+          </div>
+          <h5 class="fw-bold m-0" id="stepTitle" style="color: var(--navy);">2. เลือกหมวดหมู่</h5>
+        </div>
+        <div id="step1Container" class="row row-cols-1 g-3"></div>
+        <div id="step2Container" class="row row-cols-1 g-3" style="display: none;"></div>
+        <div id="step3Container" style="display: none;">
+          <input type="text" id="searchInput" class="form-control mb-3" placeholder="ค้นหาชื่อ, รหัส หรือขนาด..." oninput="renderStep3()">
+          <div id="productList" class="row row-cols-1 g-2"></div>
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary w-50 py-3" onclick="goToPage(1)">ย้อนกลับ</button>
+        <button class="btn btn-navy w-50 py-3" onclick="validatePage2()">ยืนยันรายการ</button>
+      </div>
+    </div>
+
+    <!-- หน้า 3: สรุปรายการเบิก -->
+    <div id="page3" class="page">
+      <div class="section-card">
+        <h5 class="fw-bold mb-3" style="color: var(--navy);"><i class="fa-solid fa-clipboard-list me-2 text-warning"></i>3. สรุปรายการเบิก</h5>
+        <div id="summaryList" class="mb-3"></div>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary w-50 py-3" onclick="goToPage(2)">แก้ไขรายการ</button>
+        <button class="btn btn-gold w-50 py-3" onclick="submitRequisition()">ยืนยันการเบิก</button>
+      </div>
+    </div>
+
+    <!-- หน้า 4: สำเร็จ / ใบเบิก -->
+    <div id="page4" class="page">
+      <div class="section-card text-center success-slip p-4">
+        <i class="fa-solid fa-circle-check fa-4x text-success mb-3"></i>
+        <h4 class="fw-bold text-success mb-1">ทำรายการสำเร็จ!</h4>
+        <p class="text-muted small mb-4">ระบบได้บันทึกข้อมูลการเบิกของคุณเรียบร้อยแล้ว</p>
+        <div id="slipDetails" class="text-start border-top pt-3 small"></div>
+      </div>
+      <button class="btn btn-navy w-100 py-3 mt-3" onclick="location.reload()">1. ทำรายการใหม่อีกครั้ง</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    // 📌 นำลิงก์ Web App ของคุณมาใส่ไว้ที่ตัวแปรนี้ครับ
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyFS8OKXmvWZiI9aHYizULTwCVmNIAoCQ2ZSiE5jLUh2cBkuEBpBoE8BymEB_3dgRr3/exec";
     
     let catalog = [], cart = {};
@@ -43,9 +202,7 @@
       document.body.appendChild(script);
     }
 
-    function initDrillDown() {
-      navigateToStep(1);
-    }
+    function initDrillDown() { navigateToStep(1); }
 
     function navigateToStep(step, val = null) {
       currentStep = step;
@@ -76,11 +233,8 @@
     }
 
     function navigateBack() {
-      if (currentStep === 3) {
-        navigateToStep(2, selectedMainCategory);
-      } else if (currentStep === 2) {
-        navigateToStep(1);
-      }
+      if (currentStep === 3) { navigateToStep(2, selectedMainCategory); }
+      else if (currentStep === 2) { navigateToStep(1); }
     }
 
     function renderStep1() {
@@ -107,9 +261,7 @@
         return `
           <div class="col-12">
             <div class="card drill-card h-100 rounded-4 text-center">
-              <div class="drill-img-container" onclick="navigateToStep(2, '${cat}')">
-                ${iconHtml}
-              </div>
+              <div class="drill-img-container" onclick="navigateToStep(2, '${cat}')">${iconHtml}</div>
               <div class="p-3" onclick="navigateToStep(2, '${cat}')">
                 <h6 class="fw-bold text-dark mb-0" style="font-size: 1rem;">${cat}</h6>
               </div>
@@ -129,23 +281,12 @@
         return;
       }
 
-      const subCategoryImages = {
-        'Speed Control & Valves': '',
-        'Pneumatic & Silicone Hoses': '',
-        'Cylinders, F.R. Units & Sensors': ''
-      };
-
       container.innerHTML = subCategories.map(subCat => {
-        const imgSrc = subCategoryImages[subCat] || '';
-        const iconHtml = imgSrc 
-          ? `<img src="${imgSrc}" alt="${subCat}" class="img-fluid">`
-          : `<i class="fa-solid fa-box-archive text-warning" style="font-size: 3.5rem;"></i>`;
-
         return `
           <div class="col-12">
             <div class="card drill-card h-100 rounded-4 text-center">
               <div class="drill-img-container" onclick="navigateToStep(3, '${subCat}')">
-                ${iconHtml}
+                <i class="fa-solid fa-box-archive text-warning" style="font-size: 3.5rem;"></i>
               </div>
               <div class="p-3" onclick="navigateToStep(3, '${subCat}')">
                 <h6 class="fw-bold text-dark mb-0" style="font-size: 0.95rem;">${subCat}</h6>
@@ -163,13 +304,10 @@
       const filtered = catalog.filter(item => {
         const matchMain = item.category === selectedMainCategory;
         const matchSub = item.subCategory === selectedSubCategory;
-        
         const nameStr = String(item.partName || '').toLowerCase();
         const idStr = String(item.partId || '').toLowerCase();
         const sizeStr = String(item.size || '').toLowerCase();
-        const matchKey = nameStr.includes(keyword) || idStr.includes(keyword) || sizeStr.includes(keyword);
-
-        return matchMain && matchSub && matchKey;
+        return matchMain && matchSub && (nameStr.includes(keyword) || idStr.includes(keyword) || sizeStr.includes(keyword));
       });
 
       if (filtered.length === 0) {
@@ -261,14 +399,54 @@
       renderSummary();
     }
 
+    function renderSummary() {
+      const container = document.getElementById('summaryList');
+      const keys = Object.keys(cart);
+      
+      if (keys.length === 0) {
+        container.innerHTML = '<p class="text-center text-muted">ยังไม่มีรายการสินค้า</p>';
+        return;
+      }
+
+      let html = '<ul class="list-group list-group-flush">';
+      keys.forEach(partId => {
+        const item = catalog.find(i => i.partId === partId);
+        const name = item ? item.partName : partId;
+        const qty = cart[partId];
+        html += `<li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                  <div><h6 class="mb-0 text-dark small fw-bold">${name}</h6><small class="text-muted">รหัส: ${partId}</small></div>
+                  <span class="badge bg-primary rounded-pill px-3 py-2">x ${qty}</span>
+                </li>`;
+      });
+      html += '</ul>';
+      container.innerHTML = html;
+    }
+
+    function submitRequisition() {
+      Swal.fire({
+        title: 'กำลังบันทึกข้อมูล...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+      });
+
+      setTimeout(() => {
+        Swal.close();
+        goToPage(4);
+        document.getElementById('slipDetails').innerHTML = `
+          <p class="mb-1"><strong>ผู้เบิก:</strong> ${document.getElementById('userName').value}</p>
+          <p class="mb-1"><strong>แผนก:</strong> ${document.getElementById('dept').value}</p>
+          <p class="mb-1"><strong>โปรเจกต์:</strong> ${document.getElementById('project').value}</p>
+          <p class="mb-0 text-success fw-bold mt-2">สถานะ: บันทึกสำเร็จ</p>
+        `;
+      }, 1000);
+    }
+
     function goToPage(pageNumber) {
       document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
       let targetPage = document.getElementById('page' + pageNumber);
-      if (targetPage) {
-        targetPage.classList.add('active');
-      } else {
-        // หากต้องการรองรับหน้า 3 และ 4 สามารถเพิ่มโครงสร้าง HTML ของหน้าสรุปและใบเบิกเพิ่มเติมได้ครับ
-      }
+      if (targetPage) { targetPage.classList.add('active'); }
       window.scrollTo(0, 0);
     }
   </script>
+</body>
+</html>
