@@ -161,7 +161,7 @@
       </button>
     </div>
 
-    <!-- หน้าที่ 2: ระบบ 3-Step Visual Drill-down -->
+    <!-- หน้าที่ 2: ระบบเลือกหมวดหมู่และสินค้า -->
     <div id="page2" class="page">
       <div class="section-card">
         <!-- Header & Navigation Bar สำหรับ Drill-down -->
@@ -187,12 +187,25 @@
         <!-- Step 2: หน้าเลือกหมวดหมู่ย่อย -->
         <div id="step2Container" class="row row-cols-2 g-3" style="display: none;"></div>
 
-        <!-- Step 3: หน้าแสดงรายการสินค้าจริง -->
+        <!-- Step 3: หน้าแสดงรายการสินค้า + แถบ Filter หมวดหมู่ย่อยแนวนอนด้านบน -->
         <div id="step3Container" style="display: none;">
+          <!-- แถบเลือกหมวดหมู่ย่อยแบบแนวนอน (Filter Pills) -->
+          <div class="mb-3 pb-2 border-bottom">
+            <label class="form-label fw-semibold text-secondary small mb-2">
+              <i class="fa-solid fa-list-check text-warning me-1"></i> หมวดหมู่ย่อย (Sub Category):
+            </label>
+            <div id="subCategoryPills" class="d-flex gap-2 overflow-auto pb-2" style="white-space: nowrap; scrollbar-width: thin;">
+              <!-- ปุ่มหมวดหมู่ย่อยจะถูก Render มาใส่ตรงนี้ -->
+            </div>
+          </div>
+
+          <!-- ช่องค้นหาภายในหมวด -->
           <div class="search-container mb-3">
             <i class="fa-solid fa-magnifying-glass search-icon"></i>
             <input type="text" id="searchInput" class="form-control" placeholder="ค้นหาชื่อพาร์ท, ขนาด หรือ รหัสสินค้า..." oninput="renderStep3()">
           </div>
+
+          <!-- รายการสินค้าจริง -->
           <div id="productList" class="row row-cols-2 g-2"></div>
         </div>
       </div>
@@ -287,13 +300,12 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwFCOldBJF6JRP82jK9dKvFEinZiy6of5P2gh5TdouXPULji-8XGOexnDz0hdJzurdo/exec";
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzQrMZ8mVNYpXSJLMgO77opxVAXE2SQnW0Wsp4A_AML2WCFu0k8nU-nCSbANN53BzWO/exec";
     let catalog = [], cart = {};
     
-    // State สำหรับระบบ 3-Step Drill-down
     let currentStep = 1;
     let selectedMainCategory = null;
-    let selectedSubCategory = null;
+    let selectedSubCategory = 'ALL';
 
     document.addEventListener("DOMContentLoaded", () => {
       loadCatalogJSONP();
@@ -331,15 +343,19 @@
       document.body.appendChild(script);
     }
 
-    // --- ระบบ 3-Step Drill-down Logic ---
     function initDrillDown() {
       navigateToStep(1);
     }
 
     function navigateToStep(step, val = null) {
       currentStep = step;
-      if (step === 2) selectedMainCategory = val;
-      if (step === 3) selectedSubCategory = val;
+      if (step === 2) {
+        selectedMainCategory = val;
+        selectedSubCategory = 'ALL';
+      }
+      if (step === 3) {
+        selectedSubCategory = val;
+      }
 
       const step1El = document.getElementById('step1Container');
       const step2El = document.getElementById('step2Container');
@@ -359,7 +375,8 @@
         titleEl.innerHTML = `<i class="fa-solid fa-layer-group me-2 text-warning"></i>${selectedMainCategory}`;
         renderStep2();
       } else if (step === 3) {
-        titleEl.innerHTML = `<i class="fa-solid fa-list-check me-2 text-warning"></i>${selectedSubCategory}`;
+        titleEl.innerHTML = `<i class="fa-solid fa-list-check me-2 text-warning"></i>${selectedMainCategory}`;
+        renderSubCategoryPills();
         renderStep3();
       }
     }
@@ -372,7 +389,6 @@
       }
     }
 
-    // Step 1: แสดงหมวดหลัก (Main Categories)
     function renderStep1() {
       const mainCategories = [...new Set(catalog.map(item => item.category).filter(Boolean))];
       const container = document.getElementById('step1Container');
@@ -394,7 +410,6 @@
       `).join('');
     }
 
-    // Step 2: แสดงหมวดหมู่ย่อย (Sub Categories)
     function renderStep2() {
       const itemsInMain = catalog.filter(item => item.category === selectedMainCategory);
       const subCategories = [...new Set(itemsInMain.map(item => item.subCategory).filter(Boolean))];
@@ -417,14 +432,39 @@
       `).join('');
     }
 
-    // Step 3: แสดงรายการสินค้าจริงตามหมวด และ Search
+    function renderSubCategoryPills() {
+      const itemsInMain = catalog.filter(item => item.category === selectedMainCategory);
+      const subCategories = [...new Set(itemsInMain.map(item => item.subCategory).filter(Boolean))];
+      const pillsContainer = document.getElementById('subCategoryPills');
+
+      let html = `
+        <button type="button" class="btn ${selectedSubCategory === 'ALL' ? 'btn-navy text-white shadow-sm' : 'btn-light text-dark border'} rounded-pill px-3 py-2 fw-medium" style="font-size: 0.85rem;" onclick="filterBySubCategory('ALL')">
+          ทั้งหมดในหมวดนี้
+        </button>
+      `;
+
+      html += subCategories.map(subCat => `
+        <button type="button" class="btn ${selectedSubCategory === subCat ? 'btn-navy text-white shadow-sm' : 'btn-light text-dark border'} rounded-pill px-3 py-2 fw-medium" style="font-size: 0.85rem;" onclick="filterBySubCategory('${subCat}')">
+          ${subCat}
+        </button>
+      `).join('');
+
+      pillsContainer.innerHTML = html;
+    }
+
+    function filterBySubCategory(subCat) {
+      selectedSubCategory = subCat;
+      renderSubCategoryPills();
+      renderStep3();
+    }
+
     function renderStep3() {
       const keyword = String(document.getElementById('searchInput').value || '').toLowerCase().trim();
       const listContainer = document.getElementById('productList');
 
       const filtered = catalog.filter(item => {
         const matchMain = item.category === selectedMainCategory;
-        const matchSub = item.subCategory === selectedSubCategory;
+        const matchSub = (selectedSubCategory === 'ALL') || (item.subCategory === selectedSubCategory);
         
         const nameStr = String(item.partName || '').toLowerCase();
         const idStr = String(item.partId || '').toLowerCase();
