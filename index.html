@@ -48,7 +48,6 @@
     .btn-navy { background-color: var(--navy); color: #fff; font-weight: 600; border: none; border-radius: 12px; padding: 14px; transition: all 0.2s; box-shadow: 0 4px 10px rgba(29, 32, 136, 0.25); }
     .btn-navy:hover { background-color: var(--navy-dark); color: #fff; }
 
-    /* ปรับแต่งการ์ดหมวดหมู่ รูปสูง 230px เต็มตา */
     .drill-card {
       cursor: pointer;
       transition: transform 0.2s, box-shadow 0.2s;
@@ -78,9 +77,6 @@
     }
     .drill-card:hover .drill-img-container img { transform: scale(1.08); }
     
-    .search-container { position: relative; }
-    .search-container .form-control { border-radius: 14px; padding: 12px 16px 12px 46px; border: 1px solid #dee2e6; background-color: #fafbfc; }
-    
     .card-product { transition: transform 0.2s; border: 1px solid #eef2f6 !important; }
     .success-slip { background: linear-gradient(to bottom, #ffffff, #fafbfc); border: 2px dashed #cbd5e1; border-radius: 16px; }
   </style>
@@ -92,7 +88,7 @@
   </div>
 
   <div class="container px-3 mt-3">
-    <!-- หน้า 1: ข้อมูลผู้เบิก (ครบถ้วนทุกแผนก วัตถุประสงค์ และวันที่นัด) -->
+    <!-- หน้า 1: ข้อมูลผู้เบิก -->
     <div id="page1" class="page active">
       <div class="section-card">
         <h5 class="fw-bold mb-3" style="color: var(--navy);"><i class="fa-solid fa-user-pen me-2 text-warning"></i>1. ข้อมูลผู้เบิก</h5>
@@ -115,10 +111,7 @@
           <option value="ใช้งานทั่วไป">ใช้งานทั่วไป</option>
         </select>
 
-        <input type="text" id="project" class="form-control mb-3" placeholder="ชื่อโปรเจกต์ / Job ID">
-        
-        <label class="form-label small text-muted fw-bold mb-1">วันที่ต้องการใช้ / นัดรับของ</label>
-        <input type="date" id="needDate" class="form-control">
+        <input type="text" id="project" class="form-control" placeholder="ชื่อโปรเจกต์ / Job ID">
       </div>
       <button class="btn btn-gold w-100 py-3" onclick="validatePage1()">ถัดไป <i class="fa-solid fa-arrow-right ms-2"></i></button>
     </div>
@@ -145,19 +138,44 @@
       </div>
     </div>
 
-    <!-- หน้า 3: สรุปรายการเบิก -->
+    <!-- หน้า 3: สรุปรายการ & กำหนดเวลานัดรับ (รูปแบบใบเสร็จ/ใบเบิก) -->
     <div id="page3" class="page">
-      <div class="section-card">
-        <h5 class="fw-bold mb-3" style="color: var(--navy);"><i class="fa-solid fa-clipboard-list me-2 text-warning"></i>3. สรุปรายการเบิก</h5>
-        <div id="summaryList" class="mb-3"></div>
+      <div class="section-card success-slip p-4">
+        <h5 class="fw-bold mb-3 text-center" style="color: var(--navy);"><i class="fa-solid fa-file-invoice me-2 text-warning"></i>ใบสรุปรายการเบิกสินค้า</h5>
+        
+        <div class="border-bottom pb-3 mb-3 small">
+          <p class="mb-1"><strong>ผู้เบิก:</strong> <span id="sumName">-</span></p>
+          <p class="mb-1"><strong>แผนก:</strong> <span id="sumDept">-</span></p>
+          <p class="mb-1"><strong>วัตถุประสงค์:</strong> <span id="sumPurpose">-</span></p>
+          <p class="mb-0"><strong>โปรเจกต์:</strong> <span id="sumProject">-</span></p>
+        </div>
+
+        <div class="mb-3">
+          <h6 class="fw-bold text-dark small mb-2">รายการที่เลือก:</h6>
+          <div id="summaryList"></div>
+        </div>
+
+        <div class="border-top pt-3">
+          <label class="form-label small text-muted fw-bold mb-1"><i class="fa-solid fa-calendar-days me-1 text-primary"></i> วันที่ต้องการใช้ / นัดรับของ</label>
+          <input type="date" id="needDate" class="form-control mb-3">
+          
+          <label class="form-label small text-muted fw-bold mb-1"><i class="fa-solid fa-clock me-1 text-primary"></i> เวลาที่สะดวกรับ / รูปแบบการรับ</label>
+          <select id="receiveType" class="form-select">
+            <option value="รับทันที (ด่วน)">รับทันที (ด่วน)</option>
+            <option value="ช่วงเช้า (09:00 - 12:00)">ช่วงเช้า (09:00 - 12:00)</option>
+            <option value="ช่วงบ่าย (13:00 - 16:30)">ช่วงบ่าย (13:00 - 16:30)</option>
+            <option value="ระบุเวลาพิเศษตามนัดหมาย">ระบุเวลาพิเศษตามนัดหมาย</option>
+          </select>
+        </div>
       </div>
+
       <div class="d-flex gap-2">
         <button class="btn btn-outline-secondary w-50 py-3" onclick="goToPage(2)">แก้ไขรายการ</button>
         <button class="btn btn-gold w-50 py-3" onclick="submitRequisition()">ยืนยันการเบิก</button>
       </div>
     </div>
 
-    <!-- หน้า 4: สำเร็จ / ใบเบิก -->
+    <!-- หน้า 4: สำเร็จ / ใบเบิกเสร็จสมบูรณ์ -->
     <div id="page4" class="page">
       <div class="section-card text-center success-slip p-4">
         <i class="fa-solid fa-circle-check fa-4x text-success mb-3"></i>
@@ -392,10 +410,9 @@
       const dept = document.getElementById('dept').value;
       const purpose = document.getElementById('purpose').value;
       const project = document.getElementById('project').value.trim();
-      const needDate = document.getElementById('needDate').value;
 
-      if (!name || !dept || !purpose || !project || !needDate) {
-        Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณากรอกข้อมูลและวันนัดหมายให้ครบถ้วน', confirmButtonColor: '#1D2088' });
+      if (!name || !dept || !purpose || !project) {
+        Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณากรอกข้อมูลผู้เบิกให้ครบถ้วน', confirmButtonColor: '#1D2088' });
         return;
       }
       goToPage(2);
@@ -412,22 +429,28 @@
     }
 
     function renderSummary() {
+      // นำข้อมูลผู้เบิกมาแสดงในใบสรุป
+      document.getElementById('sumName').innerText = document.getElementById('userName').value;
+      document.getElementById('sumDept').innerText = document.getElementById('dept').value;
+      document.getElementById('sumPurpose').innerText = document.getElementById('purpose').value;
+      document.getElementById('sumProject').innerText = document.getElementById('project').value;
+
       const container = document.getElementById('summaryList');
       const keys = Object.keys(cart);
       
       if (keys.length === 0) {
-        container.innerHTML = '<p class="text-center text-muted">ยังไม่มีรายการสินค้า</p>';
+        container.innerHTML = '<p class="text-center text-muted small">ยังไม่มีรายการสินค้า</p>';
         return;
       }
 
-      let html = '<ul class="list-group list-group-flush">';
+      let html = '<ul class="list-group list-group-flush bg-transparent">';
       keys.forEach(partId => {
         const item = catalog.find(i => i.partId === partId);
         const name = item ? item.partName : partId;
         const qty = cart[partId];
-        html += `<li class="list-group-item d-flex justify-content-between align-items-center px-0">
+        html += `<li class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent">
                   <div><h6 class="mb-0 text-dark small fw-bold">${name}</h6><small class="text-muted">รหัส: ${partId}</small></div>
-                  <span class="badge bg-primary rounded-pill px-3 py-2">x ${qty}</span>
+                  <span class="badge bg-navy rounded-pill px-3 py-2" style="background-color: var(--navy);">x ${qty}</span>
                 </li>`;
       });
       html += '</ul>';
@@ -435,6 +458,14 @@
     }
 
     function submitRequisition() {
+      const needDate = document.getElementById('needDate').value;
+      const receiveType = document.getElementById('receiveType').value;
+
+      if (!needDate) {
+        Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณาเลือกวันที่ต้องการใช้ / นัดรับของ', confirmButtonColor: '#1D2088' });
+        return;
+      }
+
       Swal.fire({
         title: 'กำลังบันทึกข้อมูล...',
         allowOutsideClick: false,
@@ -449,8 +480,9 @@
           <p class="mb-1"><strong>แผนก:</strong> ${document.getElementById('dept').value}</p>
           <p class="mb-1"><strong>วัตถุประสงค์:</strong> ${document.getElementById('purpose').value}</p>
           <p class="mb-1"><strong>โปรเจกต์:</strong> ${document.getElementById('project').value}</p>
-          <p class="mb-1"><strong>วันที่ต้องการใช้:</strong> ${document.getElementById('needDate').value}</p>
-          <p class="mb-0 text-success fw-bold mt-2">สถานะ: บันทึกสำเร็จ</p>
+          <p class="mb-1"><strong>วันที่นัดรับ:</strong> ${needDate}</p>
+          <p class="mb-1"><strong>รูปแบบการรับ:</strong> ${receiveType}</p>
+          <p class="mb-0 text-success fw-bold mt-2">สถานะ: บันทึกข้อมูลสำเร็จ</p>
         `;
       }, 1000);
     }
