@@ -142,7 +142,7 @@
       </div>
       <div class="d-flex gap-2">
         <button class="btn btn-outline-custom w-50 py-3" onclick="goToPage(1)">ย้อนกลับ</button>
-        <button class="btn btn-navy w-50 py-3" style="background-color: var(--navy); color:#fff;" onclick="validatePage2()">ยืนยันรายการ</button>
+        <button class="btn w-50 py-3 text-white" style="background-color: var(--navy);" onclick="validatePage2()">ยืนยันรายการ</button>
       </div>
     </div>
 
@@ -188,7 +188,7 @@
       </div>
     </div>
 
-    <!-- หน้า 4: สำเร็จ / สลิปใบเบิกตามแบบเป๊ะๆ -->
+    <!-- หน้า 4: สำเร็จ / สลิปใบเบิก -->
     <div id="page4" class="page">
       <div class="section-card text-center success-slip p-4">
         <div class="mb-3">
@@ -221,7 +221,6 @@
           <div id="slipItemsList"></div>
         </div>
 
-        <!-- ปุ่มในสลิป -->
         <button class="btn w-100 py-3 mb-2 text-white fw-bold shadow-sm" style="background-color: var(--navy); border-radius: 12px;" onclick="window.print()">
           <i class="fa-solid fa-print me-2"></i> พิมพ์ใบเบิก (Print Slip)
         </button>
@@ -234,7 +233,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyFS8OKXmvWZiI9aHYizULTwCVmNIAoCQ2ZSiE5jLUh2cBkuEBpBoE8BymEB_3dgRr3/exec";
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyPSlBNcYHUTYhqzKNLOF2COXyPqmjXZJ2A78NpiikBjFc1wQ60-4JffdLwqCAxowRg/exec";
     
     let catalog = [], cart = {};
     let currentStep = 1;
@@ -320,22 +319,13 @@
         return;
       }
 
-      const categoryImages = {
-        'Brass Fittings': 'https://www.ifan-solution.com/uploads/35186/ifan-all-type-brass-fittings0c8e5.webp',
-        'Control Valves & Pneumatic Lines': '',
-        'Pipe Fittings & Structural Hardware': ''
-      };
-
       container.innerHTML = mainCategories.map(cat => {
-        const imgSrc = categoryImages[cat] || '';
-        const iconHtml = imgSrc 
-          ? `<img src="${imgSrc}" alt="${cat}" class="img-fluid">`
-          : `<i class="fa-solid fa-folder-open text-primary" style="font-size: 3.5rem;"></i>`;
-
         return `
           <div class="col-12">
             <div class="card drill-card h-100 rounded-4 text-center">
-              <div class="drill-img-container" onclick="navigateToStep(2, '${cat}')">${iconHtml}</div>
+              <div class="drill-img-container" onclick="navigateToStep(2, '${cat}')">
+                <i class="fa-solid folder-open text-primary" style="font-size: 3.5rem;"></i>
+              </div>
               <div class="p-3" onclick="navigateToStep(2, '${cat}')">
                 <h6 class="fw-bold text-dark mb-0" style="font-size: 1rem;">${cat}</h6>
               </div>
@@ -508,7 +498,7 @@
 
     function submitRequisition() {
       const receiveMode = document.querySelector('input[name="receiveMode"]:checked').value;
-      const timeSlot = document.getElementById('timeSlot').value;
+      const timeSlot = document.getElementById('timeSelectWrapper').style.display === 'block' ? document.getElementById('timeSlot').value : '-';
 
       if (receiveMode === 'นัดเวลารับล่วงหน้า' && !timeSlot) {
         Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณาเลือกช่วงเวลาทำงาน', confirmButtonColor: '#1D2088' });
@@ -516,21 +506,51 @@
       }
 
       Swal.fire({
-        title: 'กำลังส่งคำขอเบิก...',
+        title: 'กำลังบันทึกข้อมูลและตัดสต็อก...',
         allowOutsideClick: false,
         didOpen: () => { Swal.showLoading(); }
       });
 
-      setTimeout(() => {
+      const randomReqId = 'REQ-' + Math.floor(100000000000 + Math.random() * 900000000000);
+      
+      const cartArray = [];
+      for (const [partId, qty] of Object.entries(cart)) {
+        const item = catalog.find(i => i.partId === partId);
+        cartArray.push({
+          partId: partId,
+          partName: item ? item.partName : '',
+          qty: qty
+        });
+      }
+
+      const payload = {
+        action: 'submitForm',
+        formData: {
+          orderId: randomReqId,
+          userName: document.getElementById('userName').value,
+          dept: document.getElementById('dept').value,
+          purpose: document.getElementById('purpose').value,
+          project: document.getElementById('project').value,
+          pickupType: receiveMode,
+          timeSlot: timeSlot,
+          cart: cartArray
+        }
+      };
+
+      fetch(GAS_WEB_APP_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
         Swal.close();
         goToPage(4);
 
-        // สร้างเลขที่ใบเบิกจำลองสไตล์ REQ-xxxxxxx
-        const randomReqId = 'REQ-' + Math.floor(100000000000 + Math.random() * 900000000000);
         document.getElementById('slipId').innerText = randomReqId;
-        document.getElementById('slipUser').innerText = document.getElementById('userName').value;
-        document.getElementById('slipDept').innerText = document.getElementById('dept').value;
-        document.getElementById('slipProject').innerText = document.getElementById('project').value;
+        document.getElementById('slipUser').innerText = payload.formData.userName;
+        document.getElementById('slipDept').innerText = payload.formData.dept;
+        document.getElementById('slipProject').innerText = payload.formData.project;
         
         if (receiveMode === 'นัดเวลารับล่วงหน้า') {
           document.getElementById('slipTimeLabel').innerText = 'เวลารับของ:';
@@ -540,20 +560,20 @@
           document.getElementById('slipTime').innerText = 'รับทันทีที่คลัง';
         }
 
-        // รายการสินค้าในสลิปแบบป้ายเทาขอบมนตามรูป
         let itemsHtml = '';
-        for (const [partId, qty] of Object.entries(cart)) {
-          const item = catalog.find(i => i.partId === partId);
-          const name = item ? item.partName : partId;
+        cartArray.forEach(item => {
           itemsHtml += `
             <div class="d-flex justify-content-between align-items-center bg-light rounded-pill px-3 py-2 mb-2 border">
-              <span class="text-dark fw-medium small text-truncate" style="max-width: 75%;">${name} (${partId})</span>
-              <span class="badge bg-secondary text-white rounded-pill px-2 py-1 font-monospace" style="font-size: 0.75rem;">x${qty}</span>
+              <span class="text-dark fw-medium small text-truncate" style="max-width: 75%;">${item.partName} (${item.partId})</span>
+              <span class="badge bg-secondary text-white rounded-pill px-2 py-1 font-monospace" style="font-size: 0.75rem;">x${item.qty}</span>
             </div>
           `;
-        }
+        });
         document.getElementById('slipItemsList').innerHTML = itemsHtml;
-      }, 1000);
+      })
+      .catch(error => {
+        Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: 'ไม่สามารถบันทึกข้อมูลลงชีทได้', confirmButtonColor: '#1D2088' });
+      });
     }
 
     function goToPage(pageNumber) {
