@@ -8,398 +8,580 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root { --navy: #1D2088; --gold: #E6B400; --bg-color: #F4F6F9; }
-    body { font-family: 'Kanit', sans-serif; background-color: var(--bg-color); padding-bottom: 90px; }
-    .nav-header { background: var(--navy); color: white; padding: 18px; text-align: center; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .page { display: none; padding: 16px; }
-    .page.active { display: block; }
-    .section-card { background: #ffffff; border-radius: 14px; padding: 18px; margin-bottom: 16px; border: 1px solid #E8ECEF; }
-    .btn-gold { background: var(--gold); color: #000; font-weight: 600; border: none; border-radius: 10px; padding: 12px; }
-    .btn-navy { background: var(--navy); color: #fff; font-weight: 600; border: none; border-radius: 10px; padding: 12px; }
-    .cat-chip { background: #e9ecef; border: none; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; margin: 4px; color: #495057; cursor: pointer; }
-    .cat-chip.active { background: var(--navy); color: white; }
-    .card-product { background: white; padding: 14px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #E0E5EC; display: flex; justify-content: space-between; align-items: center; }
-    .btn-qty { width: 36px; height: 36px; border-radius: 8px; border: 1px solid #ced4da; background: #fff; font-weight: bold; cursor: pointer; }
-    .btn-qty-plus { background: var(--gold); border: none; color: #000; }
-    .cart-qty { width: 30px; text-align: center; font-weight: 700; color: var(--navy); }
+    :root { 
+      --navy: #1D2088; 
+      --navy-dark: #121458;
+      --gold: #E6B400; 
+      --gold-hover: #cf9f00;
+      --bg-color: #F4F6F9; 
+    }
+    body { font-family: 'Kanit', sans-serif; background-color: var(--bg-color); color: #333; padding-bottom: 95px; }
     
-    /* สไตล์สำหรับการสั่งพิมพ์ใบเบิก */
+    /* Header Modern Style */
+    .nav-header { 
+      background: linear-gradient(135deg, var(--navy), #2d32c9); 
+      color: white; 
+      padding: 20px 16px; 
+      text-align: center; 
+      font-weight: 700; 
+      font-size: 1.25rem;
+      box-shadow: 0 4px 12px rgba(29, 32, 136, 0.15); 
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+    }
+    
+    .page { display: none; padding: 16px; animation: fadeIn 0.25s ease-in-out; }
+    .page.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .section-card { 
+      background: #ffffff; 
+      border-radius: 16px; 
+      padding: 20px; 
+      margin-bottom: 16px; 
+      border: 1px solid rgba(0,0,0,0.04); 
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03); 
+    }
+    
+    /* Buttons */
+    .btn-gold { 
+      background-color: var(--gold); 
+      color: #000; 
+      font-weight: 600; 
+      border: none; 
+      border-radius: 12px; 
+      padding: 14px; 
+      transition: all 0.2s; 
+      box-shadow: 0 4px 10px rgba(230, 180, 0, 0.25); 
+    }
+    .btn-gold:hover { background-color: var(--gold-hover); color: #000; }
+    
+    .btn-navy { 
+      background-color: var(--navy); 
+      color: #fff; 
+      font-weight: 600; 
+      border: none; 
+      border-radius: 12px; 
+      padding: 14px; 
+      transition: all 0.2s; 
+      box-shadow: 0 4px 10px rgba(29, 32, 136, 0.25); 
+    }
+    .btn-navy:hover { background-color: var(--navy-dark); color: #fff; }
+    
+    /* Category Pill Tabs (Scrollable) */
+    .category-scroll {
+      display: flex;
+      overflow-x: auto;
+      gap: 8px;
+      padding-bottom: 6px;
+      scrollbar-width: none;
+    }
+    .category-scroll::-webkit-scrollbar { display: none; }
+    
+    .cat-chip { 
+      background: #f1f3f5; 
+      border: 1px solid #e9ecef; 
+      padding: 8px 18px; 
+      border-radius: 30px; 
+      font-size: 0.85rem; 
+      font-weight: 500;
+      color: #495057; 
+      white-space: nowrap; 
+      cursor: pointer; 
+      transition: all 0.2s;
+    }
+    .cat-chip.active { 
+      background: var(--navy); 
+      color: white; 
+      border-color: var(--navy); 
+      box-shadow: 0 2px 8px rgba(29, 32, 136, 0.25); 
+    }
+    
+    /* Search Bar */
+    .search-container { position: relative; }
+    .search-container .form-control {
+      border-radius: 14px;
+      padding: 12px 16px 12px 46px;
+      border: 1px solid #dee2e6;
+      font-size: 0.95rem;
+      background-color: #fafbfc;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+    }
+    .search-container .search-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #adb5bd;
+      z-index: 10;
+    }
+    
+    /* Product Card Grid */
+    .card-product { 
+      transition: transform 0.2s, box-shadow 0.2s; 
+      border: 1px solid #eef2f6 !important;
+    }
+    .card-product:hover { 
+      transform: translateY(-2px); 
+      box-shadow: 0 6px 16px rgba(0,0,0,0.06) !important; 
+    }
+
+    /* Success Receipt Slip Style */
+    .success-slip {
+      background: linear-gradient(to bottom, #ffffff, #fafbfc);
+      border: 2px dashed #cbd5e1;
+      border-radius: 16px;
+    }
+
     @media print {
       body { background: white; padding: 0; }
       .nav-header, .step-actions, .btn-print, .no-print, .btn { display: none !important; }
-      .section-card { border: 1px solid #000; box-shadow: none; margin: 0; }
+      .section-card, .success-slip { border: 1px solid #000; box-shadow: none; margin: 0; }
     }
   </style>
 </head>
 <body>
 
-<div class="nav-header no-print">TAKIGAMI (TTC) - STORE</div>
-
-<div class="container px-3 mt-3">
-  <!-- หน้าที่ 1: ข้อมูลผู้เบิก -->
-  <div id="page1" class="page active">
-    <div class="section-card">
-      <h5 class="fw-bold mb-3" style="color: var(--navy);">1. ข้อมูลผู้เบิกสินค้า</h5>
-      <div class="mb-3">
-        <label class="form-label fw-semibold">ชื่อ-นามสกุล <span class="text-danger">*</span></label>
-        <input type="text" id="userName" class="form-control" placeholder="ระบุชื่อ-นามสกุลผู้เบิก">
-      </div>
-      <div class="mb-3">
-        <label class="form-label fw-semibold">แผนก / ฝ่าย <span class="text-danger">*</span></label>
-        <select id="dept" class="form-select">
-          <option value="" disabled selected>-- เลือกแผนก --</option>
-          <option value="Production">Production</option>
-          <option value="Maintenance">Maintenance</option>
-          <option value="Electrical">Electrical</option>
-          <option value="Machine Assembly">Machine Assembly</option>
-          <option value="Quality Control">Quality Control</option>
-        </select>
-      </div>
-      <div class="mb-3">
-        <label class="form-label fw-semibold">วัตถุประสงค์การใช้งาน <span class="text-danger">*</span></label>
-        <select id="purpose" class="form-select">
-          <option value="" disabled selected>-- เลือกวัตถุประสงค์ --</option>
-          <option value="ซ่อมบำรุง / Maintenance">ซ่อมบำรุง / Maintenance</option>
-          <option value="ประกอบเครื่องจักร / Machine Assembly">ประกอบเครื่องจักร / Machine Assembly</option>
-          <option value="ติดตั้งไฟฟ้า / Electrical Work">ติดตั้งไฟฟ้า / Electrical Work</option>
-          <option value="ใช้งานทั่วไป / General Use">ใช้งานทั่วไป / General Use</option>
-        </select>
-      </div>
-      <div class="mb-2">
-        <label class="form-label fw-semibold">ชื่อโปรเจกต์ / รหัสช็อบงาน <span class="text-danger">*</span></label>
-        <input type="text" id="project" class="form-control" placeholder="ระบุชื่อโปรเจกต์ หรือ Job ID">
-      </div>
-    </div>
-    <button class="btn btn-gold w-100 py-3 shadow-sm" onclick="validatePage1()">ถัดไป: เลือกรายการสินค้า <i class="fa-solid fa-arrow-right ms-2"></i></button>
+  <div class="nav-header no-print">
+    <i class="fa-solid fa-screwdriver-wrench me-2"></i> TAKIGAMI (TTC) STORE
   </div>
 
-  <!-- หน้าที่ 2: เลือกรายการสินค้า -->
-  <div id="page2" class="page">
-    <div class="section-card">
-      <h5 class="fw-bold mb-3" style="color: var(--navy);">2. รายการขอเบิกสินค้า</h5>
-      <div class="input-group mb-3">
-        <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
-        <input type="text" id="searchInput" class="form-control" placeholder="ค้นหาชื่อพาร์ท หรือ รหัสสินค้า..." oninput="filterProducts()">
-      </div>
-      <div id="categoryTabs" class="d-flex flex-wrap mb-3"></div>
-      <div id="loadingSpinner" class="text-center py-4">
-        <div class="spinner-border text-primary" role="status"></div>
-        <p class="small text-muted mt-2">กำลังโหลดรายการสินค้า...</p>
-      </div>
-      <div id="catalogList"></div>
-    </div>
-    <div class="d-flex gap-2">
-      <button class="btn btn-outline-secondary w-50 py-2" onclick="goToPage(1)"><i class="fa-solid fa-arrow-left me-1"></i> ย้อนกลับ</button>
-      <button class="btn btn-navy w-50 py-2" onclick="validatePage2()">ถัดไป: ยืนยันคำขอ <i class="fa-solid fa-arrow-right ms-1"></i></button>
-    </div>
-  </div>
-
-  <!-- หน้าที่ 3: สรุปและรูปแบบการรับ -->
-  <div id="page3" class="page">
-    <div class="section-card">
-      <h5 class="fw-bold mb-3" style="color: var(--navy);">3. สรุปรายการและรูปแบบการรับ</h5>
-      <div class="mb-3">
-        <h6 class="fw-semibold text-secondary mb-2">รายการที่เลือกเบิก:</h6>
-        <div id="summaryList" class="border rounded p-3 bg-light" style="max-height: 220px; overflow-y: auto;"></div>
-      </div>
-      <div class="mb-3">
-        <label class="form-label fw-semibold">รูปแบบการรับสินค้า <span class="text-danger">*</span></label>
-        <div class="d-flex gap-3 mb-2">
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="pickup" id="pickupNow" value="รับทันทีที่คลัง" checked onchange="toggleTimeSlot(false)">
-            <label class="form-check-label" for="pickupNow">รับทันทีที่คลัง</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="pickup" id="pickupSchedule" value="นัดเวลารับล่วงหน้า" onchange="toggleTimeSlot(true)">
-            <label class="form-check-label" for="pickupSchedule">นัดเวลารับล่วงหน้า</label>
-          </div>
+  <div class="container px-3 mt-3">
+    
+    <!-- หน้าที่ 1: ข้อมูลผู้เบิก -->
+    <div id="page1" class="page active">
+      <div class="section-card">
+        <h5 class="fw-bold mb-3" style="color: var(--navy);">
+          <i class="fa-solid fa-user-pen me-2 text-warning"></i>1. ข้อมูลผู้เบิกสินค้า
+        </h5>
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-secondary small">ชื่อ-นามสกุล <span class="text-danger">*</span></label>
+          <input type="text" id="userName" class="form-control rounded-3 py-2" placeholder="ระบุชื่อ-นามสกุลผู้เบิก">
         </div>
-        <div id="timeSlotContainer" style="display: none;" class="mt-2">
-          <select id="timeSlot" class="form-select">
-            <option value="" disabled selected>-- เลือกช่วงเวลาทำงาน --</option>
-            <option value="09:00-10:00">09:00 - 10:00</option>
-            <option value="10:00-11:00">10:00 - 11:00</option>
-            <option value="11:00-12:00">11:00 - 12:00</option>
-            <option value="13:00-14:00">13:00 - 14:00</option>
-            <option value="14:00-15:00">14:00 - 15:00</option>
-            <option value="15:00-16:00">15:00 - 16:00</option>
-            <option value="16:00-17:00">16:00 - 17:00</option>
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-secondary small">แผนก / ฝ่าย <span class="text-danger">*</span></label>
+          <select id="dept" class="form-select rounded-3 py-2">
+            <option value="" disabled selected>-- เลือกแผนก --</option>
+            <option value="Production">Production</option>
+            <option value="Maintenance">Maintenance</option>
+            <option value="Electrical">Electrical</option>
+            <option value="Machine Assembly">Machine Assembly</option>
+            <option value="Quality Control">Quality Control</option>
           </select>
         </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-secondary small">วัตถุประสงค์การใช้งาน <span class="text-danger">*</span></label>
+          <select id="purpose" class="form-select rounded-3 py-2">
+            <option value="" disabled selected>-- เลือกวัตถุประสงค์ --</option>
+            <option value="ซ่อมบำรุง / Maintenance">ซ่อมบำรุง / Maintenance</option>
+            <option value="ประกอบเครื่องจักร / Machine Assembly">ประกอบเครื่องจักร / Machine Assembly</option>
+            <option value="ติดตั้งไฟฟ้า / Electrical Work">ติดตั้งไฟฟ้า / Electrical Work</option>
+            <option value="ใช้งานทั่วไป / General Use">ใช้งานทั่วไป / General Use</option>
+          </select>
+        </div>
+        <div class="mb-2">
+          <label class="form-label fw-semibold text-secondary small">ชื่อโปรเจกต์ / รหัสช็อบงาน <span class="text-danger">*</span></label>
+          <input type="text" id="project" class="form-control rounded-3 py-2" placeholder="ระบุชื่อโปรเจกต์ หรือ Job ID">
+        </div>
       </div>
-    </div>
-    <div class="d-flex gap-2">
-      <button class="btn btn-outline-secondary w-50 py-2" onclick="goToPage(2)"><i class="fa-solid fa-arrow-left me-1"></i> ย้อนกลับ</button>
-      <button class="btn btn-gold w-50 py-2 shadow-sm" onclick="submitForm()"><i class="fa-solid fa-paper-plane me-1"></i> ส่งคำขอเบิกสินค้า</button>
-    </div>
-  </div>
-
-  <!-- หน้าที่ 4: ใบยืนยันการเบิก (Success Slip) -->
-  <div id="page4" class="page">
-    <div class="section-card text-center">
-      <i class="fa-solid fa-circle-check text-success" style="font-size: 3.5rem;"></i>
-      <h4 class="fw-bold mt-2">เบิกสินค้าสำเร็จ!</h4>
-      <p class="text-muted mb-3">เลขที่ใบเบิก: <strong id="displayOrderId" class="text-dark"></strong></p>
-      
-      <div class="text-start border-top pt-3 mb-3">
-        <p class="mb-1"><strong>ผู้เบิก:</strong> <span id="displayUser"></span></p>
-        <p class="mb-1"><strong>แผนก:</strong> <span id="displayDept"></span></p>
-        <p class="mb-1"><strong>โปรเจกต์:</strong> <span id="displayProject"></span></p>
-        <p class="mb-0"><strong>เวลารับของ:</strong> <span id="displayPickup"></span></p>
-      </div>
-
-      <div class="text-start border-top pt-3 mb-4">
-        <h6 class="fw-bold text-secondary mb-2">รายการสินค้าที่เบิก:</h6>
-        <div id="displayItems"></div>
-      </div>
-
-      <button class="btn btn-navy w-100 py-2 mb-2 btn-print" onclick="window.print()">
-        <i class="fa-solid fa-print me-2"></i> พิมพ์ใบเบิก (Print Slip)
-      </button>
-      <button class="btn btn-outline-secondary w-100 py-2 btn-print" onclick="location.reload()">
-        กลับหน้าหลัก / เบิกเพิ่ม
+      <button class="btn btn-gold w-100 py-3 shadow-sm" onclick="validatePage1()">
+        ถัดไป: เลือกรายการสินค้า <i class="fa-solid fa-arrow-right ms-2"></i>
       </button>
     </div>
-  </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-  const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxOeDgyQ4SpSRI0M6FnFHqcJM-6uMo8hgVJGXkOz7sUVK7EF3rpcCJSNWt503PU7CZV/exec";
-  let catalog = [], cart = {}, currentCategory = 'All';
+    <!-- หน้าที่ 2: เลือกรายการสินค้า (Card Grid View) -->
+    <div id="page2" class="page">
+      <div class="section-card">
+        <h5 class="fw-bold mb-3" style="color: var(--navy);">
+          <i class="fa-solid fa-boxes-stacked me-2 text-warning"></i>2. รายการขอเบิกสินค้า
+        </h5>
+        
+        <!-- Search Bar -->
+        <div class="search-container mb-3">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" id="searchInput" class="form-control" placeholder="ค้นหาชื่อพาร์ท หรือ รหัสสินค้า..." oninput="filterProducts()">
+        </div>
 
-  document.addEventListener("DOMContentLoaded", () => {
-    loadCatalogJSONP();
-  });
+        <!-- Category Scroll Tabs -->
+        <div id="categoryTabs" class="category-scroll mb-3"></div>
 
-  function loadCatalogJSONP() {
-    const script = document.createElement('script');
-    script.src = `${GAS_WEB_APP_URL}?action=getCatalog&callback=onCatalogLoaded`;
-    script.onerror = () => {
-      document.getElementById('loadingSpinner').innerHTML = '<p class="text-danger small">ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้</p>';
-    };
-    document.body.appendChild(script);
-  }
+        <div id="loadingSpinner" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status" style="color: var(--navy) !important;"></div>
+          <p class="small text-muted mt-2">กำลังโหลดรายการสินค้า...</p>
+        </div>
 
-  function onCatalogLoaded(res) {
-    document.getElementById('loadingSpinner').style.display = 'none';
-    if (res && res.success) {
-      catalog = res.data || [];
-      initCategories();
-      renderCatalog();
-    } else {
-      document.getElementById('catalogList').innerHTML = '<p class="text-center text-danger py-4 small">ไม่พบข้อมูลสินค้าในระบบ</p>';
-    }
-  }
+        <!-- Catalog Card Grid Container -->
+        <div id="catalogList"></div>
+      </div>
 
-  function initCategories() {
-    const categories = ['All', ...new Set(catalog.map(item => item.category).filter(Boolean))];
-    const container = document.getElementById('categoryTabs');
-    container.innerHTML = categories.map(cat => `
-      <button class="cat-chip ${cat === 'All' ? 'active' : ''}" onclick="filterCategory('${cat}', this)">
-        ${cat === 'All' ? 'ทั้งหมด' : cat}
-      </button>
-    `).join('');
-  }
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary w-50 py-3 rounded-3" onclick="goToPage(1)">
+          <i class="fa-solid fa-arrow-left me-1"></i> ย้อนกลับ
+        </button>
+        <button class="btn btn-navy w-50 py-3 rounded-3" onclick="validatePage2()">
+          ถัดไป: ยืนยันคำขอ <i class="fa-solid fa-arrow-right ms-1"></i>
+        </button>
+      </div>
+    </div>
 
-  function filterCategory(category, btnElement) {
-    currentCategory = category;
-    document.querySelectorAll('.cat-chip').forEach(el => el.classList.remove('active'));
-    btnElement.classList.add('active');
-    renderCatalog();
-  }
-
-  function renderCatalog() {
-    const keyword = document.getElementById('searchInput').value.toLowerCase().trim();
-    const listContainer = document.getElementById('catalogList');
-
-    const filtered = catalog.filter(item => {
-      const matchCat = (currentCategory === 'All' || item.category === currentCategory);
-      const matchKey = (item.partName || '').toLowerCase().includes(keyword) || (item.partId || '').toLowerCase().includes(keyword);
-      return matchCat && matchKey;
-    });
-
-    if (filtered.length === 0) {
-      listContainer.innerHTML = '<p class="text-center text-muted py-4 small">ไม่พบรายการสินค้าที่ค้นหา</p>';
-      return;
-    }
-
-    listContainer.innerHTML = filtered.map(item => {
-      const qty = cart[item.partId] || 0;
-      const stockVal = Number(item.stock) || 0;
-      return `
-        <div class="card-product">
-          <div class="product-info">
-            <h6 class="fw-semibold mb-1">${item.partName}</h6>
-            <small class="text-muted"><i class="fa-solid fa-barcode me-1"></i> ${item.partId} | ตำแหน่ง: <b>${item.location || '-'}</b> | คงเหลือ: <b class="text-primary">${stockVal}</b></small>
+    <!-- หน้าที่ 3: สรุปและรูปแบบการรับ -->
+    <div id="page3" class="page">
+      <div class="section-card">
+        <h5 class="fw-bold mb-3" style="color: var(--navy);">
+          <i class="fa-solid fa-clipboard-check me-2 text-warning"></i>3. สรุปรายการและรูปแบบการรับ
+        </h5>
+        <div class="mb-3">
+          <h6 class="fw-semibold text-secondary mb-2 small">รายการที่เลือกเบิก:</h6>
+          <div id="summaryList" class="border rounded-3 p-3 bg-light" style="max-height: 240px; overflow-y: auto;"></div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-secondary small">รูปแบบการรับสินค้า <span class="text-danger">*</span></label>
+          <div class="d-flex gap-3 mb-2">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="pickup" id="pickupNow" value="รับทันทีที่คลัง" checked onchange="toggleTimeSlot(false)">
+              <label class="form-check-label small" for="pickupNow">รับทันทีที่คลัง</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="pickup" id="pickupSchedule" value="นัดเวลารับล่วงหน้า" onchange="toggleTimeSlot(true)">
+              <label class="form-check-label small" for="pickupSchedule">นัดเวลารับล่วงหน้า</label>
+            </div>
           </div>
-          <div class="d-flex align-items-center gap-2">
-            <button type="button" class="btn-qty" onclick="updateCart('${item.partId}', -1, ${stockVal})">-</button>
-            <span class="cart-qty" id="qty-${item.partId}">${qty}</span>
-            <button type="button" class="btn-qty btn-qty-plus" onclick="updateCart('${item.partId}', 1, ${stockVal})">+</button>
+          <div id="timeSlotContainer" style="display: none;" class="mt-2">
+            <select id="timeSlot" class="form-select rounded-3 py-2">
+              <option value="" disabled selected>-- เลือกช่วงเวลาทำงาน --</option>
+              <option value="09:00-10:00">09:00 - 10:00</option>
+              <option value="10:00-11:00">10:00 - 11:00</option>
+              <option value="11:00-12:00">11:00 - 12:00</option>
+              <option value="13:00-14:00">13:00 - 14:00</option>
+              <option value="14:00-15:00">14:00 - 15:00</option>
+              <option value="15:00-16:00">15:00 - 16:00</option>
+              <option value="16:00-17:00">16:00 - 17:00</option>
+            </select>
           </div>
         </div>
-      `;
-    }).join('');
-  }
-
-  function filterProducts() {
-    renderCatalog();
-  }
-
-  function updateCart(partId, change, maxStock) {
-    const current = cart[partId] || 0;
-    const next = current + change;
-
-    if (next < 0) return;
-    if (next > maxStock) {
-      Swal.fire('แจ้งเตือน', 'จำนวนเบิกเกินจำนวนคงเหลือในคลัง', 'warning');
-      return;
-    }
-
-    if (next === 0) {
-      delete cart[partId];
-    } else {
-      cart[partId] = next;
-    }
-
-    const el = document.getElementById(`qty-${partId}`);
-    if (el) el.innerText = next;
-  }
-
-  function validatePage1() {
-    const name = document.getElementById('userName').value.trim();
-    const dept = document.getElementById('dept').value;
-    const purpose = document.getElementById('purpose').value;
-    const project = document.getElementById('project').value.trim();
-
-    if (!name || !dept || !purpose || !project) {
-      Swal.fire('แจ้งเตือน', 'กรุณากรอกข้อมูลผู้เบิกให้ครบถ้วน', 'warning');
-      return;
-    }
-    goToPage(2);
-  }
-
-  function validatePage2() {
-    const totalSelected = Object.keys(cart).reduce((sum, key) => sum + cart[key], 0);
-    if (totalSelected === 0) {
-      Swal.fire('แจ้งเตือน', 'กรุณาเลือกรายการสินค้าอย่างน้อย 1 ชิ้น', 'warning');
-      return;
-    }
-    goToPage(3);
-    renderSummary();
-  }
-
-  function toggleTimeSlot(show) {
-    document.getElementById('timeSlotContainer').style.display = show ? 'block' : 'none';
-    if (!show) {
-      document.getElementById('timeSlot').value = '';
-    }
-  }
-
-  function renderSummary() {
-    const summaryContainer = document.getElementById('summaryList');
-    let html = '';
-    let hasItems = false;
-
-    for (let id in cart) {
-      if (cart[id] > 0) {
-        hasItems = true;
-        let item = catalog.find(i => i.partId === id);
-        let name = item ? item.partName : id;
-        html += `
-          <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-            <div>
-              <span class="fw-semibold text-dark">${name}</span><br>
-              <small class="text-muted">ID: ${id}</small>
-            </div>
-            <span class="badge bg-primary rounded-pill px-3 py-2">จำนวน: ${cart[id]}</span>
-          </div>
-        `;
-      }
-    }
-
-    summaryContainer.innerHTML = hasItems ? html : '<p class="text-center text-muted mb-0 small">ยังไม่ได้เลือกสินค้า</p>';
-  }
-
-  function goToPage(pageNumber) {
-    document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-    document.getElementById('page' + pageNumber).classList.add('active');
-    window.scrollTo(0, 0);
-  }
-
-  function submitForm() {
-    const pickupType = document.querySelector('input[name="pickup"]:checked').value;
-    const timeSlot = document.getElementById('timeSlot').value;
-
-    if (pickupType === 'นัดเวลารับล่วงหน้า' && !timeSlot) {
-      Swal.fire('แจ้งเตือน', 'กรุณาเลือกช่วงเวลารับสินค้า', 'warning');
-      return;
-    }
-
-    const orderId = "REQ-" + Date.now();
-    const cartArray = [];
-    for (let id in cart) {
-      if (cart[id] > 0) {
-        let item = catalog.find(i => i.partId === id);
-        cartArray.push({
-          partId: id,
-          partName: item ? item.partName : '',
-          qty: cart[id]
-        });
-      }
-    }
-
-    const formData = {
-      orderId: orderId,
-      userName: document.getElementById('userName').value.trim(),
-      dept: document.getElementById('dept').value,
-      purpose: document.getElementById('purpose').value,
-      project: document.getElementById('project').value.trim(),
-      pickupType: pickupType,
-      timeSlot: pickupType === 'นัดเวลารับล่วงหน้า' ? timeSlot : 'รับทันทีที่คลัง',
-      cart: cartArray
-    };
-
-    Swal.fire({
-      title: 'กำลังบันทึก...',
-      text: 'กรุณารอสักครู่ ระบบกำลังบันทึกข้อมูลคำขอเบิก',
-      allowOutsideClick: false,
-      didOpen: () => { Swal.showLoading(); }
-    });
-
-    fetch(GAS_WEB_APP_URL, {
-      method: "POST",
-      mode: "no-cors",
-      body: JSON.stringify({
-        action: "submitForm",
-        formData: formData
-      })
-    }).then(() => {
-      Swal.close();
-      showSuccessScreen(formData);
-    }).catch(err => {
-      Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเพื่อส่งข้อมูลได้', 'error');
-    });
-  }
-
-  function showSuccessScreen(data) {
-    document.getElementById('displayOrderId').innerText = data.orderId;
-    document.getElementById('displayUser').innerText = data.userName;
-    document.getElementById('displayDept').innerText = data.dept;
-    document.getElementById('displayProject').innerText = data.project;
-    document.getElementById('displayPickup').innerText = data.timeSlot;
-
-    const itemsHtml = data.cart.map(i => `
-      <div class="d-flex justify-content-between align-items-center mb-1 pb-1 border-bottom">
-        <span class="small text-dark">${i.partName} <span class="text-muted">(${i.partId})</span></span>
-        <span class="badge bg-secondary rounded-pill">x${i.qty}</span>
       </div>
-    `).join('');
-    document.getElementById('displayItems').innerHTML = itemsHtml;
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary w-50 py-3 rounded-3" onclick="goToPage(2)">
+          <i class="fa-solid fa-arrow-left me-1"></i> ย้อนกลับ
+        </button>
+        <button class="btn btn-gold w-50 py-3 shadow-sm rounded-3" onclick="submitForm()">
+          <i class="fa-solid fa-paper-plane me-1"></i> ส่งคำขอเบิกสินค้า
+        </button>
+      </div>
+    </div>
 
-    goToPage(4);
-  }
-</script>
+    <!-- หน้าที่ 4: ใบยืนยันการเบิก (Success Slip) -->
+    <div id="page4" class="page">
+      <div class="section-card success-slip text-center p-4">
+        <div class="mb-2">
+          <i class="fa-solid fa-circle-check text-success" style="font-size: 3.8rem;"></i>
+        </div>
+        <h4 class="fw-bold text-dark mt-1">เบิกสินค้าสำเร็จ!</h4>
+        <p class="text-muted small mb-3">เลขที่ใบเบิก: <strong id="displayOrderId" class="text-primary font-monospace"></strong></p>
+        
+        <div class="text-start border-top pt-3 mb-3 small">
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">ผู้เบิก:</span> <span id="displayUser" class="fw-semibold"></span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">แผนก:</span> <span id="displayDept" class="fw-semibold"></span></div>
+          <div class="d-flex justify-content-between mb-1"><span class="text-muted">โปรเจกต์:</span> <span id="displayProject" class="fw-semibold"></span></div>
+          <div class="d-flex justify-content-between mb-0"><span class="text-muted">เวลารับของ:</span> <span id="displayPickup" class="fw-semibold"></span></div>
+        </div>
+
+        <div class="text-start border-top pt-3 mb-4">
+          <h6 class="fw-bold text-secondary mb-2 small">รายการสินค้าที่เบิก:</h6>
+          <div id="displayItems" class="small"></div>
+        </div>
+
+        <button class="btn btn-navy w-100 py-3 mb-2 btn-print rounded-3 shadow-sm" onclick="window.print()">
+          <i class="fa-solid fa-print me-2"></i> พิมพ์ใบเบิก (Print Slip)
+        </button>
+        <button class="btn btn-outline-secondary w-100 py-2.5 btn-print rounded-3" onclick="location.reload()">
+          กลับหน้าหลัก / เบิกเพิ่ม
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxs_JCVNrlZV3IJa3ZUiQ-njwgqM8jBXJ1rxOIcw-NSVti0mtKRueEDznXh6sdFU4tE/exec";
+    let catalog = [], cart = {}, currentCategory = 'All';
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadCatalogJSONP();
+    });
+
+    function loadCatalogJSONP() {
+      const script = document.createElement('script');
+      script.src = `${GAS_WEB_APP_URL}?action=getCatalog&callback=onCatalogLoaded`;
+      script.onerror = () => {
+        document.getElementById('loadingSpinner').innerHTML = '<p class="text-danger small">ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้</p>';
+      };
+      document.body.appendChild(script);
+    }
+
+    function onCatalogLoaded(res) {
+      document.getElementById('loadingSpinner').style.display = 'none';
+      if (res && res.success) {
+        catalog = res.data || [];
+        initCategories();
+        renderCatalog();
+      } else {
+        document.getElementById('catalogList').innerHTML = '<p class="text-center text-danger py-4 small">ไม่พบข้อมูลสินค้าในระบบ</p>';
+      }
+    }
+
+    function initCategories() {
+      const categories = ['All', ...new Set(catalog.map(item => item.category).filter(Boolean))];
+      const container = document.getElementById('categoryTabs');
+      container.innerHTML = categories.map(cat => `
+        <button class="cat-chip ${cat === 'All' ? 'active' : ''}" onclick="filterCategory('${cat}', this)">
+          ${cat === 'All' ? '📁 ทั้งหมด' : cat}
+        </button>
+      `).join('');
+    }
+
+    function filterCategory(category, btnElement) {
+      currentCategory = category;
+      document.querySelectorAll('.cat-chip').forEach(el => el.classList.remove('active'));
+      btnElement.classList.add('active');
+      renderCatalog();
+    }
+
+    function renderCatalog() {
+      const keyword = document.getElementById('searchInput').value.toLowerCase().trim();
+      const listContainer = document.getElementById('catalogList');
+
+      const filtered = catalog.filter(item => {
+        const matchCat = (currentCategory === 'All' || item.category === currentCategory);
+        const matchKey = (item.partName || '').toLowerCase().includes(keyword) || (item.partId || '').toLowerCase().includes(keyword) || (item.size || '').toLowerCase().includes(keyword);
+        return matchCat && matchKey;
+      });
+
+      if (filtered.length === 0) {
+        listContainer.innerHTML = '<p class="text-center text-muted py-5 small">ไม่พบรายการสินค้าที่ค้นหา</p>';
+        return;
+      }
+
+      // Render as 2-column Card Grid View for mobile
+      listContainer.innerHTML = `
+        <div class="row row-cols-2 g-2">
+          ${filtered.map(item => {
+            const qty = cart[item.partId] || 0;
+            const stockVal = Number(item.stock) || 0;
+            return `
+              <div class="col">
+                <div class="card card-product h-100 rounded-4 p-3 d-flex flex-column justify-content-between bg-white shadow-sm">
+                  <div>
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <span class="badge bg-light text-dark font-monospace px-2 py-1 rounded-pill" style="font-size: 0.7rem;">${item.partId}</span>
+                      <span class="badge ${stockVal > 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'} rounded-pill px-2" style="font-size: 0.65rem;">คลัง: ${stockVal}</span>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-1" style="font-size: 0.88rem; line-height: 1.3;">${item.partName}</h6>
+                    <p class="text-muted mb-1" style="font-size: 0.75rem;">ขนาด: <span class="text-secondary fw-medium">${item.size || '-'}</span></p>
+                    <div class="text-muted mb-3" style="font-size: 0.7rem;"><i class="fa-solid fa-location-dot me-1 text-danger"></i>${item.location || '-'}</div>
+                  </div>
+                  <div>
+                    <div class="d-flex align-items-center justify-content-between bg-light rounded-pill p-1 border">
+                      <button type="button" class="btn btn-sm btn-white rounded-circle shadow-sm fw-bold text-dark d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" onclick="updateCart('${item.partId}', -1, ${stockVal})">
+                        <i class="fa-solid fa-minus fa-xs"></i>
+                      </button>
+                      <span class="cart-qty fw-bold text-navy px-1" id="qty-${item.partId}" style="font-size: 0.9rem;">${qty}</span>
+                      <button type="button" class="btn btn-sm rounded-circle shadow-sm fw-bold d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: var(--gold); color: #000;" onclick="updateCart('${item.partId}', 1, ${stockVal})">
+                        <i class="fa-solid fa-plus fa-xs"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function filterProducts() {
+      renderCatalog();
+    }
+
+    function updateCart(partId, change, maxStock) {
+      const current = cart[partId] || 0;
+      const next = current + change;
+
+      if (next < 0) return;
+      if (next > maxStock) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'แจ้งเตือน',
+          text: 'จำนวนเบิกเกินจำนวนคงเหลือในคลัง',
+          confirmButtonColor: '#1D2088'
+        });
+        return;
+      }
+
+      if (next === 0) {
+        delete cart[partId];
+      } else {
+        cart[partId] = next;
+      }
+
+      const el = document.getElementById(`qty-${partId}`);
+      if (el) el.innerText = next;
+    }
+
+    function validatePage1() {
+      const name = document.getElementById('userName').value.trim();
+      const dept = document.getElementById('dept').value;
+      const purpose = document.getElementById('purpose').value;
+      const project = document.getElementById('project').value.trim();
+
+      if (!name || !dept || !purpose || !project) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'แจ้งเตือน',
+          text: 'กรุณากรอกข้อมูลผู้เบิกให้ครบถ้วน',
+          confirmButtonColor: '#1D2088'
+        });
+        return;
+      }
+      goToPage(2);
+    }
+
+    function validatePage2() {
+      const totalSelected = Object.keys(cart).reduce((sum, key) => sum + cart[key], 0);
+      if (totalSelected === 0) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'แจ้งเตือน',
+          text: 'กรุณาเลือกรายการสินค้าอย่างน้อย 1 ชิ้น',
+          confirmButtonColor: '#1D2088'
+        });
+        return;
+      }
+      goToPage(3);
+      renderSummary();
+    }
+
+    function toggleTimeSlot(show) {
+      document.getElementById('timeSlotContainer').style.display = show ? 'block' : 'none';
+      if (!show) {
+        document.getElementById('timeSlot').value = '';
+      }
+    }
+
+    function renderSummary() {
+      const summaryContainer = document.getElementById('summaryList');
+      let html = '';
+      let hasItems = false;
+
+      for (let id in cart) {
+        if (cart[id] > 0) {
+          hasItems = true;
+          let item = catalog.find(i => i.partId === id);
+          let name = item ? item.partName : id;
+          html += `
+            <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+              <div>
+                <span class="fw-semibold text-dark small">${name}</span><br>
+                <small class="text-muted font-monospace" style="font-size: 0.75rem;">ID: ${id}</small>
+              </div>
+              <span class="badge bg-primary rounded-pill px-3 py-2" style="background-color: var(--navy) !important;">จำนวน: ${cart[id]}</span>
+            </div>
+          `;
+        }
+      }
+
+      summaryContainer.innerHTML = hasItems ? html : '<p class="text-center text-muted mb-0 small">ยังไม่ได้เลือกสินค้า</p>';
+    }
+
+    function goToPage(pageNumber) {
+      document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+      document.getElementById('page' + pageNumber).classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    function submitForm() {
+      const pickupType = document.querySelector('input[name="pickup"]:checked').value;
+      const timeSlot = document.getElementById('timeSlot').value;
+
+      if (pickupType === 'นัดเวลารับล่วงหน้า' && !timeSlot) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'แจ้งเตือน',
+          text: 'กรุณาเลือกช่วงเวลารับสินค้า',
+          confirmButtonColor: '#1D2088'
+        });
+        return;
+      }
+
+      const orderId = "REQ-" + Date.now();
+      const cartArray = [];
+      for (let id in cart) {
+        if (cart[id] > 0) {
+          let item = catalog.find(i => i.partId === id);
+          cartArray.push({
+            partId: id,
+            partName: item ? item.partName : '',
+            qty: cart[id]
+          });
+        }
+      }
+
+      const formData = {
+        orderId: orderId,
+        userName: document.getElementById('userName').value.trim(),
+        dept: document.getElementById('dept').value,
+        purpose: document.getElementById('purpose').value,
+        project: document.getElementById('project').value.trim(),
+        pickupType: pickupType,
+        timeSlot: pickupType === 'นัดเวลารับล่วงหน้า' ? timeSlot : 'รับทันทีที่คลัง',
+        cart: cartArray
+      };
+
+      Swal.fire({
+        title: 'กำลังบันทึก...',
+        text: 'กรุณารอสักครู่ ระบบกำลังบันทึกข้อมูลคำขอเบิก',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+      });
+
+      fetch(GAS_WEB_APP_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify({
+          action: "submitForm",
+          formData: formData
+        })
+      }).then(() => {
+        Swal.close();
+        showSuccessScreen(formData);
+      }).catch(err => {
+        Swal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: 'ไม่สามารถเชื่อมต่อเพื่อส่งข้อมูลได้',
+          confirmButtonColor: '#1D2088'
+        });
+      });
+    }
+
+    function showSuccessScreen(data) {
+      document.getElementById('displayOrderId').innerText = data.orderId;
+      document.getElementById('displayUser').innerText = data.userName;
+      document.getElementById('displayDept').innerText = data.dept;
+      document.getElementById('displayProject').innerText = data.project;
+      document.getElementById('displayPickup').innerText = data.timeSlot;
+
+      const itemsHtml = data.cart.map(i => `
+        <div class="d-flex justify-content-between align-items-center mb-1 pb-1 border-bottom">
+          <span class="text-dark">${i.partName} <span class="text-muted">(${i.partId})</span></span>
+          <span class="badge bg-secondary rounded-pill">x${i.qty}</span>
+        </div>
+      `).join('');
+      document.getElementById('displayItems').innerHTML = itemsHtml;
+
+      goToPage(4);
+    }
+  </script>
 </body>
 </html>
