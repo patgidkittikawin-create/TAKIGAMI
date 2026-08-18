@@ -372,7 +372,7 @@
       }
     }
 
-    // Step 1: แสดงหมวดหลัก (Main Categories)
+    // Step 1: แสดงหมวดหลัก (Main Categories) พร้อมรูปภาพประกอบ
     function renderStep1() {
       const mainCategories = [...new Set(catalog.map(item => item.category).filter(Boolean))];
       const container = document.getElementById('step1Container');
@@ -382,19 +382,29 @@
         return;
       }
 
-      container.innerHTML = mainCategories.map(cat => `
-        <div class="col">
-          <div class="card drill-card h-100 rounded-4 p-3 text-center d-flex flex-column align-items-center justify-content-center" onclick="navigateToStep(2, '${cat}')">
-            <div class="mb-2 text-primary" style="font-size: 2.2rem;">
-              <i class="fa-solid fa-folder-open"></i>
+      // กำหนดลิงก์รูปภาพประจำหมวดหมู่หลัก (สามารถเปลี่ยน URL รูปภาพได้ที่นี่)
+      const categoryImages = {
+        'Brass Fittings': 'https://via.placeholder.com/150/1D2088/FFFFFF?text=Brass',
+        'Control Valves & Pneumatic Lines': 'https://via.placeholder.com/150/E6B400/000000?text=Valves',
+        'Pipe Fittings & Structural Hardware': 'https://via.placeholder.com/150/2d32c9/FFFFFF?text=Pipe'
+      };
+
+      container.innerHTML = mainCategories.map(cat => {
+        const imgSrc = categoryImages[cat] || 'https://via.placeholder.com/150';
+        return `
+          <div class="col">
+            <div class="card drill-card h-100 rounded-4 p-3 text-center d-flex flex-column align-items-center justify-content-center" onclick="navigateToStep(2, '${cat}')">
+              <div class="mb-2" style="width: 70px; height: 70px;">
+                <img src="${imgSrc}" alt="${cat}" class="img-fluid object-fit-contain rounded-3" style="max-height: 70px;">
+              </div>
+              <h6 class="fw-bold text-dark mb-0" style="font-size: 0.95rem;">${cat}</h6>
             </div>
-            <h6 class="fw-bold text-dark mb-0" style="font-size: 0.95rem;">${cat}</h6>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
-    // Step 2: แสดงหมวดหมู่ย่อย (Sub Categories)
+    // Step 2: แสดงหมวดหมู่ย่อย (Sub Categories) พร้อมรูปภาพประกอบ
     function renderStep2() {
       const itemsInMain = catalog.filter(item => item.category === selectedMainCategory);
       const subCategories = [...new Set(itemsInMain.map(item => item.subCategory).filter(Boolean))];
@@ -405,16 +415,26 @@
         return;
       }
 
-      container.innerHTML = subCategories.map(subCat => `
-        <div class="col">
-          <div class="card drill-card h-100 rounded-4 p-3 text-center d-flex flex-column align-items-center justify-content-center" onclick="navigateToStep(3, '${subCat}')">
-            <div class="mb-2 text-warning" style="font-size: 2.2rem;">
-              <i class="fa-solid fa-boxes-packing"></i>
+      // กำหนดลิงก์รูปภาพประจำหมวดหมู่ย่อย (สามารถเปลี่ยน URL รูปภาพได้ที่นี่)
+      const subCategoryImages = {
+        'Speed Control & Valves': 'https://via.placeholder.com/150/E6B400/000000?text=Speed',
+        'Pneumatic & Silicone Hoses': 'https://via.placeholder.com/150/1D2088/FFFFFF?text=Hoses',
+        'Cylinders, F.R. Units & Sensors': 'https://via.placeholder.com/150/2d32c9/FFFFFF?text=Cylinders'
+      };
+
+      container.innerHTML = subCategories.map(subCat => {
+        const imgSrc = subCategoryImages[subCat] || 'https://via.placeholder.com/150';
+        return `
+          <div class="col">
+            <div class="card drill-card h-100 rounded-4 p-3 text-center d-flex flex-column align-items-center justify-content-center" onclick="navigateToStep(3, '${subCat}')">
+              <div class="mb-2" style="width: 70px; height: 70px;">
+                <img src="${imgSrc}" alt="${subCat}" class="img-fluid object-fit-contain rounded-3" style="max-height: 70px;">
+              </div>
+              <h6 class="fw-bold text-dark mb-0" style="font-size: 0.9rem;">${subCat}</h6>
             </div>
-            <h6 class="fw-bold text-dark mb-0" style="font-size: 0.9rem;">${subCat}</h6>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     // Step 3: แสดงรายการสินค้าจริงตามหมวด และ Search
