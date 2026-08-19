@@ -188,7 +188,7 @@
       </div>
     </div>
 
-    <!-- หน้า 4: สำเร็จ / สลิปใบเบิก -->
+    <!-- หน้า 4: สลิปใบเบิก -->
     <div id="page4" class="page">
       <div class="section-card text-center success-slip p-4">
         <div class="mb-3">
@@ -233,8 +233,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    // ⚠️ นำ Web App URL ที่ได้จาก Google Apps Script มาวางแทนที่ในอัญประกาศตรงนี้ครับ
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzsgkjKD2BH7nLDDZS_aB7vh2jLr7Zupq8ftZ4sO-zdcQEDdzeIiK-vStI_P5ofuvZR/exec";
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzlhYGnOG5ljU7s9iL2SpM3G-5uzlwku5-Uj6eV0Bhjae2Vg0oSEVCNfo1Ap6b6VeyS/exec";
     
     let catalog = [], cart = {};
     let currentStep = 1;
@@ -245,7 +244,6 @@
       loadCatalogJSONP();
     });
 
-    // ฟังก์ชั่นแปลงลิงก์ Google Drive + เพิ่ม =s400 ย่อรูปอัตโนมัติให้โหลดเร็วขึ้น
     function formatImageUrl(url) {
       if (!url) return '';
       if (url.includes('drive.google.com')) {
@@ -258,17 +256,29 @@
     }
 
     function loadCatalogJSONP() {
+      const container = document.getElementById('step1Container');
+      container.innerHTML = `
+        <div class="text-center py-5 col-12">
+          <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
+          <p class="fw-bold text-navy mb-1">กำลังโหลดข้อมูลสินค้าจากฐานข้อมูล...</p>
+          <small class="text-muted">โปรดรอสักครู่ (การโหลดครั้งแรกอาจใช้เวลา 10-15 วินาที)</small>
+        </div>
+      `;
+
       const script = document.createElement('script');
       script.src = `${GAS_WEB_APP_URL}?action=getCatalog&callback=onCatalogLoaded`;
       
       const timeout = setTimeout(() => {
-        document.getElementById('step1Container').innerHTML = `
-          <div class="text-danger py-3 text-center col-12">
+        container.innerHTML = `
+          <div class="text-danger py-4 text-center col-12">
             <i class="fa-solid fa-triangle-exclamation fa-2x mb-2"></i>
-            <p class="small mb-0">การเชื่อมต่อใช้เวลานานเกินไป กรุณาลองใหม่อีกครั้ง</p>
-            <button class="btn btn-sm btn-outline-secondary mt-2" onclick="location.reload()">โหลดใหม่</button>
+            <p class="fw-bold mb-1">การเชื่อมต่อใช้เวลานานเกินไป</p>
+            <p class="small text-muted mb-3">Google Apps Script ใช้เวลาตอบสนองนานกว่าปกติ</p>
+            <button class="btn btn-sm btn-primary px-4 py-2 rounded-pill" onclick="loadCatalogJSONP()">
+              <i class="fa-solid fa-rotate-right me-1"></i> ลองใหม่อีกครั้ง
+            </button>
           </div>`;
-      }, 12000);
+      }, 30000);
 
       window.onCatalogLoaded = (res) => {
         clearTimeout(timeout);
@@ -276,13 +286,17 @@
           catalog = res.data || [];
           initDrillDown();
         } else {
-          document.getElementById('step1Container').innerHTML = '<p class="text-center text-danger py-4 small col-12">ไม่พบข้อมูลสินค้าในระบบ</p>';
+          container.innerHTML = '<p class="text-center text-danger py-4 small col-12">ไม่พบข้อมูลสินค้าในระบบ</p>';
         }
       };
 
       script.onerror = () => {
         clearTimeout(timeout);
-        document.getElementById('step1Container').innerHTML = '<p class="text-danger small text-center col-12">ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้</p>';
+        container.innerHTML = `
+          <div class="text-danger py-4 text-center col-12">
+            <p class="small mb-2">ไม่สามารถเชื่อมต่อกับ Google Apps Script ได้</p>
+            <button class="btn btn-sm btn-outline-secondary" onclick="loadCatalogJSONP()">ลองใหม่</button>
+          </div>`;
       };
       
       document.body.appendChild(script);
@@ -323,7 +337,6 @@
       else if (currentStep === 2) { navigateToStep(1); }
     }
 
-    // 1. หมวดหมู่หลัก (ดึงรูปจาก Col I: categoryImg)
     function renderStep1() {
       const mainCategories = [...new Set(catalog.map(item => item.category).filter(Boolean))];
       const container = document.getElementById('step1Container');
@@ -356,7 +369,6 @@
       }).join('');
     }
 
-    // 2. หมวดหมู่ย่อย (ดึงรูปจาก Col J: subCategoryImg)
     function renderStep2() {
       const itemsInMain = catalog.filter(item => item.category === selectedMainCategory);
       const subCategories = [...new Set(itemsInMain.map(item => item.subCategory).filter(Boolean))];
@@ -390,7 +402,6 @@
       }).join('');
     }
 
-    // 3. รายการสินค้า (ดึงรูปจาก Col H: productImg)
     function renderStep3() {
       const keyword = String(document.getElementById('searchInput').value || '').toLowerCase().trim();
       const listContainer = document.getElementById('productList');
