@@ -60,7 +60,7 @@
     
     .drill-img-container {
       width: 100%;
-      height: 230px; 
+      height: 200px; 
       display: flex;
       align-items: center;
       justify-content: center;
@@ -233,7 +233,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzOTAHgAVhdNBvUJCVUj2eEOgPaCFf3YfiRlvR_xH62FmpaXYPbJ0JDcF6rbt4n4YwC/exec";
+    // ⚠️ นำ Web App URL ที่ได้จาก Google Apps Script มาวางแทนที่ในอัญประกาศตรงนี้ครับ
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxlqCk9K8txgvIQHObJDpieZBopF2ZRaRdOwPO-jPC5gptOkLbkR8yWeOZg4B76EdSm/exec";
     
     let catalog = [], cart = {};
     let currentStep = 1;
@@ -243,6 +244,18 @@
     document.addEventListener("DOMContentLoaded", () => {
       loadCatalogJSONP();
     });
+
+    // ฟังก์ชั่นแปลงลิงก์ Google Drive ให้เป็น Direct Image Link
+    function formatImageUrl(url) {
+      if (!url) return '';
+      if (url.includes('drive.google.com')) {
+        const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+        if (match && match[1]) {
+          return `https://lh3.googleusercontent.com/d/${match[1]}`;
+        }
+      }
+      return url;
+    }
 
     function loadCatalogJSONP() {
       const script = document.createElement('script');
@@ -310,6 +323,7 @@
       else if (currentStep === 2) { navigateToStep(1); }
     }
 
+    // 1. หมวดหมู่หลัก (ดึงรูปจาก Col I: categoryImg)
     function renderStep1() {
       const mainCategories = [...new Set(catalog.map(item => item.category).filter(Boolean))];
       const container = document.getElementById('step1Container');
@@ -320,11 +334,18 @@
       }
 
       container.innerHTML = mainCategories.map(cat => {
+        const catItem = catalog.find(i => i.category === cat && i.categoryImg);
+        const imgUrl = catItem ? formatImageUrl(catItem.categoryImg) : '';
+
+        const imgContent = imgUrl 
+          ? `<img src="${imgUrl}" alt="${cat}">`
+          : `<i class="fa-solid fa-folder-open text-primary" style="font-size: 3.5rem;"></i>`;
+
         return `
           <div class="col-12">
             <div class="card drill-card h-100 rounded-4 text-center">
               <div class="drill-img-container" onclick="navigateToStep(2, '${cat}')">
-                <i class="fa-solid folder-open text-primary" style="font-size: 3.5rem;"></i>
+                ${imgContent}
               </div>
               <div class="p-3" onclick="navigateToStep(2, '${cat}')">
                 <h6 class="fw-bold text-dark mb-0" style="font-size: 1rem;">${cat}</h6>
@@ -335,6 +356,7 @@
       }).join('');
     }
 
+    // 2. หมวดหมู่ย่อย (ดึงรูปจาก Col J: subCategoryImg)
     function renderStep2() {
       const itemsInMain = catalog.filter(item => item.category === selectedMainCategory);
       const subCategories = [...new Set(itemsInMain.map(item => item.subCategory).filter(Boolean))];
@@ -346,11 +368,18 @@
       }
 
       container.innerHTML = subCategories.map(subCat => {
+        const subCatItem = itemsInMain.find(i => i.subCategory === subCat && i.subCategoryImg);
+        const imgUrl = subCatItem ? formatImageUrl(subCatItem.subCategoryImg) : '';
+
+        const imgContent = imgUrl 
+          ? `<img src="${imgUrl}" alt="${subCat}">`
+          : `<i class="fa-solid fa-box-archive text-warning" style="font-size: 3.5rem;"></i>`;
+
         return `
           <div class="col-12">
             <div class="card drill-card h-100 rounded-4 text-center">
               <div class="drill-img-container" onclick="navigateToStep(3, '${subCat}')">
-                <i class="fa-solid fa-box-archive text-warning" style="font-size: 3.5rem;"></i>
+                ${imgContent}
               </div>
               <div class="p-3" onclick="navigateToStep(3, '${subCat}')">
                 <h6 class="fw-bold text-dark mb-0" style="font-size: 0.95rem;">${subCat}</h6>
@@ -361,6 +390,7 @@
       }).join('');
     }
 
+    // 3. รายการสินค้า (ดึงรูปจาก Col H: productImg)
     function renderStep3() {
       const keyword = String(document.getElementById('searchInput').value || '').toLowerCase().trim();
       const listContainer = document.getElementById('productList');
@@ -384,6 +414,13 @@
         const stockVal = Number(item.stock) || 0;
         const currentStock = stockVal - qty;
         const isOut = currentStock <= 0;
+        
+        const imgUrl = formatImageUrl(item.productImg);
+        const productImgHtml = imgUrl 
+          ? `<div class="text-center mb-2" style="height: 120px; display: flex; align-items: center; justify-content: center;">
+               <img src="${imgUrl}" alt="${item.partName}" style="max-height: 100%; max-width: 100%; object-fit: contain; border-radius: 8px;">
+             </div>`
+          : '';
 
         return `
           <div class="col-12">
@@ -393,6 +430,7 @@
                   <span class="badge bg-light text-dark font-monospace px-2 py-1 rounded-pill" style="font-size: 0.75rem;">${item.partId}</span>
                   <span id="stock-badge-${item.partId}" class="badge ${currentStock > 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'} rounded-pill px-2" style="font-size: 0.7rem;">คลัง: ${currentStock}</span>
                 </div>
+                ${productImgHtml}
                 <h6 class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">${item.partName}</h6>
                 <p class="text-muted mb-1" style="font-size: 0.8rem;">ขนาด: <span class="text-secondary fw-medium">${item.size || '-'}</span></p>
                 <div class="text-muted mb-3" style="font-size: 0.75rem;"><i class="fa-solid fa-location-dot me-1 text-danger"></i>${item.location || '-'}</div>
