@@ -234,7 +234,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     // ⚠️ นำ Web App URL ที่ได้จาก Google Apps Script มาวางแทนที่ในอัญประกาศตรงนี้ครับ
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxlqCk9K8txgvIQHObJDpieZBopF2ZRaRdOwPO-jPC5gptOkLbkR8yWeOZg4B76EdSm/exec";
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzsgkjKD2BH7nLDDZS_aB7vh2jLr7Zupq8ftZ4sO-zdcQEDdzeIiK-vStI_P5ofuvZR/exec";
     
     let catalog = [], cart = {};
     let currentStep = 1;
@@ -245,13 +245,13 @@
       loadCatalogJSONP();
     });
 
-    // ฟังก์ชั่นแปลงลิงก์ Google Drive ให้เป็น Direct Image Link
+    // ฟังก์ชั่นแปลงลิงก์ Google Drive + เพิ่ม =s400 ย่อรูปอัตโนมัติให้โหลดเร็วขึ้น
     function formatImageUrl(url) {
       if (!url) return '';
       if (url.includes('drive.google.com')) {
         const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
         if (match && match[1]) {
-          return `https://lh3.googleusercontent.com/d/${match[1]}`;
+          return `https://lh3.googleusercontent.com/d/${match[1]}=s400`;
         }
       }
       return url;
@@ -338,7 +338,7 @@
         const imgUrl = catItem ? formatImageUrl(catItem.categoryImg) : '';
 
         const imgContent = imgUrl 
-          ? `<img src="${imgUrl}" alt="${cat}">`
+          ? `<img src="${imgUrl}" alt="${cat}" loading="lazy" style="max-height: 100%; max-width: 100%; object-fit: contain;">`
           : `<i class="fa-solid fa-folder-open text-primary" style="font-size: 3.5rem;"></i>`;
 
         return `
@@ -372,7 +372,7 @@
         const imgUrl = subCatItem ? formatImageUrl(subCatItem.subCategoryImg) : '';
 
         const imgContent = imgUrl 
-          ? `<img src="${imgUrl}" alt="${subCat}">`
+          ? `<img src="${imgUrl}" alt="${subCat}" loading="lazy" style="max-height: 100%; max-width: 100%; object-fit: contain;">`
           : `<i class="fa-solid fa-box-archive text-warning" style="font-size: 3.5rem;"></i>`;
 
         return `
@@ -418,7 +418,7 @@
         const imgUrl = formatImageUrl(item.productImg);
         const productImgHtml = imgUrl 
           ? `<div class="text-center mb-2" style="height: 120px; display: flex; align-items: center; justify-content: center;">
-               <img src="${imgUrl}" alt="${item.partName}" style="max-height: 100%; max-width: 100%; object-fit: contain; border-radius: 8px;">
+               <img src="${imgUrl}" alt="${item.partName}" loading="lazy" style="max-height: 100%; max-width: 100%; object-fit: contain; border-radius: 8px;">
              </div>`
           : '';
 
