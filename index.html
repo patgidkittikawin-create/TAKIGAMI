@@ -348,28 +348,6 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbynIFrK-ahyh4rx879AHmDt2fTye9psxxDdWf7nF-NY_JPuoFEWS5fV1VHyUTm679n8/exec";
-    
-    // ตารางคำแปลภาษาไทยสำหรับหมวดหมู่หลักและหมวดหมู่ย่อย (สามารถเพิ่ม/แก้ไขคำแปลตรงนี้ได้)
-    const categoryTranslations = {
-      // หมวดหมู่หลัก (Category)
-      "Brass Fittings": "ข้อต่อทองเหลือง",
-      "Control Valves & Pneumatic Lines": "วาล์วควบคุมและระบบลม",
-      
-      // หมวดหมู่ย่อย (SubCategory)
-      "Brass Fittings & Nipples": "นิปเปิ้ลและข้อต่อทองเหลือง",
-      "Straight Fittings": "ข้อต่อตรง",
-      "Elbow Fittings": "ข้อต่องอ 90 องศา",
-      "Tee Fittings": "ข้อต่อ 3 ทาง",
-      "Solenoid Valves": "โซลินอยด์วาล์ว",
-      "Pneumatic Hoses": "สายลมและท่อลม"
-    };
-
-    // ฟังก์ชันช่วยดึงชื่อภาษาไทย + ภาษาอังกฤษ
-    function getCategoryDisplayName(name) {
-      if (!name) return '-';
-      const thaiName = categoryTranslations[name.trim()];
-      return thaiName ? `${thaiName} <small class="text-muted fw-normal d-block" style="font-size:0.8rem;">(${name})</small>` : name;
-    }
 
     let catalog = [], cart = {};
     let currentStep = 1;
@@ -470,12 +448,10 @@
         titleEl.innerHTML = '<i class="fa-solid fa-boxes-stacked me-2 text-warning"></i>2. เลือกหมวดหมู่หลัก';
         renderStep1();
       } else if (step === 2) {
-        const mainTranslated = categoryTranslations[selectedMainCategory] || selectedMainCategory;
-        titleEl.innerHTML = `<i class="fa-solid fa-layer-group me-2 text-warning"></i>${mainTranslated}`;
+        titleEl.innerHTML = `<i class="fa-solid fa-layer-group me-2 text-warning"></i>${selectedMainCategory}`;
         renderStep2();
       } else if (step === 3) {
-        const subTranslated = categoryTranslations[selectedSubCategory] || selectedSubCategory;
-        titleEl.innerHTML = `<i class="fa-solid fa-list-check me-2 text-warning"></i>${subTranslated}`;
+        titleEl.innerHTML = `<i class="fa-solid fa-list-check me-2 text-warning"></i>${selectedSubCategory}`;
         renderStep3();
       }
     }
@@ -509,7 +485,7 @@
                 ${imgContent}
               </div>
               <div class="p-3" onclick="navigateToStep(2, '${cat}')">
-                <h6 class="fw-bold text-dark mb-0">${getCategoryDisplayName(cat)}</h6>
+                <h6 class="fw-bold text-dark mb-0">${cat}</h6>
               </div>
             </div>
           </div>
@@ -542,7 +518,7 @@
                 ${imgContent}
               </div>
               <div class="p-3" onclick="navigateToStep(3, '${subCat}')">
-                <h6 class="fw-bold text-dark mb-0">${getCategoryDisplayName(subCat)}</h6>
+                <h6 class="fw-bold text-dark mb-0">${subCat}</h6>
               </div>
             </div>
           </div>
