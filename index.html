@@ -17,7 +17,7 @@
       --bg-color: #F4F6F9; 
     }
     body { font-family: 'Kanit', sans-serif; background-color: var(--bg-color); color: #333; padding-bottom: 40px; }
-    
+
     .nav-header { 
       background: linear-gradient(135deg, var(--navy), #2d32c9); 
       color: white; 
@@ -29,11 +29,11 @@
       border-bottom-left-radius: 20px;
       border-bottom-right-radius: 20px;
     }
-    
+
     .page { display: none; padding: 16px; animation: fadeIn 0.25s ease-in-out; }
     .page.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-    
+
     .section-card { 
       background: #ffffff; 
       border-radius: 20px; 
@@ -42,10 +42,10 @@
       border: 1px solid rgba(0,0,0,0.04); 
       box-shadow: 0 4px 15px rgba(0,0,0,0.04); 
     }
-    
+
     .btn-gold { background-color: var(--gold); color: #000; font-weight: 600; border: none; border-radius: 12px; padding: 14px; transition: all 0.2s; box-shadow: 0 4px 10px rgba(230, 180, 0, 0.25); }
     .btn-gold:hover { background-color: var(--gold-hover); color: #000; }
-    
+
     .btn-outline-custom { border: 1px solid #ced4da; background: #fff; color: #333; font-weight: 600; border-radius: 12px; padding: 14px; transition: all 0.2s; }
     .btn-outline-custom:hover { background: #f8f9fa; }
 
@@ -58,7 +58,7 @@
       border-radius: 16px;
     }
     .drill-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
-    
+
     .drill-img-container {
       width: 100%;
       height: 180px; 
@@ -77,7 +77,7 @@
       transition: transform 0.3s;
     }
     .drill-card:hover .drill-img-container img { transform: scale(1.05); }
-    
+
     .card-product { transition: transform 0.2s; border: 1px solid #eef2f6 !important; }
     .product-img-box {
       height: 140px;
@@ -112,13 +112,13 @@
     <i class="fa-solid fa-screwdriver-wrench me-2"></i> TAKIGAMI (TTC) STORE
   </div>
 
-  <div class="container px-3 mt-3">
+  <div class="container px-3 mt-3" style="max-width: 768px;">
     <!-- หน้า 1: ข้อมูลผู้เบิก -->
     <div id="page1" class="page active">
       <div class="section-card">
         <h5 class="fw-bold mb-3" style="color: var(--navy);"><i class="fa-solid fa-user-pen me-2 text-warning"></i>1. ข้อมูลผู้เบิก</h5>
         <input type="text" id="userName" class="form-control mb-3" placeholder="ชื่อ-นามสกุล">
-        
+
         <select id="dept" class="form-select mb-3">
           <option value="" disabled selected>-- เลือกแผนก --</option>
           <option value="Production">Production</option>
@@ -148,26 +148,26 @@
         <div class="d-flex align-items-center justify-content-between mb-3">
           <div class="d-flex align-items-center">
             <div id="backBtnContainer" class="me-2" style="display: none;">
-              <button class="btn btn-outline-secondary rounded-circle" style="width:38px; height:38px;" onclick="navigateBack()"><i class="fa-solid fa-arrow-left"></i></button>
+              <button class="btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center" style="width:38px; height:38px;" onclick="navigateBack()"><i class="fa-solid fa-arrow-left"></i></button>
             </div>
             <h5 class="fw-bold m-0" id="stepTitle" style="color: var(--navy);">2. เลือกหมวดหมู่</h5>
           </div>
           <button class="btn btn-sm btn-light text-secondary rounded-pill border" onclick="loadCatalogJSONP(true)" title="ดึงข้อมูลล่าสุดจาก Sheets">
-            <i class="fa-solid fa-rotate me-1"></i> ดึงข้อมูลล่าสุด
+            <i class="fa-solid fa-rotate me-1"></i> รีเฟรช
           </button>
         </div>
 
-        <div id="step1Container" class="row row-cols-1 g-3"></div>
-        <div id="step2Container" class="row row-cols-1 g-3" style="display: none;"></div>
+        <div id="step1Container" class="row g-3"></div>
+        <div id="step2Container" class="row g-3" style="display: none;"></div>
         <div id="step3Container" style="display: none;">
           <input type="text" id="searchInput" class="form-control mb-3" placeholder="ค้นหาชื่อ, รหัส หรือขนาด..." oninput="renderStep3()">
-          <div id="productList" class="row row-cols-1 g-3"></div>
+          <div id="productList" class="row row-cols-1 row-cols-md-2 g-3"></div>
         </div>
       </div>
-      
+
       <div class="d-flex gap-2">
         <button class="btn btn-outline-custom w-50 py-3" onclick="goToPage(1)">ย้อนกลับ</button>
-        <button class="btn w-50 py-3 text-white" style="background-color: var(--navy);" onclick="validatePage2()">ยืนยันรายการ</button>
+        <button class="btn w-50 py-3 text-white fw-bold" style="background-color: var(--navy);" onclick="validatePage2()">ยืนยันรายการ</button>
       </div>
     </div>
 
@@ -177,7 +177,7 @@
         <h5 class="fw-bold mb-3" style="color: var(--navy);">
           <i class="fa-solid fa-clipboard-check me-2 text-warning"></i>3. สรุปรายการและรูปแบบการรับ
         </h5>
-        
+
         <label class="form-label small text-muted fw-bold mb-2">รายการที่เลือกเบิก:</label>
         <div id="summaryList" class="mb-4"></div>
 
@@ -221,7 +221,7 @@
         </div>
         <h4 class="fw-bold text-dark mb-1" style="font-size: 1.25rem;">เบิกสินค้าสำเร็จ!</h4>
         <p class="small text-muted mb-3">เลขที่ใบเบิก: <span id="slipId" class="fw-bold text-primary">REQ-000000000000</span></p>
-        
+
         <div class="text-start border-top pt-3 pb-3 mb-3 small" style="color: #495057;">
           <div class="d-flex justify-content-between mb-2">
             <span class="text-muted">ผู้เบิก:</span>
@@ -258,8 +258,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzYtcnLm6RmCOBm_pm6h1QRBseH6W2ZHpfoAOYfwyGTr7VwlmrgwHl7eebkpM6vxTHH/exec";
-    
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxY3j23yq-GL6t8gwT8V5ERjnQbYSeXR60YDYY2dkNP0nL6KubOc93rVpravhkpRd1R/exec";
+
     let catalog = [], cart = {};
     let currentStep = 1;
     let selectedMainCategory = null;
@@ -269,13 +269,14 @@
       loadCatalogJSONP();
     });
 
-    // ฟังก์ชั่นแปลงลิงก์รูปภาพทุกชนิด (Google Drive, Web URL)
+    /**
+     * ฟังก์ชันแปลงลิงก์รูปภาพ พร้อมรองรับ Fallback ID
+     */
     function formatImageUrl(url) {
       if (!url || typeof url !== 'string') return '';
       url = url.trim();
       if (!url) return '';
 
-      // รองรับลิงก์ Google Drive
       if (url.includes('drive.google.com')) {
         let fileId = '';
         const matchD = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
@@ -292,6 +293,17 @@
       return url;
     }
 
+    function getFallbackUrl(url) {
+      if (!url || typeof url !== 'string') return '';
+      let fileId = '';
+      const matchD = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+      const matchId = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+      if (matchD && matchD[1]) fileId = matchD[1];
+      else if (matchId && matchId[1]) fileId = matchId[1];
+
+      return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w800` : '';
+    }
+
     function loadCatalogJSONP(forceReload = false) {
       const container = document.getElementById('step1Container');
       container.innerHTML = `
@@ -302,10 +314,14 @@
         </div>
       `;
 
+      const oldScript = document.getElementById('jsonpScript');
+      if (oldScript) oldScript.remove();
+
       const script = document.createElement('script');
+      script.id = 'jsonpScript';
       const nocacheParam = forceReload ? '&nocache=1' : '';
       script.src = `${GAS_WEB_APP_URL}?action=getCatalog&callback=onCatalogLoaded${nocacheParam}&_t=${Date.now()}`;
-      
+
       const timeout = setTimeout(() => {
         container.innerHTML = `
           <div class="text-danger py-4 text-center col-12">
@@ -335,7 +351,7 @@
             <button class="btn btn-sm btn-outline-secondary" onclick="loadCatalogJSONP(true)">ลองใหม่</button>
           </div>`;
       };
-      
+
       document.body.appendChild(script);
     }
 
@@ -385,14 +401,16 @@
 
       container.innerHTML = mainCategories.map(cat => {
         const catItem = catalog.find(i => i.category === cat && i.categoryImg);
-        const imgUrl = catItem ? formatImageUrl(catItem.categoryImg) : '';
+        const rawUrl = catItem ? catItem.categoryImg : '';
+        const imgUrl = formatImageUrl(rawUrl);
+        const fallbackUrl = getFallbackUrl(rawUrl);
 
         const imgContent = imgUrl 
-          ? `<img src="${imgUrl}" alt="${cat}" referrerpolicy="no-referrer" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\\'fa-solid fa-folder-open text-primary\\' style=\\'font-size: 3.5rem;\\'></i>';">`
+          ? `<img src="${imgUrl}" alt="${cat}" referrerpolicy="no-referrer" loading="lazy" onerror="if(this.src!=='${fallbackUrl}' && '${fallbackUrl}'){this.src='${fallbackUrl}';} else {this.onerror=null; this.parentElement.innerHTML='<i class=\\'fa-solid fa-folder-open text-primary\\' style=\\'font-size: 3.5rem;\\'></i>';}">`
           : `<i class="fa-solid fa-folder-open text-primary" style="font-size: 3.5rem;"></i>`;
 
         return `
-          <div class="col-12">
+          <div class="col-12 col-md-6">
             <div class="card drill-card h-100 rounded-4 text-center">
               <div class="drill-img-container" onclick="navigateToStep(2, '${cat}')">
                 ${imgContent}
@@ -418,14 +436,16 @@
 
       container.innerHTML = subCategories.map(subCat => {
         const subCatItem = itemsInMain.find(i => i.subCategory === subCat && i.subCategoryImg);
-        const imgUrl = subCatItem ? formatImageUrl(subCatItem.subCategoryImg) : '';
+        const rawUrl = subCatItem ? subCatItem.subCategoryImg : '';
+        const imgUrl = formatImageUrl(rawUrl);
+        const fallbackUrl = getFallbackUrl(rawUrl);
 
         const imgContent = imgUrl 
-          ? `<img src="${imgUrl}" alt="${subCat}" referrerpolicy="no-referrer" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\\'fa-solid fa-box-archive text-warning\\' style=\\'font-size: 3.5rem;\\'></i>';">`
+          ? `<img src="${imgUrl}" alt="${subCat}" referrerpolicy="no-referrer" loading="lazy" onerror="if(this.src!=='${fallbackUrl}' && '${fallbackUrl}'){this.src='${fallbackUrl}';} else {this.onerror=null; this.parentElement.innerHTML='<i class=\\'fa-solid fa-box-archive text-warning\\' style=\\'font-size: 3.5rem;\\'></i>';}">`
           : `<i class="fa-solid fa-box-archive text-warning" style="font-size: 3.5rem;"></i>`;
 
         return `
-          <div class="col-12">
+          <div class="col-12 col-md-6">
             <div class="card drill-card h-100 rounded-4 text-center">
               <div class="drill-img-container" onclick="navigateToStep(3, '${subCat}')">
                 ${imgContent}
@@ -462,12 +482,14 @@
         const stockVal = Number(item.stock) || 0;
         const currentStock = stockVal - qty;
         const isOut = currentStock <= 0;
-        
-        const imgUrl = formatImageUrl(item.productImg);
-        
+
+        const rawUrl = item.productImg || '';
+        const imgUrl = formatImageUrl(rawUrl);
+        const fallbackUrl = getFallbackUrl(rawUrl);
+
         const productImgHtml = imgUrl 
           ? `<div class="product-img-box">
-               <img src="${imgUrl}" alt="${item.partName}" referrerpolicy="no-referrer" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'text-muted text-center\\'><i class=\\'fa-solid fa-image fa-2x opacity-25\\'></i><br><small style=\\'font-size:0.7rem;\\'>ไม่มีรูปภาพ</small></div>';">
+               <img src="${imgUrl}" alt="${item.partName}" referrerpolicy="no-referrer" loading="lazy" onerror="if(this.src!=='${fallbackUrl}' && '${fallbackUrl}'){this.src='${fallbackUrl}';} else {this.onerror=null; this.parentElement.innerHTML='<div class=\\'text-muted text-center\\'><i class=\\'fa-solid fa-image fa-2x opacity-25\\'></i><br><small style=\\'font-size:0.7rem;\\'>ไม่มีรูปภาพ</small></div>';}">
              </div>`
           : `<div class="product-img-box">
                <i class="fa-solid fa-box text-secondary fa-2x opacity-25"></i>
@@ -521,7 +543,7 @@
       const remainingStock = maxStock - next;
       const stockBadge = document.getElementById(`stock-badge-${partId}`);
       const plusBtn = document.getElementById(`btn-plus-${partId}`);
-      
+
       if (stockBadge) {
         stockBadge.innerText = `คลัง: ${remainingStock}`;
         stockBadge.className = `badge ${remainingStock > 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'} rounded-pill px-2`;
@@ -560,7 +582,7 @@
     function renderSummary() {
       const container = document.getElementById('summaryList');
       const keys = Object.keys(cart);
-      
+
       if (keys.length === 0) {
         container.innerHTML = '<p class="text-center text-muted small">ยังไม่มีรายการสินค้า</p>';
         return;
@@ -589,7 +611,7 @@
       const receiveMode = document.querySelector('input[name="receiveMode"]:checked').value;
       const timeSlot = document.getElementById('timeSelectWrapper').style.display === 'block' ? document.getElementById('timeSlot').value : '-';
 
-      if (receiveMode === 'นัดเวลารับล่วงหน้า' && !timeSlot) {
+      if (receiveMode === 'นัดเวลารับล่วงหน้า' && (!timeSlot || timeSlot === '-')) {
         Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณาเลือกช่วงเวลาทำงาน', confirmButtonColor: '#1D2088' });
         return;
       }
@@ -601,7 +623,7 @@
       });
 
       const randomReqId = 'REQ-' + Math.floor(100000000000 + Math.random() * 900000000000);
-      
+
       const cartArray = [];
       for (const [partId, qty] of Object.entries(cart)) {
         const item = catalog.find(i => i.partId === partId);
@@ -640,7 +662,7 @@
         document.getElementById('slipUser').innerText = payload.formData.userName;
         document.getElementById('slipDept').innerText = payload.formData.dept;
         document.getElementById('slipProject').innerText = payload.formData.project;
-        
+
         if (receiveMode === 'นัดเวลารับล่วงหน้า') {
           document.getElementById('slipTimeLabel').innerText = 'เวลารับของ:';
           document.getElementById('slipTime').innerText = timeSlot;
