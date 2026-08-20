@@ -206,7 +206,7 @@
         <div id="step1Container" class="row row-cols-1 g-3"></div>
         <div id="step2Container" class="row row-cols-1 g-3" style="display: none;"></div>
         <div id="step3Container" style="display: none;">
-          <input type="text" id="searchInput" class="form-control mb-3" placeholder="ค้นหาชื่อ, รหัส หรือขนาด..." oninput="renderStep3()">
+          <input type="text" id="searchInput" class="form-control mb-3" placeholder="ค้นหาชื่อภาษาไทย, อังกฤษ, รหัส หรือขนาด..." oninput="renderStep3()">
           <div id="productList" class="row row-cols-1 g-2"></div>
         </div>
       </div>
@@ -292,7 +292,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxKeB2m6d8pXslkGVfY6mwHhF-evQb87qRHouo0nL7VTRPRq5Xj3lDKC_CZn0x4A9Vk/exec";
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxTqM32VsS6YeL1pyuHuZ9vy0euXpJ-n3qxeIYYMtg8qg3_5M4C1D2lzRl9tCPgOMXV/exec";
 
     let catalog = [], cart = {};
     let currentStep = 1;
@@ -324,7 +324,7 @@
       container.innerHTML = `
         <div class="text-center py-5 col-12">
           <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
-          <p class="fw-bold text-navy mb-1">${forceReload ? 'กำลังดึงข้อมูลสดจาก Google Sheets...' : 'กำลังโหลดข้อมูลสินค้าจากฐานข้อมูล...'}</p>
+          <p class="fw-bold text-navy mb-1">${forceReload ? 'กำลังดึงข้อมูลสดจาก Google Sheets...' : 'กำลังโหลดข้อมูลสินค้า...'}</p>
           <small class="text-muted">โปรดรอสักครู่...</small>
         </div>`;
 
@@ -501,7 +501,9 @@
         const currentStock = stockVal - qty;
         const isOut = currentStock <= 0;
         const imgUrl = formatImageUrl(item.productImg);
-        const nameTH = item.nameTH || item.nameEN || '-';
+        
+        // บังคับดึงภาษาไทย (Col B) ถ้าไม่มีจึงใช้ภาษาอังกฤษ (Col C)
+        const nameTH = (item.nameTH && item.nameTH !== '') ? item.nameTH : (item.nameEN || '-');
         const nameEN = item.nameEN || '';
 
         const productImgHtml = imgUrl 
