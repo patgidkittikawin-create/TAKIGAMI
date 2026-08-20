@@ -17,35 +17,35 @@
       --bg-color: #F4F6F9; 
     }
     body { font-family: 'Kanit', sans-serif; background-color: var(--bg-color); color: #333; padding-bottom: 40px; }
-
+    
     .nav-header { 
       background: linear-gradient(135deg, var(--navy), #2d32c9); 
       color: white; 
-      padding: 20px 16px; 
+      padding: 16px; 
       text-align: center; 
       font-weight: 700; 
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       box-shadow: 0 4px 12px rgba(29, 32, 136, 0.15); 
-      border-bottom-left-radius: 20px;
-      border-bottom-right-radius: 20px;
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
     }
-
-    .page { display: none; padding: 16px; animation: fadeIn 0.25s ease-in-out; }
+    
+    .page { display: none; padding: 12px; animation: fadeIn 0.25s ease-in-out; }
     .page.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-
+    
     .section-card { 
       background: #ffffff; 
       border-radius: 20px; 
-      padding: 24px 20px; 
+      padding: 20px 16px; 
       margin-bottom: 16px; 
       border: 1px solid rgba(0,0,0,0.04); 
       box-shadow: 0 4px 15px rgba(0,0,0,0.04); 
     }
-
+    
     .btn-gold { background-color: var(--gold); color: #000; font-weight: 600; border: none; border-radius: 12px; padding: 14px; transition: all 0.2s; box-shadow: 0 4px 10px rgba(230, 180, 0, 0.25); }
     .btn-gold:hover { background-color: var(--gold-hover); color: #000; }
-
+    
     .btn-outline-custom { border: 1px solid #ced4da; background: #fff; color: #333; font-weight: 600; border-radius: 12px; padding: 14px; transition: all 0.2s; }
     .btn-outline-custom:hover { background: #f8f9fa; }
 
@@ -58,10 +58,10 @@
       border-radius: 16px;
     }
     .drill-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
-
+    
     .drill-img-container {
       width: 100%;
-      height: 180px; 
+      height: 150px; 
       display: flex;
       align-items: center;
       justify-content: center;
@@ -77,10 +77,10 @@
       transition: transform 0.3s;
     }
     .drill-card:hover .drill-img-container img { transform: scale(1.05); }
-
+    
     .card-product { transition: transform 0.2s; border: 1px solid #eef2f6 !important; }
     .product-img-box {
-      height: 140px;
+      height: 120px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -88,7 +88,7 @@
       border-radius: 12px;
       overflow: hidden;
       padding: 8px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       border: 1px dashed #e2e8f0;
     }
     .product-img-box img {
@@ -96,7 +96,89 @@
       max-width: 100%;
       object-fit: contain;
     }
+    
+    /* Product Name Hierarchy Default */
+    .product-name-th {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #111827;
+      line-height: 1.35;
+      margin-bottom: 2px;
+    }
+
+    .product-name-en {
+      font-size: 0.825rem;
+      color: #6c757d;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .btn-qty {
+      min-width: 44px;
+      min-height: 44px;
+      width: 44px;
+      height: 44px;
+      font-size: 1.1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     .success-slip { background: #ffffff; border: 2px dashed #cbd5e1; border-radius: 20px; }
+
+    /* =========================================================
+       MOBILE OPTIMIZATIONS (< 768px)
+       ========================================================= */
+    @media (max-width: 767.98px) {
+      .section-card {
+        padding: 14px 12px !important;
+        margin-bottom: 12px !important;
+        border-radius: 16px !important;
+      }
+
+      .header-toolbar {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 8px;
+        margin-bottom: 12px !important;
+      }
+
+      .step-title-text {
+        font-size: 1.05rem !important;
+        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .btn-refresh-mobile {
+        font-size: 0.75rem !important;
+        padding: 6px 10px !important;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .card-product {
+        padding: 12px !important;
+      }
+
+      .product-img-box {
+        height: 110px !important;
+        margin-bottom: 8px !important;
+        padding: 6px !important;
+      }
+
+      .qty-control-box {
+        padding: 3px 4px !important;
+      }
+
+      .cart-qty-text {
+        font-size: 1.1rem !important;
+        min-width: 32px;
+        text-align: center;
+      }
+    }
 
     @media print {
       body * { visibility: hidden; }
@@ -112,13 +194,13 @@
     <i class="fa-solid fa-screwdriver-wrench me-2"></i> TAKIGAMI (TTC) STORE
   </div>
 
-  <div class="container px-3 mt-3" style="max-width: 768px;">
+  <div class="container px-2 mt-2">
     <!-- หน้า 1: ข้อมูลผู้เบิก -->
     <div id="page1" class="page active">
       <div class="section-card">
         <h5 class="fw-bold mb-3" style="color: var(--navy);"><i class="fa-solid fa-user-pen me-2 text-warning"></i>1. ข้อมูลผู้เบิก</h5>
         <input type="text" id="userName" class="form-control mb-3" placeholder="ชื่อ-นามสกุล">
-
+        
         <select id="dept" class="form-select mb-3">
           <option value="" disabled selected>-- เลือกแผนก --</option>
           <option value="Production">Production</option>
@@ -145,29 +227,32 @@
     <!-- หน้า 2: เลือกหมวดหมู่สินค้า -->
     <div id="page2" class="page">
       <div class="section-card">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-          <div class="d-flex align-items-center">
+        <!-- Header Toolbar แบบ Flexbox Single Row ประหยัดพื้นที่ -->
+        <div class="header-toolbar mb-3">
+          <div class="d-flex align-items-center overflow-hidden">
             <div id="backBtnContainer" class="me-2" style="display: none;">
-              <button class="btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center" style="width:38px; height:38px;" onclick="navigateBack()"><i class="fa-solid fa-arrow-left"></i></button>
+              <button class="btn btn-outline-secondary rounded-circle d-inline-flex align-items-center justify-content-center" style="width:36px; height:36px;" onclick="navigateBack()">
+                <i class="fa-solid fa-arrow-left"></i>
+              </button>
             </div>
-            <h5 class="fw-bold m-0" id="stepTitle" style="color: var(--navy);">2. เลือกหมวดหมู่</h5>
+            <h5 class="fw-bold m-0 text-truncate step-title-text" id="stepTitle" style="color: var(--navy);">2. เลือกหมวดหมู่</h5>
           </div>
-          <button class="btn btn-sm btn-light text-secondary rounded-pill border" onclick="loadCatalogJSONP(true)" title="ดึงข้อมูลล่าสุดจาก Sheets">
-            <i class="fa-solid fa-rotate me-1"></i> รีเฟรช
+          <button class="btn btn-sm btn-light text-secondary rounded-pill border btn-refresh-mobile" onclick="loadCatalogJSONP(true)" title="ดึงข้อมูลล่าสุดจาก Sheets">
+            <i class="fa-solid fa-rotate me-1"></i> ดึงข้อมูลล่าสุด
           </button>
         </div>
 
-        <div id="step1Container" class="row g-3"></div>
-        <div id="step2Container" class="row g-3" style="display: none;"></div>
+        <div id="step1Container" class="row row-cols-1 g-3"></div>
+        <div id="step2Container" class="row row-cols-1 g-3" style="display: none;"></div>
         <div id="step3Container" style="display: none;">
           <input type="text" id="searchInput" class="form-control mb-3" placeholder="ค้นหาชื่อ, รหัส หรือขนาด..." oninput="renderStep3()">
-          <div id="productList" class="row row-cols-1 row-cols-md-2 g-3"></div>
+          <div id="productList" class="row row-cols-1 g-2"></div>
         </div>
       </div>
-
+      
       <div class="d-flex gap-2">
         <button class="btn btn-outline-custom w-50 py-3" onclick="goToPage(1)">ย้อนกลับ</button>
-        <button class="btn w-50 py-3 text-white fw-bold" style="background-color: var(--navy);" onclick="validatePage2()">ยืนยันรายการ</button>
+        <button class="btn w-50 py-3 text-white" style="background-color: var(--navy);" onclick="validatePage2()">ยืนยันรายการ</button>
       </div>
     </div>
 
@@ -177,7 +262,7 @@
         <h5 class="fw-bold mb-3" style="color: var(--navy);">
           <i class="fa-solid fa-clipboard-check me-2 text-warning"></i>3. สรุปรายการและรูปแบบการรับ
         </h5>
-
+        
         <label class="form-label small text-muted fw-bold mb-2">รายการที่เลือกเบิก:</label>
         <div id="summaryList" class="mb-4"></div>
 
@@ -221,7 +306,7 @@
         </div>
         <h4 class="fw-bold text-dark mb-1" style="font-size: 1.25rem;">เบิกสินค้าสำเร็จ!</h4>
         <p class="small text-muted mb-3">เลขที่ใบเบิก: <span id="slipId" class="fw-bold text-primary">REQ-000000000000</span></p>
-
+        
         <div class="text-start border-top pt-3 pb-3 mb-3 small" style="color: #495057;">
           <div class="d-flex justify-content-between mb-2">
             <span class="text-muted">ผู้เบิก:</span>
@@ -258,8 +343,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxZgyhHJX20rtqYsNW2lb8PRPPtUPUcn4NxUpJ_-3qGno8fkAjeGHXPGqPdf4y86Bzg/exec";
-
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx_wDGODu-lmORipKkB02Bcka1QIhUBTQFS33FPNxY-Jf1fmU2ucyA_kzxuEUgCN14H/exec";
+    
     let catalog = [], cart = {};
     let currentStep = 1;
     let selectedMainCategory = null;
@@ -269,9 +354,6 @@
       loadCatalogJSONP();
     });
 
-    /**
-     * ฟังก์ชันแปลงลิงก์รูปภาพ พร้อมรองรับ Fallback ID
-     */
     function formatImageUrl(url) {
       if (!url || typeof url !== 'string') return '';
       url = url.trim();
@@ -293,17 +375,6 @@
       return url;
     }
 
-    function getFallbackUrl(url) {
-      if (!url || typeof url !== 'string') return '';
-      let fileId = '';
-      const matchD = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-      const matchId = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-      if (matchD && matchD[1]) fileId = matchD[1];
-      else if (matchId && matchId[1]) fileId = matchId[1];
-
-      return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w800` : '';
-    }
-
     function loadCatalogJSONP(forceReload = false) {
       const container = document.getElementById('step1Container');
       container.innerHTML = `
@@ -314,14 +385,10 @@
         </div>
       `;
 
-      const oldScript = document.getElementById('jsonpScript');
-      if (oldScript) oldScript.remove();
-
       const script = document.createElement('script');
-      script.id = 'jsonpScript';
       const nocacheParam = forceReload ? '&nocache=1' : '';
       script.src = `${GAS_WEB_APP_URL}?action=getCatalog&callback=onCatalogLoaded${nocacheParam}&_t=${Date.now()}`;
-
+      
       const timeout = setTimeout(() => {
         container.innerHTML = `
           <div class="text-danger py-4 text-center col-12">
@@ -351,7 +418,7 @@
             <button class="btn btn-sm btn-outline-secondary" onclick="loadCatalogJSONP(true)">ลองใหม่</button>
           </div>`;
       };
-
+      
       document.body.appendChild(script);
     }
 
@@ -401,16 +468,14 @@
 
       container.innerHTML = mainCategories.map(cat => {
         const catItem = catalog.find(i => i.category === cat && i.categoryImg);
-        const rawUrl = catItem ? catItem.categoryImg : '';
-        const imgUrl = formatImageUrl(rawUrl);
-        const fallbackUrl = getFallbackUrl(rawUrl);
+        const imgUrl = catItem ? formatImageUrl(catItem.categoryImg) : '';
 
         const imgContent = imgUrl 
-          ? `<img src="${imgUrl}" alt="${cat}" referrerpolicy="no-referrer" loading="lazy" onerror="if(this.src!=='${fallbackUrl}' && '${fallbackUrl}'){this.src='${fallbackUrl}';} else {this.onerror=null; this.parentElement.innerHTML='<i class=\\'fa-solid fa-folder-open text-primary\\' style=\\'font-size: 3.5rem;\\'></i>';}">`
+          ? `<img src="${imgUrl}" alt="${cat}" referrerpolicy="no-referrer" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\\'fa-solid fa-folder-open text-primary\\' style=\\'font-size: 3.5rem;\\'></i>';">`
           : `<i class="fa-solid fa-folder-open text-primary" style="font-size: 3.5rem;"></i>`;
 
         return `
-          <div class="col-12 col-md-6">
+          <div class="col-12">
             <div class="card drill-card h-100 rounded-4 text-center">
               <div class="drill-img-container" onclick="navigateToStep(2, '${cat}')">
                 ${imgContent}
@@ -436,16 +501,14 @@
 
       container.innerHTML = subCategories.map(subCat => {
         const subCatItem = itemsInMain.find(i => i.subCategory === subCat && i.subCategoryImg);
-        const rawUrl = subCatItem ? subCatItem.subCategoryImg : '';
-        const imgUrl = formatImageUrl(rawUrl);
-        const fallbackUrl = getFallbackUrl(rawUrl);
+        const imgUrl = subCatItem ? formatImageUrl(subCatItem.subCategoryImg) : '';
 
         const imgContent = imgUrl 
-          ? `<img src="${imgUrl}" alt="${subCat}" referrerpolicy="no-referrer" loading="lazy" onerror="if(this.src!=='${fallbackUrl}' && '${fallbackUrl}'){this.src='${fallbackUrl}';} else {this.onerror=null; this.parentElement.innerHTML='<i class=\\'fa-solid fa-box-archive text-warning\\' style=\\'font-size: 3.5rem;\\'></i>';}">`
+          ? `<img src="${imgUrl}" alt="${subCat}" referrerpolicy="no-referrer" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\\'fa-solid fa-box-archive text-warning\\' style=\\'font-size: 3.5rem;\\'></i>';">`
           : `<i class="fa-solid fa-box-archive text-warning" style="font-size: 3.5rem;"></i>`;
 
         return `
-          <div class="col-12 col-md-6">
+          <div class="col-12">
             <div class="card drill-card h-100 rounded-4 text-center">
               <div class="drill-img-container" onclick="navigateToStep(3, '${subCat}')">
                 ${imgContent}
@@ -466,10 +529,18 @@
       const filtered = catalog.filter(item => {
         const matchMain = item.category === selectedMainCategory;
         const matchSub = item.subCategory === selectedSubCategory;
-        const nameStr = String(item.partName || '').toLowerCase();
+        
+        const thStr = String(item.nameTH || item.partName || '').toLowerCase();
+        const enStr = String(item.nameEN || '').toLowerCase();
         const idStr = String(item.partId || '').toLowerCase();
         const sizeStr = String(item.size || '').toLowerCase();
-        return matchMain && matchSub && (nameStr.includes(keyword) || idStr.includes(keyword) || sizeStr.includes(keyword));
+        
+        return matchMain && matchSub && (
+          thStr.includes(keyword) || 
+          enStr.includes(keyword) || 
+          idStr.includes(keyword) || 
+          sizeStr.includes(keyword)
+        );
       });
 
       if (filtered.length === 0) {
@@ -482,14 +553,15 @@
         const stockVal = Number(item.stock) || 0;
         const currentStock = stockVal - qty;
         const isOut = currentStock <= 0;
-
-        const rawUrl = item.productImg || '';
-        const imgUrl = formatImageUrl(rawUrl);
-        const fallbackUrl = getFallbackUrl(rawUrl);
+        
+        const imgUrl = formatImageUrl(item.productImg);
+        
+        const nameTH = item.nameTH || item.partName || '-';
+        const nameEN = item.nameEN || '';
 
         const productImgHtml = imgUrl 
           ? `<div class="product-img-box">
-               <img src="${imgUrl}" alt="${item.partName}" referrerpolicy="no-referrer" loading="lazy" onerror="if(this.src!=='${fallbackUrl}' && '${fallbackUrl}'){this.src='${fallbackUrl}';} else {this.onerror=null; this.parentElement.innerHTML='<div class=\\'text-muted text-center\\'><i class=\\'fa-solid fa-image fa-2x opacity-25\\'></i><br><small style=\\'font-size:0.7rem;\\'>ไม่มีรูปภาพ</small></div>';}">
+               <img src="${imgUrl}" alt="${nameTH}" referrerpolicy="no-referrer" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'text-muted text-center\\'><i class=\\'fa-solid fa-image fa-2x opacity-25\\'></i><br><small style=\\'font-size:0.7rem;\\'>ไม่มีรูปภาพ</small></div>';">
              </div>`
           : `<div class="product-img-box">
                <i class="fa-solid fa-box text-secondary fa-2x opacity-25"></i>
@@ -503,19 +575,30 @@
                   <span class="badge bg-light text-dark font-monospace px-2 py-1 rounded-pill" style="font-size: 0.75rem;">${item.partId}</span>
                   <span id="stock-badge-${item.partId}" class="badge ${currentStock > 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'} rounded-pill px-2" style="font-size: 0.7rem;">คลัง: ${currentStock}</span>
                 </div>
+
                 ${productImgHtml}
-                <h6 class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">${item.partName}</h6>
-                <p class="text-muted mb-1" style="font-size: 0.8rem;">ขนาด: <span class="text-secondary fw-medium">${item.size || '-'}</span></p>
-                <div class="text-muted mb-3" style="font-size: 0.75rem;"><i class="fa-solid fa-location-dot me-1 text-danger"></i>${item.location || '-'}</div>
+
+                <!-- Product Name Hierarchy -->
+                <h6 class="product-name-th">${nameTH}</h6>
+                ${nameEN ? `<div class="product-name-en">${nameEN}</div>` : ''}
+
+                <div class="d-flex justify-content-between align-items-center mb-2 text-muted" style="font-size: 0.8rem;">
+                  <span>ขนาด: <strong class="text-dark">${item.size || '-'}</strong></span>
+                  <span><i class="fa-solid fa-location-dot me-1 text-danger"></i>${item.location || '-'}</span>
+                </div>
               </div>
-              <div>
-                <div class="d-flex align-items-center justify-content-between bg-light rounded-pill p-1 border">
-                  <button type="button" class="btn btn-sm btn-white rounded-circle shadow-sm fw-bold text-dark d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" onclick="updateCart('${item.partId}', -1, ${stockVal})">
-                    <i class="fa-solid fa-minus fa-xs"></i>
+
+              <!-- Controls -->
+              <div class="mt-2">
+                <div class="d-flex align-items-center justify-content-between bg-light rounded-pill border qty-control-box">
+                  <button type="button" class="btn btn-white rounded-circle shadow-sm fw-bold text-dark btn-qty" onclick="updateCart('${item.partId}', -1, ${stockVal})">
+                    <i class="fa-solid fa-minus"></i>
                   </button>
-                  <span class="cart-qty fw-bold text-navy px-2" id="qty-${item.partId}" style="font-size: 1rem;">${qty}</span>
-                  <button type="button" id="btn-plus-${item.partId}" class="btn btn-sm rounded-circle shadow-sm fw-bold d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background-color: var(--gold); color: #000;" ${isOut ? 'disabled' : ''} onclick="updateCart('${item.partId}', 1, ${stockVal})">
-                    <i class="fa-solid fa-plus fa-xs"></i>
+                  
+                  <span class="cart-qty-text fw-bold text-navy px-2" id="qty-${item.partId}">${qty}</span>
+                  
+                  <button type="button" id="btn-plus-${item.partId}" class="btn rounded-circle shadow-sm fw-bold btn-qty" style="background-color: var(--gold); color: #000;" ${isOut ? 'disabled' : ''} onclick="updateCart('${item.partId}', 1, ${stockVal})">
+                    <i class="fa-solid fa-plus"></i>
                   </button>
                 </div>
               </div>
@@ -543,7 +626,7 @@
       const remainingStock = maxStock - next;
       const stockBadge = document.getElementById(`stock-badge-${partId}`);
       const plusBtn = document.getElementById(`btn-plus-${partId}`);
-
+      
       if (stockBadge) {
         stockBadge.innerText = `คลัง: ${remainingStock}`;
         stockBadge.className = `badge ${remainingStock > 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'} rounded-pill px-2`;
@@ -582,7 +665,7 @@
     function renderSummary() {
       const container = document.getElementById('summaryList');
       const keys = Object.keys(cart);
-
+      
       if (keys.length === 0) {
         container.innerHTML = '<p class="text-center text-muted small">ยังไม่มีรายการสินค้า</p>';
         return;
@@ -591,7 +674,7 @@
       let html = '';
       keys.forEach(partId => {
         const item = catalog.find(i => i.partId === partId);
-        const name = item ? item.partName : partId;
+        const name = item ? (item.nameTH || item.partName) : partId;
         const qty = cart[partId];
         html += `
           <div class="card p-3 mb-2 border rounded-4 bg-light shadow-sm">
@@ -611,7 +694,7 @@
       const receiveMode = document.querySelector('input[name="receiveMode"]:checked').value;
       const timeSlot = document.getElementById('timeSelectWrapper').style.display === 'block' ? document.getElementById('timeSlot').value : '-';
 
-      if (receiveMode === 'นัดเวลารับล่วงหน้า' && (!timeSlot || timeSlot === '-')) {
+      if (receiveMode === 'นัดเวลารับล่วงหน้า' && !timeSlot) {
         Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณาเลือกช่วงเวลาทำงาน', confirmButtonColor: '#1D2088' });
         return;
       }
@@ -623,13 +706,13 @@
       });
 
       const randomReqId = 'REQ-' + Math.floor(100000000000 + Math.random() * 900000000000);
-
+      
       const cartArray = [];
       for (const [partId, qty] of Object.entries(cart)) {
         const item = catalog.find(i => i.partId === partId);
         cartArray.push({
           partId: partId,
-          partName: item ? item.partName : '',
+          partName: item ? (item.nameTH || item.partName) : '',
           qty: qty
         });
       }
@@ -662,7 +745,7 @@
         document.getElementById('slipUser').innerText = payload.formData.userName;
         document.getElementById('slipDept').innerText = payload.formData.dept;
         document.getElementById('slipProject').innerText = payload.formData.project;
-
+        
         if (receiveMode === 'นัดเวลารับล่วงหน้า') {
           document.getElementById('slipTimeLabel').innerText = 'เวลารับของ:';
           document.getElementById('slipTime').innerText = timeSlot;
