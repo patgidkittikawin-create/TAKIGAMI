@@ -109,7 +109,6 @@
       font-weight: 600;
       color: #1a1d20;
       line-height: 1.4;
-      letter-spacing: 0.2px;
       margin-bottom: 2px;
     }
 
@@ -117,7 +116,6 @@
       font-size: 0.85rem;
       color: #6c757d;
       line-height: 1.3;
-      letter-spacing: 0.3px;
       margin-bottom: 8px;
     }
 
@@ -135,54 +133,13 @@
     .success-slip { background: #ffffff; border: 2px dashed #cbd5e1; border-radius: 20px; }
 
     @media (max-width: 767.98px) {
-      .section-card {
-        padding: 14px 12px !important;
-        margin-bottom: 12px !important;
-        border-radius: 16px !important;
-      }
-
-      .header-toolbar {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        gap: 8px;
-        margin-bottom: 12px !important;
-      }
-
-      .step-title-text {
-        font-size: 1.05rem !important;
-        line-height: 1.2;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .btn-refresh-mobile {
-        font-size: 0.75rem !important;
-        padding: 6px 10px !important;
-        white-space: nowrap;
-        flex-shrink: 0;
-      }
-
-      .card-product {
-        padding: 12px !important;
-      }
-
-      .product-img-box {
-        height: 110px !important;
-        margin-bottom: 8px !important;
-        padding: 6px !important;
-      }
-
-      .qty-control-box {
-        padding: 3px 4px !important;
-      }
-
-      .cart-qty-text {
-        font-size: 1.1rem !important;
-        min-width: 32px;
-        text-align: center;
-      }
+      .section-card { padding: 14px 12px !important; margin-bottom: 12px !important; border-radius: 16px !important; }
+      .header-toolbar { display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 8px; margin-bottom: 12px !important; }
+      .step-title-text { font-size: 1.05rem !important; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .btn-refresh-mobile { font-size: 0.75rem !important; padding: 6px 10px !important; white-space: nowrap; flex-shrink: 0; }
+      .card-product { padding: 12px !important; }
+      .product-img-box { height: 110px !important; margin-bottom: 8px !important; padding: 6px !important; }
+      .cart-qty-text { font-size: 1.1rem !important; min-width: 32px; text-align: center; }
     }
 
     @media print {
@@ -312,22 +269,10 @@
         <p class="small text-muted mb-3">เลขที่ใบเบิก: <span id="slipId" class="fw-bold text-primary">REQ-000000000000</span></p>
         
         <div class="text-start border-top pt-3 pb-3 mb-3 small" style="color: #495057;">
-          <div class="d-flex justify-content-between mb-2">
-            <span class="text-muted">ผู้เบิก:</span>
-            <span id="slipUser" class="fw-bold text-dark">-</span>
-          </div>
-          <div class="d-flex justify-content-between mb-2">
-            <span class="text-muted">แผนก:</span>
-            <span id="slipDept" class="fw-bold text-dark">-</span>
-          </div>
-          <div class="d-flex justify-content-between mb-2">
-            <span class="text-muted">โปรเจกต์:</span>
-            <span id="slipProject" class="fw-bold text-dark">-</span>
-          </div>
-          <div class="d-flex justify-content-between">
-            <span class="text-muted" id="slipTimeLabel">เวลารับของ:</span>
-            <span id="slipTime" class="fw-bold text-dark">-</span>
-          </div>
+          <div class="d-flex justify-content-between mb-2"><span class="text-muted">ผู้เบิก:</span><span id="slipUser" class="fw-bold text-dark">-</span></div>
+          <div class="d-flex justify-content-between mb-2"><span class="text-muted">แผนก:</span><span id="slipDept" class="fw-bold text-dark">-</span></div>
+          <div class="d-flex justify-content-between mb-2"><span class="text-muted">โปรเจกต์:</span><span id="slipProject" class="fw-bold text-dark">-</span></div>
+          <div class="d-flex justify-content-between"><span class="text-muted" id="slipTimeLabel">เวลารับของ:</span><span id="slipTime" class="fw-bold text-dark">-</span></div>
         </div>
 
         <div class="text-start border-top pt-3 mb-4">
@@ -347,12 +292,12 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzlAqry2u1CTLE4GrI_rI1SbZXW1EUNgN3ydMJe1VyVV5ojk4JE9OfXGyGKXHjn3uiL/exec";
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwnWA1n_ha3SRxtkUS-fD791dNsfapOeeUWGbkgeOQ1hksNDo61m4uH6SI7LqEq9jEv/exec";
 
     let catalog = [], cart = {};
     let currentStep = 1;
-    let selectedMainCategory = null;
-    let selectedSubCategory = null;
+    let selectedMainCategoryKey = null;
+    let selectedSubCategoryKey = null;
 
     document.addEventListener("DOMContentLoaded", () => {
       loadCatalogJSONP();
@@ -367,14 +312,9 @@
         let fileId = '';
         const matchD = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
         const matchId = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-        if (matchD && matchD[1]) {
-          fileId = matchD[1];
-        } else if (matchId && matchId[1]) {
-          fileId = matchId[1];
-        }
-        if (fileId) {
-          return `https://lh3.googleusercontent.com/d/${fileId}`;
-        }
+        if (matchD && matchD[1]) fileId = matchD[1];
+        else if (matchId && matchId[1]) fileId = matchId[1];
+        if (fileId) return `https://lh3.googleusercontent.com/d/${fileId}`;
       }
       return url;
     }
@@ -386,8 +326,7 @@
           <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
           <p class="fw-bold text-navy mb-1">${forceReload ? 'กำลังดึงข้อมูลสดจาก Google Sheets...' : 'กำลังโหลดข้อมูลสินค้าจากฐานข้อมูล...'}</p>
           <small class="text-muted">โปรดรอสักครู่...</small>
-        </div>
-      `;
+        </div>`;
 
       const script = document.createElement('script');
       const nocacheParam = forceReload ? '&nocache=1' : '';
@@ -416,11 +355,7 @@
 
       script.onerror = () => {
         clearTimeout(timeout);
-        container.innerHTML = `
-          <div class="text-danger py-4 text-center col-12">
-            <p class="small mb-2">ไม่สามารถเชื่อมต่อกับ Google Apps Script ได้</p>
-            <button class="btn btn-sm btn-outline-secondary" onclick="loadCatalogJSONP(true)">ลองใหม่</button>
-          </div>`;
+        container.innerHTML = `<div class="text-danger py-4 text-center col-12"><p class="small mb-2">ไม่สามารถเชื่อมต่อกับ Google Apps Script ได้</p><button class="btn btn-sm btn-outline-secondary" onclick="loadCatalogJSONP(true)">ลองใหม่</button></div>`;
       };
       
       document.body.appendChild(script);
@@ -428,10 +363,10 @@
 
     function initDrillDown() { navigateToStep(1); }
 
-    function navigateToStep(step, val = null) {
+    function navigateToStep(step, valKey = null) {
       currentStep = step;
-      if (step === 2) selectedMainCategory = val;
-      if (step === 3) selectedSubCategory = val;
+      if (step === 2) selectedMainCategoryKey = valKey;
+      if (step === 3) selectedSubCategoryKey = valKey;
 
       const step1El = document.getElementById('step1Container');
       const step2El = document.getElementById('step2Container');
@@ -448,16 +383,20 @@
         titleEl.innerHTML = '<i class="fa-solid fa-boxes-stacked me-2 text-warning"></i>2. เลือกหมวดหมู่หลัก';
         renderStep1();
       } else if (step === 2) {
-        titleEl.innerHTML = `<i class="fa-solid fa-layer-group me-2 text-warning"></i>${selectedMainCategory}`;
+        const item = catalog.find(i => i.category === selectedMainCategoryKey);
+        const nameDisplay = (item && item.categoryTH) ? item.categoryTH : selectedMainCategoryKey;
+        titleEl.innerHTML = `<i class="fa-solid fa-layer-group me-2 text-warning"></i>${nameDisplay}`;
         renderStep2();
       } else if (step === 3) {
-        titleEl.innerHTML = `<i class="fa-solid fa-list-check me-2 text-warning"></i>${selectedSubCategory}`;
+        const item = catalog.find(i => i.subCategory === selectedSubCategoryKey);
+        const nameDisplay = (item && item.subCategoryTH) ? item.subCategoryTH : selectedSubCategoryKey;
+        titleEl.innerHTML = `<i class="fa-solid fa-list-check me-2 text-warning"></i>${nameDisplay}`;
         renderStep3();
       }
     }
 
     function navigateBack() {
-      if (currentStep === 3) { navigateToStep(2, selectedMainCategory); }
+      if (currentStep === 3) { navigateToStep(2, selectedMainCategoryKey); }
       else if (currentStep === 2) { navigateToStep(1); }
     }
 
@@ -470,22 +409,24 @@
         return;
       }
 
-      container.innerHTML = mainCategories.map(cat => {
-        const catItem = catalog.find(i => i.category === cat && i.categoryImg);
+      container.innerHTML = mainCategories.map(catKey => {
+        const catItem = catalog.find(i => i.category === catKey);
+        const titleTH = (catItem && catItem.categoryTH) ? catItem.categoryTH : catKey;
         const imgUrl = catItem ? formatImageUrl(catItem.categoryImg) : '';
 
         const imgContent = imgUrl 
-          ? `<img src="${imgUrl}" alt="${cat}" referrerpolicy="no-referrer" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\\'fa-solid fa-folder-open text-primary\\' style=\\'font-size: 3.5rem;\\'></i>';">`
+          ? `<img src="${imgUrl}" alt="${titleTH}" referrerpolicy="no-referrer" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\\'fa-solid fa-folder-open text-primary\\' style=\\'font-size: 3.5rem;\\'></i>';">`
           : `<i class="fa-solid fa-folder-open text-primary" style="font-size: 3.5rem;"></i>`;
 
         return `
           <div class="col-12">
             <div class="card drill-card h-100 rounded-4 text-center">
-              <div class="drill-img-container" onclick="navigateToStep(2, '${cat}')">
+              <div class="drill-img-container" onclick="navigateToStep(2, '${catKey}')">
                 ${imgContent}
               </div>
-              <div class="p-3" onclick="navigateToStep(2, '${cat}')">
-                <h6 class="fw-bold text-dark mb-0">${cat}</h6>
+              <div class="p-3" onclick="navigateToStep(2, '${catKey}')">
+                <h6 class="fw-bold text-dark mb-0">${titleTH}</h6>
+                ${catKey !== titleTH ? `<small class="text-muted" style="font-size:0.8rem;">(${catKey})</small>` : ''}
               </div>
             </div>
           </div>
@@ -494,7 +435,7 @@
     }
 
     function renderStep2() {
-      const itemsInMain = catalog.filter(item => item.category === selectedMainCategory);
+      const itemsInMain = catalog.filter(item => item.category === selectedMainCategoryKey);
       const subCategories = [...new Set(itemsInMain.map(item => item.subCategory).filter(Boolean))];
       const container = document.getElementById('step2Container');
 
@@ -503,22 +444,24 @@
         return;
       }
 
-      container.innerHTML = subCategories.map(subCat => {
-        const subCatItem = itemsInMain.find(i => i.subCategory === subCat && i.subCategoryImg);
+      container.innerHTML = subCategories.map(subCatKey => {
+        const subCatItem = itemsInMain.find(i => i.subCategory === subCatKey);
+        const titleTH = (subCatItem && subCatItem.subCategoryTH) ? subCatItem.subCategoryTH : subCatKey;
         const imgUrl = subCatItem ? formatImageUrl(subCatItem.subCategoryImg) : '';
 
         const imgContent = imgUrl 
-          ? `<img src="${imgUrl}" alt="${subCat}" referrerpolicy="no-referrer" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\\'fa-solid fa-box-archive text-warning\\' style=\\'font-size: 3.5rem;\\'></i>';">`
+          ? `<img src="${imgUrl}" alt="${titleTH}" referrerpolicy="no-referrer" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\\'fa-solid fa-box-archive text-warning\\' style=\\'font-size: 3.5rem;\\'></i>';">`
           : `<i class="fa-solid fa-box-archive text-warning" style="font-size: 3.5rem;"></i>`;
 
         return `
           <div class="col-12">
             <div class="card drill-card h-100 rounded-4 text-center">
-              <div class="drill-img-container" onclick="navigateToStep(3, '${subCat}')">
+              <div class="drill-img-container" onclick="navigateToStep(3, '${subCatKey}')">
                 ${imgContent}
               </div>
-              <div class="p-3" onclick="navigateToStep(3, '${subCat}')">
-                <h6 class="fw-bold text-dark mb-0">${subCat}</h6>
+              <div class="p-3" onclick="navigateToStep(3, '${subCatKey}')">
+                <h6 class="fw-bold text-dark mb-0">${titleTH}</h6>
+                ${subCatKey !== titleTH ? `<small class="text-muted" style="font-size:0.8rem;">(${subCatKey})</small>` : ''}
               </div>
             </div>
           </div>
@@ -531,10 +474,10 @@
       const listContainer = document.getElementById('productList');
 
       const filtered = catalog.filter(item => {
-        const matchMain = item.category === selectedMainCategory;
-        const matchSub = item.subCategory === selectedSubCategory;
+        const matchMain = item.category === selectedMainCategoryKey;
+        const matchSub = item.subCategory === selectedSubCategoryKey;
         
-        const thStr = String(item.nameTH || item.partName || '').toLowerCase();
+        const thStr = String(item.nameTH || '').toLowerCase();
         const enStr = String(item.nameEN || '').toLowerCase();
         const idStr = String(item.partId || '').toLowerCase();
         const sizeStr = String(item.size || '').toLowerCase();
@@ -557,19 +500,15 @@
         const stockVal = Number(item.stock) || 0;
         const currentStock = stockVal - qty;
         const isOut = currentStock <= 0;
-        
         const imgUrl = formatImageUrl(item.productImg);
-        
-        const nameTH = item.nameTH || item.partName || '-';
+        const nameTH = item.nameTH || item.nameEN || '-';
         const nameEN = item.nameEN || '';
 
         const productImgHtml = imgUrl 
           ? `<div class="product-img-box">
                <img src="${imgUrl}" alt="${nameTH}" referrerpolicy="no-referrer" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'text-muted text-center\\'><i class=\\'fa-solid fa-image fa-2x opacity-25\\'></i><br><small style=\\'font-size:0.7rem;\\'>ไม่มีรูปภาพ</small></div>';">
              </div>`
-          : `<div class="product-img-box">
-               <i class="fa-solid fa-box text-secondary fa-2x opacity-25"></i>
-             </div>`;
+          : `<div class="product-img-box"><i class="fa-solid fa-box text-secondary fa-2x opacity-25"></i></div>`;
 
         return `
           <div class="col-12">
@@ -596,9 +535,7 @@
                   <button type="button" class="btn btn-white rounded-circle shadow-sm fw-bold text-dark btn-qty" onclick="updateCart('${item.partId}', -1, ${stockVal})">
                     <i class="fa-solid fa-minus"></i>
                   </button>
-                  
                   <span class="cart-qty-text fw-bold text-navy px-2" id="qty-${item.partId}">${qty}</span>
-                  
                   <button type="button" id="btn-plus-${item.partId}" class="btn rounded-circle shadow-sm fw-bold btn-qty" style="background-color: var(--gold); color: #000;" ${isOut ? 'disabled' : ''} onclick="updateCart('${item.partId}', 1, ${stockVal})">
                     <i class="fa-solid fa-plus"></i>
                   </button>
@@ -676,7 +613,7 @@
       let html = '';
       keys.forEach(partId => {
         const item = catalog.find(i => i.partId === partId);
-        const name = item ? (item.nameTH || item.partName) : partId;
+        const name = item ? (item.nameTH || item.nameEN) : partId;
         const qty = cart[partId];
         html += `
           <div class="card p-3 mb-2 border rounded-4 bg-light shadow-sm">
@@ -714,7 +651,7 @@
         const item = catalog.find(i => i.partId === partId);
         cartArray.push({
           partId: partId,
-          partName: item ? (item.nameTH || item.partName) : '',
+          partName: item ? (item.nameTH || item.nameEN) : '',
           qty: qty
         });
       }
