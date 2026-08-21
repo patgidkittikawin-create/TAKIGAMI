@@ -134,7 +134,7 @@
       width: 100%;
     }
 
-    /* Product Cards (Step 3) */
+    /* Product Cards */
     .product-card {
       background: #ffffff;
       border: 1px solid #EAEAEA;
@@ -377,35 +377,6 @@
   <script>
     const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwKZnpO3khPoBqwkaEDqL6f6cZ6XrqQC7IsBl8vPv_dIkkk6btHPAdFH3w4eDbc0qN1/exec';
     
-    // ตารางแผนที่หมวดหมู่หลัก (Fallback Dictionary)
-    const CATEGORY_EN_FALLBACK = {
-      'ข้อต่อทองเหลือง': 'Brass Fittings',
-      'วาล์วควบคุม & อุปกรณ์สายลม': 'Control Valves & Pneumatic Lines',
-      'วาล์วควบคุมและอุปกรณ์สายลม': 'Control Valves & Pneumatic Lines',
-      'ข้อต่อประปา & อุปกรณ์เหล็กงานโครงสร้าง': 'Pipe Fittings & Structural Hardware',
-      'ข้อต่อประปาและอุปกรณ์เหล็กงานโครงสร้าง': 'Pipe Fittings & Structural Hardware',
-      'โบลต์-น็อต และชิ้นส่วนฟิกซ์เจอร์': 'Bolts, Nuts & Fixture Parts',
-      'โบลต์-น็อตและชิ้นส่วนฟิกซ์เจอร์': 'Bolts, Nuts & Fixture Parts',
-      'ข้อต่อสวมเร็ว': 'Quick Couplers'
-    };
-
-    // ตารางแผนที่หมวดย่อย (Fallback Dictionary รองรับทั้ง Thai -> EN และ EN -> Thai)
-    const SUBCATEGORY_MAP = {
-      'ข้อต่อตรง & นิปเปิ้ลทองเหลือง': { th: 'ข้อต่อตรง & นิปเปิ้ลทองเหลือง', en: 'Straight & Brass Nipples' },
-      'ข้อต่อตรงและนิปเปิ้ลทองเหลือง': { th: 'ข้อต่อตรง & นิปเปิ้ลทองเหลือง', en: 'Straight & Brass Nipples' },
-      'ข้อต่อตรง': { th: 'ข้อต่อตรง', en: 'Straight Fittings' },
-      'ข้อข้องอ': { th: 'ข้อข้องอ', en: 'Elbow Fittings' },
-      'ข้อต่อสามทาง & ทรงพิเศษ': { th: 'ข้อต่อสามทาง & ทรงพิเศษ', en: 'Branch & Shape Unions' },
-      'ข้อต่อตรงมาตรฐาน': { th: 'ข้อต่อตรงมาตรฐาน', en: 'Straight & Standard Unions' },
-      
-      // แปลงจาก English key ใน Sheet เป็น Thai + English
-      'straight fittings': { th: 'ข้อต่อตรง', en: 'Straight Fittings' },
-      'elbow fittings': { th: 'ข้อข้องอ', en: 'Elbow Fittings' },
-      'branch & shape unions': { th: 'ข้อต่อสามทาง & ทรงพิเศษ', en: 'Branch & Shape Unions' },
-      'straight & standard unions': { th: 'ข้อต่อตรงมาตรฐาน', en: 'Straight & Standard Unions' },
-      'straight & brass nipples': { th: 'ข้อต่อตรง & นิปเปิ้ลทองเหลือง', en: 'Straight & Brass Nipples' }
-    };
-
     let catalog = []; 
     let cart = {};
     let currentPage = 1;
@@ -422,6 +393,7 @@
       loadDataFromSheet();
     };
 
+    // ฟังก์ชันอ่านค่า property รองรับทั้งตัวเล็กตัวใหญ่ ช่องว่าง และ _
     function getProp(obj, targetKeys) {
       if (!obj || typeof obj !== 'object') return '';
       const keys = Object.keys(obj);
@@ -448,54 +420,21 @@
       return cleanUrl;
     }
 
+    // ดึงค่าตามหัวคอลัมน์ใน Sheet เป๊ะๆ
     function getCategoryTH(item) {
-      return getProp(item, ['Category TH', 'CategoryTH', 'categoryTH', 'หมวดหลัก', 'category']) || 'หมวดทั่วไป';
+      return getProp(item, ['Category TH']) || 'หมวดทั่วไป';
     }
 
-    function getCategoryEN(item, catTH) {
-      let val = '';
-      if (item) {
-        val = getProp(item, [
-          'CategoryEN', 'Category EN', 'Category_EN', 'categoryEN', 'หมวดหลัก EN', 'หมวดหมู่หลัก EN', 'CatEN'
-        ]);
-      }
-      return val || CATEGORY_EN_FALLBACK[catTH] || '';
+    function getCategoryEN(item) {
+      return getProp(item, ['Category EN']) || '';
     }
 
     function getSubCategoryTH(item) {
-      return getProp(item, ['SubCategory TH', 'SubCategoryTH', 'subCategoryTH', 'หมวดย่อย', 'subCategory']) || 'ทั่วไป';
+      return getProp(item, ['Sub_Category TH']) || 'ทั่วไป';
     }
 
     function getSubCategoryEN(item) {
-      if (!item) return '';
-      return getProp(item, [
-        'SubCategoryEN', 'Sub Category EN', 'SubCategory_EN', 'subCategoryEN', 'หมวดย่อย EN', 'SubCatEN'
-      ]);
-    }
-
-    // ฟังก์ชั่นช่วยแปลงชื่อหมวดย่อยให้มีทั้งภาษาไทยและอังกฤษแบบสมบูรณ์
-    function parseSubCategoryInfo(item) {
-      const rawTH = getSubCategoryTH(item);
-      const rawEN = getSubCategoryEN(item);
-
-      let finalTH = rawTH;
-      let finalEN = rawEN;
-
-      const normKey = rawTH.trim().toLowerCase();
-
-      if (SUBCATEGORY_MAP[normKey]) {
-        finalTH = SUBCATEGORY_MAP[normKey].th;
-        finalEN = finalEN || SUBCATEGORY_MAP[normKey].en;
-      } else if (SUBCATEGORY_MAP[rawTH]) {
-        finalTH = SUBCATEGORY_MAP[rawTH].th;
-        finalEN = finalEN || SUBCATEGORY_MAP[rawTH].en;
-      }
-
-      return {
-        rawKey: rawTH,
-        nameTH: finalTH,
-        nameEN: finalEN
-      };
+      return getProp(item, ['Sub Category EN']) || '';
     }
 
     function getCategoryImageUrl(items, isSubCategory = false, subCatName = '') {
@@ -567,7 +506,7 @@
       const mainCatMap = new Map();
       catalog.forEach(item => {
         const catName = getCategoryTH(item);
-        const catNameEN = getCategoryEN(item, catName);
+        const catNameEN = getCategoryEN(item);
 
         if (!mainCatMap.has(catName)) {
           const itemsInCat = catalog.filter(i => getCategoryTH(i) === catName);
@@ -589,7 +528,7 @@
           : '';
 
         html += `
-          <div class="item-category-card" onclick="selectMainCategory('${cat.name.replace(/'/g, "\\'")}')">
+          <div class="item-category-card" onclick="selectMainCategory('${cat.name.replace(/'/g, "\\'")}', '${cat.nameEN.replace(/'/g, "\\'")}')">
             ${imgHtml}
             <div class="fw-bold text-dark fs-5 mb-0" style="line-height: 1.2;">${cat.name}</div>
             ${enHtml}
@@ -599,14 +538,13 @@
       container.innerHTML = html;
     }
 
-    function selectMainCategory(catName) {
+    function selectMainCategory(catName, catEN) {
       selectedCategory = catName;
-      const foundItem = catalog.find(i => getCategoryTH(i) === catName);
-      selectedCategoryEN = getCategoryEN(foundItem, catName);
+      selectedCategoryEN = catEN;
       renderStep2SubCategories(catName);
     }
 
-    /* Step 2: Render หมวดย่อย (แก้ไขให้ดึงทั้งภาษาไทยและอังกฤษพร้อม Fallback) */
+    /* Step 2: Render หมวดย่อย */
     function renderStep2SubCategories(mainCatName) {
       currentStepNav = 2;
       updateHeaderUI();
@@ -620,14 +558,14 @@
       const itemsInMainCat = catalog.filter(i => getCategoryTH(i) === mainCatName);
 
       itemsInMainCat.forEach(item => {
-        const subInfo = parseSubCategoryInfo(item);
+        const subTH = getSubCategoryTH(item);
+        const subEN = getSubCategoryEN(item);
 
-        if (!subCatMap.has(subInfo.rawKey)) {
-          const foundImg = getCategoryImageUrl(itemsInMainCat, true, subInfo.rawKey);
-          subCatMap.set(subInfo.rawKey, { 
-            rawKey: subInfo.rawKey,
-            nameTH: subInfo.nameTH, 
-            nameEN: subInfo.nameEN, 
+        if (!subCatMap.has(subTH)) {
+          const foundImg = getCategoryImageUrl(itemsInMainCat, true, subTH);
+          subCatMap.set(subTH, { 
+            nameTH: subTH, 
+            nameEN: subEN, 
             img: foundImg 
           });
         }
@@ -646,7 +584,7 @@
           : '';
 
         html += `
-          <div class="item-category-card" onclick="selectSubCategory('${sub.rawKey.replace(/'/g, "\\'")}', '${sub.nameTH.replace(/'/g, "\\'")}', '${(sub.nameEN || '').replace(/'/g, "\\'")}')">
+          <div class="item-category-card" onclick="selectSubCategory('${sub.nameTH.replace(/'/g, "\\'")}', '${(sub.nameEN || '').replace(/'/g, "\\'")}')">
             ${imgHtml}
             <div class="fw-bold text-dark fs-5 mb-0" style="line-height: 1.2;">${sub.nameTH}</div>
             ${enHtml}
@@ -656,8 +594,8 @@
       container.innerHTML = html;
     }
 
-    function selectSubCategory(rawKey, nameTH, nameEN) {
-      selectedSubCategoryKey = rawKey;
+    function selectSubCategory(nameTH, nameEN) {
+      selectedSubCategoryKey = nameTH;
       selectedSubCategory = nameTH;
       selectedSubCategoryEN = nameEN;
       renderStep3Items();
