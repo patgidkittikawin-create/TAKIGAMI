@@ -200,7 +200,7 @@
   </div>
 
   <!-- ================= PAGE 1: ข้อมูลผู้เบิก ================= -->
-  <div id="page1" class="page container max-width-600">
+  <div id="page1" class="page active container max-width-600">
     <div class="main-card-container">
       <h5 class="fw-bold text-primary mb-4"><i class="bi bi-person-vcard"></i> กรอกข้อมูลผู้เบิก</h5>
       <div class="mb-3">
@@ -333,7 +333,6 @@
     </div>
   </div>
 
-
   <!-- ================= BOTTOM ACTION BAR (สำหรับ Page 2 และ 3) ================= -->
   <div id="bottomActionBar" class="bottom-action-bar" style="display: none;">
     <div class="row g-2">
@@ -348,10 +347,10 @@
     </div>
   </div>
 
-
   <!-- ================= JAVASCRIPT LOGIC ================= -->
   <script>
-    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby__YLOH5br1nOdileCqBWKZWV_k5rpruuna5xlqbQYyjd1cKM56ApPTTj3ra0ukZIV/exec';
+    // ⚠️ ลิงก์ Web App ของคุณ (ถ้านำไปใช้ใหม่ ให้เปลี่ยนเป็นลิงก์ล่าสุด)
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzmZWyRbJ_tE_sjcYLdN5ne2Y01mc2nFXReA0X__fw2JEcn7yMLBFgJ0Zxdh59YNcg0/exec';
     
     let catalog = []; 
     let cart = {};
@@ -362,30 +361,39 @@
     let selectedSubCategory = '';
 
     window.onload = () => {
+      goToPage(1); // บังคับให้โชว์หน้า 1 ก่อนเสมอ
       loadDataFromSheet();
     };
 
-    // ฟังก์ชันแปลง URL รูปภาพ (รองรับ Google Drive Links)
+    // ฟังก์ชันแปลง URL จาก Google Drive ให้ดึงเป็นรูปภาพ Direct Link ทะลุบล็อก
     function fixImageUrl(url) {
       if (!url || typeof url !== 'string') return '';
       let cleanUrl = url.trim();
+      
       if (cleanUrl.includes('drive.google.com')) {
         const match = cleanUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || cleanUrl.match(/id=([a-zA-Z0-9_-]+)/);
         if (match && match[1]) {
-          return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w800`;
+          return `https://lh3.googleusercontent.com/d/${match[1]}`;
         }
       }
       return cleanUrl;
     }
 
-    // ฟังก์ชันดึงรูปภาพของสินค้าชิ้นแรกที่มีรูปในหมวดหมู่นั้นๆ
+    // ฟังก์ชันค้นหารูปภาพของหมวดหมู่ (รองรับภาษาไทย)
     function getCategoryImageUrl(items, isSubCategory = false, subCatName = '') {
       for (let item of items) {
-        if (isSubCategory && (item.subCategoryTH || item.subCategory || 'ทั่วไป') !== subCatName) continue;
+        if (isSubCategory && (item.subCategoryTH || item.subCategory || item['หมวดย่อย'] || 'ทั่วไป') !== subCatName) continue;
         
-        let img = item.subCategoryImg || item.categoryImg || item.productImg || item.image || item.img || item.picture;
-        if (img && typeof img === 'string' && img.trim() !== '') {
-          return fixImageUrl(img);
+        let rawUrl = isSubCategory 
+          ? (item['รูปหมวดย่อย'] || item.subCategoryImg || item['รูปหมวดหลัก'] || item.categoryImg)
+          : (item['รูปหมวดหลัก'] || item.categoryImg || item['รูปหมวดย่อย'] || item.subCategoryImg);
+
+        if (!rawUrl || rawUrl.toString().trim() === '') {
+          rawUrl = item['รูปสินค้า'] || item.productImg || item.image || item.img;
+        }
+
+        if (rawUrl && typeof rawUrl === 'string' && rawUrl.trim() !== '') {
+          return fixImageUrl(rawUrl);
         }
       }
       return '';
@@ -415,7 +423,6 @@
       Swal.close();
       if (response && response.success && Array.isArray(response.data)) {
         catalog = response.data;
-        renderStep1MainCategories();
       } else {
         Swal.fire({ icon: 'warning', title: 'ไม่พบข้อมูล', text: 'ไม่มีรายการสินค้าในระบบ', confirmButtonColor: '#1C2382' });
       }
@@ -429,6 +436,7 @@
         return;
       }
       goToPage(2);
+      renderStep1MainCategories();
     }
 
     // STEP 1: Render หมวดหมู่หลัก
@@ -443,14 +451,13 @@
 
       const mainCatMap = new Map();
       catalog.forEach(item => {
-        const catName = item.categoryTH || item.category || 'หมวดทั่วไป';
+        const catName = item.categoryTH || item.category || item['หมวดหลัก'] || 'หมวดทั่วไป';
         if (!mainCatMap.has(catName)) {
-          const itemsInCat = catalog.filter(i => (i.categoryTH || i.category || 'หมวดทั่วไป') === catName);
+          const itemsInCat = catalog.filter(i => (i.categoryTH || i.category || i['หมวดหลัก'] || 'หมวดทั่วไป') === catName);
           const foundImg = getCategoryImageUrl(itemsInCat);
           
           mainCatMap.set(catName, {
             name: catName,
-            nameEN: item.category || '',
             img: foundImg
           });
         }
@@ -468,11 +475,9 @@
           <div class="item-category-card" onclick="selectMainCategory('${cat.name}')">
             ${imgHtml}
             <div class="fw-bold text-dark">${cat.name}</div>
-            <div class="text-muted small">(${cat.nameEN})</div>
           </div>
         `;
       });
-
       container.innerHTML = html;
     }
 
@@ -492,15 +497,14 @@
       document.getElementById('step3ItemView').style.display = 'none';
 
       const subCatMap = new Map();
-      const itemsInMainCat = catalog.filter(i => (i.categoryTH || i.category) === mainCatName);
+      const itemsInMainCat = catalog.filter(i => (i.categoryTH || i.category || i['หมวดหลัก'] || 'หมวดทั่วไป') === mainCatName);
 
       itemsInMainCat.forEach(item => {
-        const subCatName = item.subCategoryTH || item.subCategory || 'ทั่วไป';
+        const subCatName = item.subCategoryTH || item.subCategory || item['หมวดย่อย'] || 'ทั่วไป';
         if (!subCatMap.has(subCatName)) {
           const foundImg = getCategoryImageUrl(itemsInMainCat, true, subCatName);
           subCatMap.set(subCatName, {
             name: subCatName,
-            nameEN: item.subCategory || '',
             img: foundImg
           });
         }
@@ -518,11 +522,9 @@
           <div class="item-category-card" onclick="selectSubCategory('${sub.name}')">
             ${imgHtml}
             <div class="fw-bold text-dark">${sub.name}</div>
-            <div class="text-muted small">${sub.nameEN}</div>
           </div>
         `;
       });
-
       container.innerHTML = html;
     }
 
@@ -542,8 +544,8 @@
       document.getElementById('step3ItemView').style.display = 'block';
 
       const filteredItems = catalog.filter(item => {
-        const catMatch = (item.categoryTH || item.category) === selectedCategory;
-        const subCatMatch = (item.subCategoryTH || item.subCategory || 'ทั่วไป') === selectedSubCategory;
+        const catMatch = (item.categoryTH || item.category || item['หมวดหลัก'] || 'หมวดทั่วไป') === selectedCategory;
+        const subCatMatch = (item.subCategoryTH || item.subCategory || item['หมวดย่อย'] || 'ทั่วไป') === selectedSubCategory;
         return catMatch && subCatMatch;
       });
 
@@ -574,7 +576,7 @@
       const grouped = {};
       dataToGroup.forEach(item => {
         const groupKey = item.nameTH || item.nameEN || item.partId;
-        const pImg = fixImageUrl(item.productImg || item.image || item.img || item.picture);
+        const pImg = fixImageUrl(item['รูปสินค้า'] || item.productImg || item.image || item.img || item.picture);
         
         if (!grouped[groupKey]) {
           grouped[groupKey] = {
@@ -650,12 +652,10 @@
                 <span id="display-qty-${cardId}" class="fw-bold fs-5 text-primary px-3">${defaultQtyInCart}</span>
                 <button id="btn-add-${cardId}" class="btn-qty-plus" onclick="updateCartFromGroup('${cardId}', 1)" ${defaultStock <= 0 ? 'disabled style="opacity:0.5;"' : ''}>+</button>
               </div>
-
             </div>
           </div>
         `;
       });
-
       container.innerHTML = html;
     }
 
