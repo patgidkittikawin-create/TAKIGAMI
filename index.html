@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบเบิกจ่ายอุปกรณ์</title>
+  <title>ระบบเบิกจ่ายอุปกรณ์ TAKIGAMI</title>
   <!-- Bootstrap 5 & Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -32,7 +32,7 @@
 
   <!-- Header -->
   <div class="custom-header text-center">
-    <h3 class="mb-0 fw-bold">ระบบเบิกอุปกรณ์ (Requisition System)</h3>
+    <h3 class="mb-0 fw-bold">ระบบเบิกอุปกรณ์ (TAKIGAMI Requisition)</h3>
   </div>
 
   <!-- PAGE 1: ข้อมูลผู้เบิก -->
@@ -72,17 +72,14 @@
       <input type="text" id="searchItem" class="form-control border-start-0 form-control-lg" placeholder="ค้นหาชื่อ, รหัส, ขนาด..." onkeyup="renderStep3()">
     </div>
 
-    <!-- หมวดหมู่ -->
+    <!-- หมวดหมู่ (ดึงสร้างอัตโนมัติ) -->
     <div class="mb-3 overflow-auto" style="white-space: nowrap;" id="categoryContainer">
       <button class="btn btn-outline-primary active me-2" onclick="setActiveCategory('ทั้งหมด', this)">ทั้งหมด</button>
-      <button class="btn btn-outline-primary me-2" onclick="setActiveCategory('เครื่องมือเจาะ', this)">เครื่องมือเจาะ</button>
-      <button class="btn btn-outline-primary me-2" onclick="setActiveCategory('ข้อต่อ', this)">ข้อต่อ</button>
-      <!-- สามารถเพิ่มหมวดหมู่อื่นๆ ตรงนี้ได้เลย -->
     </div>
 
     <!-- รายการสินค้า -->
     <div id="itemContainer" class="row g-3 mb-4">
-      <!-- สินค้าจะถูก Render ที่นี่โดยฟังก์ชัน renderStep3() -->
+      <!-- สินค้าจะถูก Render ที่นี่ -->
     </div>
 
     <!-- ตะกร้าแบบลอยด้านล่าง (Floating Cart) -->
@@ -95,7 +92,7 @@
         <button class="btn btn-lg text-white px-4 fw-bold" style="background-color: var(--gold);" onclick="goToStep3()">สรุปรายการ <i class="bi bi-cart-check"></i></button>
       </div>
     </div>
-    <div style="height: 80px;"></div> <!-- เว้นที่ว่างด้านล่างกันบัง -->
+    <div style="height: 80px;"></div>
   </div>
 
   <!-- PAGE 3: สรุปรายการและนัดรับ -->
@@ -106,7 +103,7 @@
     </div>
 
     <div id="summaryList" class="mb-4">
-      <!-- รายการสินค้าในตะกร้าจะโผล่ที่นี่ -->
+      <!-- รายการสินค้าในตะกร้า -->
     </div>
 
     <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
@@ -178,26 +175,18 @@
 
   <!-- ================= JAVASCRIPT ================= -->
   <script>
-    // ---------------------------------------------------------
-    // 1. การตั้งค่าและตัวแปรเริ่มต้น
-    // ---------------------------------------------------------
-    // ลิงก์ Web App URL ถูกใส่ให้แล้วที่นี่ครับ
-    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzHrSzZLk9XwP79vw3bDOuQeK_T-CQBICxMsYyQGY3QyGAGuFD23J5LNovV-PgvdVR-/exec';
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby__YLOH5br1nOdileCqBWKZWV_k5rpruuna5xlqbQYyjd1cKM56ApPTTj3ra0ukZIV/exec';
     
-    // ตั้งค่าเป็น Array ว่าง เพื่อรอรับข้อมูลจริงจาก Google Sheet
     let catalog = []; 
     let cart = {};
     let activeCategory = 'ทั้งหมด';
 
-    // ---------------------------------------------------------
-    // 2. โหลดข้อมูลจาก Google Sheet เมื่อเปิดเว็บ
-    // ---------------------------------------------------------
+    // 1. โหลดข้อมูลแบบ JSONP ให้ตรงกับ backend (action=getCatalog)
     window.onload = () => {
       loadDataFromSheet();
     };
 
     function loadDataFromSheet() {
-      // แสดงหน้าต่างโหลดข้อมูล
       Swal.fire({
         title: 'กำลังโหลดข้อมูลสินค้า...',
         text: 'กรุณารอสักครู่',
@@ -205,38 +194,72 @@
         didOpen: () => { Swal.showLoading(); }
       });
 
-      // ทำการดึงข้อมูลจาก GAS 
-      fetch(GAS_WEB_APP_URL + "?action=getProducts")
-        .then(response => response.json())
-        .then(data => {
-          catalog = data; // นำข้อมูลที่ได้ใส่ใน catalog
-          renderStep3();  // สั่งวาดหน้าจอ
-          Swal.close();   // ปิดหน้าต่างโหลด
-        })
-        .catch(error => {
-          console.error('Error fetching data:', error);
-          Swal.fire({ 
-            icon: 'error', 
-            title: 'โหลดข้อมูลไม่สำเร็จ', 
-            text: 'ไม่สามารถเชื่อมต่อกับ Google Sheet ได้',
-            confirmButtonColor: '#1D2088'
-          });
+      // ลบ script tag เก่าถ้ามี
+      const oldScript = document.getElementById('jsonp-script');
+      if (oldScript) oldScript.remove();
+
+      // สร้าง Tag Script ดึงข้อมูลแบบ JSONP
+      const script = document.createElement('script');
+      script.id = 'jsonp-script';
+      script.src = `${GAS_WEB_APP_URL}?action=getCatalog&callback=onCatalogLoaded&nocache=1`;
+      script.onerror = () => {
+        Swal.fire({
+          icon: 'error',
+          title: 'โหลดข้อมูลไม่สำเร็จ',
+          text: 'ไม่สามารถเชื่อมต่อกับ Google Sheet ได้',
+          confirmButtonColor: '#1D2088'
         });
+      };
+      document.body.appendChild(script);
     }
 
-    // ---------------------------------------------------------
-    // 3. ระบบจัดกลุ่มสินค้า และ Render หน้าจอ (เลือกขนาด)
-    // ---------------------------------------------------------
+    // ฟังก์ชัน Callback รองรับข้อมูลจาก JSONP
+    function onCatalogLoaded(response) {
+      Swal.close();
+      if (response && response.success && Array.isArray(response.data)) {
+        catalog = response.data;
+        buildCategoryButtons();
+        renderStep3();
+      } else {
+        Swal.fire({
+          icon: 'warning',
+          title: 'ไม่พบข้อมูลสินค้า',
+          text: 'ไม่มีรายการสินค้าในตาราง Master_Parts',
+          confirmButtonColor: '#1D2088'
+        });
+      }
+    }
+
+    // สร้างปุ่มหมวดหมู่อัตโนมัติจากข้อมูลใน Google Sheet
+    function buildCategoryButtons() {
+      const container = document.getElementById('categoryContainer');
+      const categories = new Set();
+
+      catalog.forEach(item => {
+        const cat = item.categoryTH || item.category;
+        if (cat) categories.add(cat);
+      });
+
+      let html = `<button class="btn btn-outline-primary active me-2" onclick="setActiveCategory('ทั้งหมด', this)">ทั้งหมด</button>`;
+      categories.forEach(cat => {
+        html += `<button class="btn btn-outline-primary me-2" onclick="setActiveCategory('${cat}', this)">${cat}</button>`;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // 2. ระบบจัดกลุ่มสินค้า และ Render หน้าจอ (เลือกขนาด)
     function groupCatalogData(dataToGroup) {
       const grouped = {};
       dataToGroup.forEach(item => {
-        const groupKey = item.nameTH || item.nameEN || 'ไม่ระบุชื่อ';
+        const groupKey = item.nameTH || item.nameEN || item.partId;
         if (!grouped[groupKey]) {
           grouped[groupKey] = {
             nameTH: item.nameTH,
             nameEN: item.nameEN,
-            image: item.image,
+            productImg: item.productImg,
             category: item.category,
+            categoryTH: item.categoryTH,
             variants: []
           };
         }
@@ -256,9 +279,9 @@
       const container = document.getElementById('itemContainer');
       const searchInput = document.getElementById('searchItem').value.toLowerCase();
       
-      // กรองข้อมูลตามการค้นหาและหมวดหมู่
       let filtered = catalog.filter(item => {
-        if (activeCategory !== 'ทั้งหมด' && item.category !== activeCategory) return false;
+        const catName = item.categoryTH || item.category;
+        if (activeCategory !== 'ทั้งหมด' && catName !== activeCategory) return false;
         if (searchInput && !`${item.nameTH} ${item.nameEN} ${item.partId} ${item.size}`.toLowerCase().includes(searchInput)) return false;
         return true;
       });
@@ -268,7 +291,6 @@
         return;
       }
 
-      // จัดกลุ่มข้อมูล
       const groupedData = groupCatalogData(filtered);
       let html = '';
       
@@ -276,7 +298,6 @@
         const cardId = `group-card-${groupIndex}`;
         let optionsHtml = '';
         
-        // สร้าง Dropdown สำหรับขนาดต่างๆ ในกลุ่ม
         group.variants.forEach((v) => {
           const qtyInCart = cart[v.partId] || 0;
           const remainingStock = parseInt(v.stock || 0) - qtyInCart;
@@ -285,7 +306,6 @@
           </option>`;
         });
 
-        // กำหนดค่าเริ่มต้นตามตัวเลือกแรก
         const defaultVariant = group.variants[0];
         const defaultQtyInCart = cart[defaultVariant.partId] || 0;
         const defaultStock = parseInt(defaultVariant.stock || 0) - defaultQtyInCart;
@@ -304,7 +324,7 @@
               </div>
 
               <div class="text-center mb-3" style="height: 120px;">
-                <img src="${group.image || 'https://via.placeholder.com/150?text=No+Image'}" 
+                <img src="${group.productImg || 'https://via.placeholder.com/150?text=No+Image'}" 
                      onerror="this.src='https://via.placeholder.com/150?text=No+Image'" 
                      class="img-fluid h-100 object-fit-contain rounded" alt="item">
               </div>
@@ -344,7 +364,6 @@
       updateCartTotalUI();
     }
 
-    // เมื่อผู้ใช้เปลี่ยน Dropdown ขนาด
     function handleVariantChange(cardId) {
       const selectElement = document.getElementById(`select-size-${cardId}`);
       const selectedOption = selectElement.options[selectElement.selectedIndex];
@@ -370,9 +389,8 @@
       const partId = selectElement.value;
       
       updateCart(partId, change);
-      renderStep3(); // ให้หน้าจออัปเดตสต็อกคงเหลือ
+      renderStep3();
       
-      // บังคับให้ Dropdown กลับมาเลือกค่าเดิมหลังจากหน้าจอวาดใหม่
       setTimeout(() => {
         const newSelectElement = document.getElementById(`select-size-${cardId}`);
         if(newSelectElement) {
@@ -382,9 +400,7 @@
       }, 10);
     }
 
-    // ---------------------------------------------------------
-    // 4. ระบบจัดการตะกร้าสินค้า
-    // ---------------------------------------------------------
+    // 3. จัดการตะกร้าสินค้า
     function updateCart(partId, change) {
       if (!cart[partId]) cart[partId] = 0;
       cart[partId] += change;
@@ -414,9 +430,7 @@
       goToPage(3);
     }
 
-    // ---------------------------------------------------------
-    // 5. ระบบสรุปรายการ, ส่งฟอร์ม, และหน้าสลิป
-    // ---------------------------------------------------------
+    // 4. สรุปรายการและส่งฟอร์ม (ตรงตาม doPost ใน gs)
     function toggleTimeSelect() {
       const isLater = document.getElementById('receiveLater').checked;
       document.getElementById('timeSelectWrapper').style.display = isLater ? 'block' : 'none';
@@ -504,7 +518,6 @@
         }
       };
 
-      // บันทึกข้อมูลลง Google Sheet ผ่าน no-cors
       fetch(GAS_WEB_APP_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -513,9 +526,8 @@
       })
       .then(() => {
         Swal.close();
-        goToPage(4); // ไปหน้าสลิป
+        goToPage(4);
 
-        // ใส่ข้อมูลลงสลิป
         document.getElementById('slipId').innerText = randomReqId;
         document.getElementById('slipUser').innerText = payload.formData.userName;
         document.getElementById('slipDept').innerText = payload.formData.dept;
@@ -545,7 +557,6 @@
       });
     }
 
-    // ฟังก์ชันเปลี่ยนหน้า
     function goToPage(pageNumber) {
       document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
       let targetPage = document.getElementById('page' + pageNumber);
