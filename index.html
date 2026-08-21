@@ -75,21 +75,21 @@
       margin-bottom: 12px;
     }
 
-    /* Product Cards (Step 3) */
+    /* Product Cards (Step 3 - Grouped Variant) */
     .product-card {
-      background: #FAFAFA;
-      border: 1px dashed #D0D0D0;
-      border-radius: 12px;
-      padding: 14px;
+      background: #ffffff;
+      border: 1px solid #EAEAEA;
+      border-radius: 16px;
+      padding: 16px;
       margin-bottom: 16px;
-      position: relative;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
     .product-img-box {
-      height: 90px;
+      height: 110px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
     .product-img-box img {
       max-height: 100%;
@@ -97,40 +97,43 @@
       object-fit: contain;
     }
 
-    /* Quantity Controls */
+    /* Quantity Controls Bar */
     .qty-control-bar {
-      background: #F4F4F4;
-      border-radius: 20px;
+      background: #F4F6F9;
+      border-radius: 30px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 3px 6px;
+      padding: 4px 8px;
+      border: 1px solid #E2E8F0;
     }
     .btn-qty-minus {
       border: none;
-      background: transparent;
-      color: #777;
+      background: #EAEAEA;
+      color: #555;
       font-size: 1.2rem;
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: pointer;
     }
     .btn-qty-plus {
       border: none;
-      background: var(--brand-yellow);
-      color: #000;
+      background: var(--brand-blue);
+      color: #ffffff;
       font-weight: bold;
       font-size: 1.1rem;
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      cursor: pointer;
     }
 
     /* Bottom Action Bar */
@@ -163,19 +166,28 @@
       width: 100%;
     }
 
-    /* Custom Badges */
     .badge-stock {
-      background-color: #E6F4EA;
-      color: #137333;
-      font-size: 0.75rem;
+      background-color: #34A853;
+      color: #ffffff;
+      font-size: 0.8rem;
       font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+    .badge-partid {
+      background: #F1F3F4;
+      color: #3C4043;
+      border: 1px solid #DADCE0;
+      font-size: 0.8rem;
+      font-weight: 600;
       padding: 3px 8px;
-      border-radius: 10px;
+      border-radius: 6px;
+      font-family: monospace;
     }
     .badge-location {
       color: #D93025;
-      font-size: 0.75rem;
-      font-weight: 500;
+      font-size: 0.85rem;
+      font-weight: 600;
     }
   </style>
 </head>
@@ -230,9 +242,9 @@
         </button>
       </div>
 
-      <!-- SEARCH BOX (แสดงใน Step 3 หรือเมื่อพิมพ์ค้นหา) -->
+      <!-- SEARCH BOX -->
       <div id="searchWrapper" class="mb-3" style="display: none;">
-        <input type="text" id="searchItem" class="form-control" placeholder="ค้นหาชื่อภาษาไทย, อังกฤษ, รหัส หรือขนาด..." onkeyup="handleSearch(this.value)">
+        <input type="text" id="searchItem" class="form-control form-control-lg" placeholder="ค้นหาชื่อ, รหัสสินค้า, ขนาด..." onkeyup="handleSearch(this.value)">
       </div>
 
       <!-- STEP 1: หมวดหมู่หลัก (Main Categories) -->
@@ -245,9 +257,9 @@
         <div id="subCategoryContainer"></div>
       </div>
 
-      <!-- STEP 3: รายการสินค้า (Items) -->
+      <!-- STEP 3: รายการสินค้า (Items + Size Dropdown) -->
       <div id="step3ItemView" style="display: none;">
-        <div id="itemContainer"></div>
+        <div id="itemContainer" class="row g-3"></div>
       </div>
 
     </div>
@@ -338,6 +350,7 @@
 
   <!-- ================= JAVASCRIPT LOGIC ================= -->
   <script>
+    // อัปเดต Web App URL ใหม่เรียบร้อยแล้ว
     const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby__YLOH5br1nOdileCqBWKZWV_k5rpruuna5xlqbQYyjd1cKM56ApPTTj3ra0ukZIV/exec';
     
     let catalog = []; 
@@ -504,77 +517,163 @@
         return catMatch && subCatMatch;
       });
 
-      renderProductList(filteredItems);
+      renderProductCards(filteredItems);
     }
 
-    // SEARCH LOGIC
+    // Search Logic
     function handleSearch(keyword) {
       const searchVal = keyword.trim().toLowerCase();
       if (searchVal === '') {
-        renderStep3Items();
+        if(currentStepNav === 3) renderStep3Items();
         return;
       }
+
+      document.getElementById('step1CategoryView').style.display = 'none';
+      document.getElementById('step2SubCategoryView').style.display = 'none';
+      document.getElementById('step3ItemView').style.display = 'block';
 
       const matchedItems = catalog.filter(item => {
         return `${item.nameTH} ${item.nameEN} ${item.partId} ${item.size}`.toLowerCase().includes(searchVal);
       });
 
-      renderProductList(matchedItems);
+      renderProductCards(matchedItems);
     }
 
-    // Render รายการสินค้าแนวขวาง (ตามภาพ 3)
-    function renderProductList(items) {
+    // Grouping Data สินค้าตัวเดียวกันเพื่อทำ Dropdown เลือกขนาด
+    function groupCatalogData(dataToGroup) {
+      const grouped = {};
+      dataToGroup.forEach(item => {
+        const groupKey = item.nameTH || item.nameEN || item.partId;
+        if (!grouped[groupKey]) {
+          grouped[groupKey] = {
+            nameTH: item.nameTH,
+            nameEN: item.nameEN,
+            productImg: item.productImg,
+            variants: []
+          };
+        }
+        grouped[groupKey].variants.push(item);
+      });
+      return Object.values(grouped);
+    }
+
+    // Render การ์ดสินค้าแบบมี Dropdown เลือกขนาด
+    function renderProductCards(items) {
       const container = document.getElementById('itemContainer');
       
       if (items.length === 0) {
-        container.innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-inbox fs-1"></i><br>ไม่พบรายการสินค้า</div>';
+        container.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="bi bi-inbox fs-1"></i><br>ไม่พบรายการสินค้า</div>';
         return;
       }
 
+      const groupedData = groupCatalogData(items);
       let html = '';
-      items.forEach((item) => {
-        const qtyInCart = cart[item.partId] || 0;
-        const remainingStock = parseInt(item.stock || 0) - qtyInCart;
 
-        const imgHtml = item.productImg 
-          ? `<img src="${item.productImg}" alt="item" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=No+Image';">`
-          : `<i class="bi bi-box text-muted fs-1"></i>`;
+      groupedData.forEach((group, groupIndex) => {
+        const cardId = `group-card-${groupIndex}`;
+        let optionsHtml = '';
+        
+        group.variants.forEach((v) => {
+          const qtyInCart = cart[v.partId] || 0;
+          const remainingStock = parseInt(v.stock || 0) - qtyInCart;
+          optionsHtml += `<option value="${v.partId}" data-stock="${remainingStock}" data-location="${v.location || '-'}">
+            ขนาด: ${v.size || '-'} (คงเหลือ: ${remainingStock})
+          </option>`;
+        });
+
+        const defaultVariant = group.variants[0];
+        const defaultQtyInCart = cart[defaultVariant.partId] || 0;
+        const defaultStock = parseInt(defaultVariant.stock || 0) - defaultQtyInCart;
 
         html += `
-          <div class="product-card">
-            <!-- Header Badges -->
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <span class="text-muted small"># ${item.partId}</span>
-              <span class="badge-stock">คลัง: ${remainingStock}</span>
-            </div>
-
-            <!-- Product Image -->
-            <div class="product-img-box">
-              ${imgHtml}
-            </div>
-
-            <!-- Title & Size -->
-            <div class="mb-2">
-              <div class="fw-bold text-dark">${item.nameTH || item.nameEN}</div>
-              <div class="text-muted small">${item.nameEN || ''}</div>
-              <div class="text-muted small mt-1">ขนาด: ${item.size || '-'}</div>
-            </div>
-
-            <!-- Location & Qty Controls -->
-            <div class="d-flex justify-content-between align-items-center mt-3">
-              <span class="badge-location"><i class="bi bi-geo-alt-fill me-1"></i>${item.location || '-'}</span>
-              
-              <div class="qty-control-bar" style="width: 110px;">
-                <button class="btn-qty-minus" onclick="updateCart('${item.partId}', -1)">-</button>
-                <span class="fw-bold px-2">${qtyInCart}</span>
-                <button class="btn-qty-plus" onclick="updateCart('${item.partId}', 1)" ${remainingStock <= 0 ? 'disabled style="opacity:0.5;"' : ''}>+</button>
+          <div class="col-12 col-md-6">
+            <div class="product-card">
+              <!-- Top Badges -->
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span id="display-partId-${cardId}" class="badge-partid">${defaultVariant.partId}</span>
+                <span id="display-stock-${cardId}" class="badge-stock">คลัง: ${defaultStock}</span>
               </div>
+
+              <!-- Product Image -->
+              <div class="product-img-box">
+                <img src="${group.productImg || 'https://via.placeholder.com/150?text=No+Image'}" 
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=No+Image'" 
+                     alt="product">
+              </div>
+
+              <!-- Product Name -->
+              <div class="mb-3 text-start">
+                <div class="fw-bold text-dark fs-6 mb-0">${group.nameTH || group.nameEN}</div>
+                <div class="text-muted small">${group.nameEN || ''}</div>
+              </div>
+
+              <!-- Size Dropdown & Location -->
+              <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded-3 border mb-3">
+                 <select id="select-size-${cardId}" class="form-select form-select-sm border-secondary w-75" onchange="handleVariantChange('${cardId}')">
+                   ${optionsHtml}
+                 </select>
+                 <span id="display-location-${cardId}" class="badge-location ms-2"><i class="bi bi-geo-alt-fill me-1"></i>${defaultVariant.location || '-'}</span>
+              </div>
+
+              <!-- Qty Control Bar -->
+              <div class="qty-control-bar">
+                <button class="btn-qty-minus" onclick="updateCartFromGroup('${cardId}', -1)">-</button>
+                <span id="display-qty-${cardId}" class="fw-bold fs-5 text-primary px-3">${defaultQtyInCart}</span>
+                <button id="btn-add-${cardId}" class="btn-qty-plus" onclick="updateCartFromGroup('${cardId}', 1)" ${defaultStock <= 0 ? 'disabled style="opacity:0.5;"' : ''}>+</button>
+              </div>
+
             </div>
           </div>
         `;
       });
 
       container.innerHTML = html;
+    }
+
+    // เมื่อสลับขนาดใน Dropdown
+    function handleVariantChange(cardId) {
+      const selectElement = document.getElementById(`select-size-${cardId}`);
+      const selectedOption = selectElement.options[selectElement.selectedIndex];
+      
+      const partId = selectedOption.value;
+      const currentStock = parseInt(selectedOption.getAttribute('data-stock'));
+      const location = selectedOption.getAttribute('data-location');
+      const qtyInCart = cart[partId] || 0;
+
+      document.getElementById(`display-partId-${cardId}`).innerText = partId;
+      document.getElementById(`display-location-${cardId}`).innerHTML = `<i class="bi bi-geo-alt-fill me-1"></i>${location}`;
+      document.getElementById(`display-qty-${cardId}`).innerText = qtyInCart;
+      
+      const stockBadge = document.getElementById(`display-stock-${cardId}`);
+      stockBadge.innerText = `คลัง: ${currentStock}`;
+      stockBadge.style.backgroundColor = currentStock > 0 ? '#34A853' : '#EA4335';
+
+      const btnAdd = document.getElementById(`btn-add-${cardId}`);
+      btnAdd.disabled = (currentStock <= 0);
+      btnAdd.style.opacity = (currentStock <= 0) ? '0.5' : '1';
+    }
+
+    function updateCartFromGroup(cardId, change) {
+      const selectElement = document.getElementById(`select-size-${cardId}`);
+      const partId = selectElement.value;
+      
+      updateCart(partId, change);
+      
+      // Refresh UI state
+      const searchInput = document.getElementById('searchItem').value;
+      if (searchInput.trim() !== '') {
+        handleSearch(searchInput);
+      } else {
+        renderStep3Items();
+      }
+      
+      setTimeout(() => {
+        const newSelectElement = document.getElementById(`select-size-${cardId}`);
+        if(newSelectElement) {
+          newSelectElement.value = partId;
+          handleVariantChange(cardId);
+        }
+      }, 10);
     }
 
     function updateCart(partId, change) {
@@ -584,17 +683,11 @@
       const item = catalog.find(i => i.partId === partId);
       if (item && cart[partId] > item.stock) {
          cart[partId] = item.stock; 
-         Swal.fire({icon: 'warning', title: 'สต็อกไม่พอ', text: 'เบิกเกินจำนวนในคลังไม่ได้ครับ', confirmButtonColor: '#1C2382'});
+         Swal.fire({icon: 'warning', title: 'สต็อกไม่พอ', text: 'เบิกเกินจำนวนที่มีในคลังไม่ได้ครับ', confirmButtonColor: '#1C2382'});
       }
 
       if (cart[partId] <= 0) delete cart[partId];
-      
       updateCartUI();
-      if (currentStepNav === 3) {
-        const searchInput = document.getElementById('searchItem').value;
-        if(searchInput.trim() !== '') handleSearch(searchInput);
-        else renderStep3Items();
-      }
     }
 
     function updateCartUI() {
