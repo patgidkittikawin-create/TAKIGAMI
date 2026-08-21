@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <!-- Google Fonts: เปลี่ยนจาก Kanit เป็น Prompt เพื่อให้อ่านง่ายและสวยงามขึ้น -->
+  <!-- Google Fonts: Prompt -->
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
@@ -25,11 +25,11 @@
       background-color: var(--bg-gray);
       color: var(--text-dark);
       margin: 0;
-      padding-bottom: 90px;
+      padding-bottom: 100px;
     }
 
-    .max-width-600 {
-      max-width: 600px;
+    .max-width-main {
+      max-width: 850px;
       margin-left: auto;
       margin-right: auto;
     }
@@ -38,48 +38,97 @@
     .page.active { display: block; animation: fadeIn 0.25s ease-in-out; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Top Navigation Header */
+    /* Top Bar Header */
     .store-header {
       background-color: var(--brand-blue);
       color: white;
       text-align: center;
-      padding: 12px;
+      padding: 14px;
       font-weight: 700;
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       letter-spacing: 0.5px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
-    /* Main Container Card Envelope */
+    /* Main Container Card (ตรงตามภาพที่ 2) */
     .main-card-container {
       background: #ffffff;
       border-radius: 16px;
-      padding: 20px;
-      margin-top: 15px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+      padding: 24px;
+      margin-top: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
     }
 
-    /* Category Cards (Step 1 & 2) */
+    /* Category Cards (กล่องหมวดหมู่ตามภาพที่ 2) */
     .item-category-card {
       background: #FAFAFA;
-      border: 1px solid #EFEFEF;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
+      border: 1px solid #EAEAEA;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 18px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.2s ease-in-out;
       text-align: center;
     }
     .item-category-card:hover {
       border-color: var(--brand-blue);
       background: #ffffff;
-      box-shadow: 0 4px 12px rgba(28, 35, 130, 0.08);
+      box-shadow: 0 6px 16px rgba(28, 35, 130, 0.08);
+      transform: translateY(-2px);
     }
     .item-category-card img {
-      height: 100px;
+      height: 110px;
       max-width: 100%;
       object-fit: contain;
       margin-bottom: 12px;
+    }
+
+    /* Button Reload Data Pill */
+    .btn-reload-data {
+      background-color: #F1F3F5;
+      color: #6C757D;
+      border: 1px solid #E9ECEF;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 0.8rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-reload-data:hover {
+      background-color: #E9ECEF;
+      color: #333;
+    }
+
+    /* Bottom Action Bar */
+    .bottom-action-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      padding: 14px 20px;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.06);
+      z-index: 1000;
+    }
+    .btn-action-back {
+      border: 1px solid #D0D0D0;
+      background: white;
+      color: #444;
+      font-weight: 500;
+      border-radius: 8px;
+      padding: 10px;
+      width: 100%;
+    }
+    .btn-action-submit {
+      background: var(--brand-blue);
+      color: white;
+      font-weight: 500;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      width: 100%;
     }
 
     /* Product Cards (Step 3) */
@@ -102,10 +151,8 @@
       max-height: 100%;
       max-width: 100%;
       object-fit: contain;
-      transition: all 0.2s ease-in-out;
     }
 
-    /* Quantity Controls Bar */
     .qty-control-bar {
       background: #F4F6F9;
       border-radius: 30px;
@@ -140,38 +187,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
       cursor: pointer;
-    }
-
-    /* Bottom Action Bar */
-    .bottom-action-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #ffffff;
-      padding: 12px 20px;
-      box-shadow: 0 -3px 10px rgba(0,0,0,0.05);
-      z-index: 1000;
-    }
-    .btn-action-back {
-      border: 1px solid #D0D0D0;
-      background: white;
-      color: #444;
-      font-weight: 500;
-      border-radius: 8px;
-      padding: 10px;
-      width: 100%;
-    }
-    .btn-action-submit {
-      background: var(--brand-blue);
-      color: white;
-      font-weight: 500;
-      border: none;
-      border-radius: 8px;
-      padding: 10px;
-      width: 100%;
     }
 
     .badge-stock {
@@ -201,13 +217,13 @@
 </head>
 <body>
 
-  <!-- Header -->
+  <!-- Top Header Bar -->
   <div class="store-header">
     <i class="bi bi-tools me-1"></i> TAKIGAMI (TTC) STORE
   </div>
 
   <!-- PAGE 1: ข้อมูลผู้เบิก -->
-  <div id="page1" class="page container max-width-600">
+  <div id="page1" class="page container max-width-main">
     <div class="main-card-container">
       <h5 class="fw-bold text-primary mb-4"><i class="bi bi-person-vcard"></i> กรอกข้อมูลผู้เบิก</h5>
       <div class="mb-3">
@@ -230,21 +246,22 @@
     </div>
   </div>
 
-  <!-- PAGE 2: เลือกสินค้า -->
-  <div id="page2" class="page container">
+  <!-- PAGE 2: เลือกสินค้า (หมวดหลัก -> หมวดย่อย -> สินค้า) -->
+  <div id="page2" class="page container max-width-main">
     <div class="main-card-container">
 
-      <div class="d-flex align-items-center mb-2">
+      <!-- Head Title inside Card -->
+      <div class="d-flex align-items-center mb-1">
         <button id="btnNavBackHeader" class="btn btn-sm btn-light border rounded-circle me-2" onclick="handleBackStep()" style="display:none; width:34px; height:34px;">
           <i class="bi bi-arrow-left"></i>
         </button>
-        <h6 class="fw-bold mb-0 text-dark" id="stepTitle">
-          <span class="text-warning me-1">👑</span> 2. เลือกหมวดหมู่หลัก
-        </h6>
+        <h5 class="fw-bold mb-0 text-dark" id="stepTitle">
+          <span class="me-1">👑</span> 2. เลือกหมวดหมู่หลัก
+        </h5>
       </div>
 
-      <div class="mb-3">
-        <button class="btn btn-sm btn-link text-muted p-0 text-decoration-none" style="font-size:0.8rem;" onclick="loadDataFromSheet()">
+      <div class="mb-4">
+        <button class="btn btn-reload-data" onclick="loadDataFromSheet()">
           <i class="bi bi-arrow-clockwise"></i> ดึงข้อมูลล่าสุด
         </button>
       </div>
@@ -273,7 +290,7 @@
   </div>
 
   <!-- PAGE 3: สรุปรายการ -->
-  <div id="page3" class="page container">
+  <div id="page3" class="page container max-width-main">
     <div class="main-card-container">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-cart-check"></i> สรุปรายการเบิก</h5>
@@ -284,7 +301,6 @@
 
       <div class="border-top pt-3">
         <h6 class="fw-bold mb-3">รูปแบบการรับของ</h6>
-        
         <div class="form-check mb-2">
           <input class="form-check-input" type="radio" name="receiveMode" id="receiveNow" value="รับทันทีที่คลัง" onchange="toggleTimeSelect()" checked>
           <label class="form-check-label" for="receiveNow">รับทันทีที่คลัง (Walk-in)</label>
@@ -311,7 +327,7 @@
   </div>
 
   <!-- PAGE 4: สลิปใบเบิก -->
-  <div id="page4" class="page container max-width-600">
+  <div id="page4" class="page container max-width-main">
     <div class="main-card-container text-center">
       <div class="text-success mb-2" style="font-size: 3rem;"><i class="bi bi-check-circle-fill"></i></div>
       <h4 class="fw-bold text-success mb-1">เบิกสินค้าสำเร็จ</h4>
@@ -341,14 +357,16 @@
 
   <!-- BOTTOM ACTION BAR -->
   <div id="bottomActionBar" class="bottom-action-bar" style="display: none;">
-    <div class="row g-2">
-      <div class="col-4">
-        <button class="btn btn-action-back" onclick="handleBackStep()">ย้อนกลับ</button>
-      </div>
-      <div class="col-8">
-        <button id="btnSubmitMain" class="btn btn-action-submit" onclick="handleMainSubmit()">
-          ยืนยันรายการ (<span id="cartCountTotal">0</span>)
-        </button>
+    <div class="max-width-main">
+      <div class="row g-3">
+        <div class="col-6">
+          <button class="btn btn-action-back" onclick="handleBackStep()">ย้อนกลับ</button>
+        </div>
+        <div class="col-6">
+          <button id="btnSubmitMain" class="btn btn-action-submit" onclick="handleMainSubmit()">
+            ยืนยันรายการ
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -371,7 +389,6 @@
       loadDataFromSheet();
     };
 
-    // ฟังก์ชันอเนกประสงค์สำหรับดึงค่าจาก Object แบบไม่สนตัวพิมพ์เล็ก-ใหญ่ และไม่สนเว้นวรรค
     function getProp(obj, targetKeys) {
       if (!obj || typeof obj !== 'object') return '';
       const keys = Object.keys(obj);
@@ -389,7 +406,6 @@
     function fixImageUrl(url) {
       if (!url || typeof url !== 'string') return '';
       let cleanUrl = url.trim();
-      
       if (cleanUrl.includes('drive.google.com')) {
         const match = cleanUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || cleanUrl.match(/id=([a-zA-Z0-9_-]+)/);
         if (match && match[1]) {
@@ -403,32 +419,59 @@
       return getProp(item, ['Category TH', 'CategoryTH', 'categoryTH', 'category_th', 'หมวดหลัก', 'category']) || 'หมวดทั่วไป';
     }
 
+    // ฟังก์ชันดึงชื่อภาษาอังกฤษแบบค้นหาอัจฉริยะ (ดักทุกรูปแบบชื่อคอลัมน์)
     function getCategoryEN(item) {
-      return getProp(item, ['CategoryEN', 'Category EN', 'categoryEN', 'category_en', 'หมวดหลัก EN', 'หมวดหลักEN', 'หมวดหลัก (EN)', 'หมวดหมู่หลัก EN']);
+      if (!item) return '';
+      let val = getProp(item, [
+        'CategoryEN', 'Category EN', 'Category_EN', 'categoryEN', 'category_en', 'categoryen',
+        'หมวดหลัก EN', 'หมวดหลักEN', 'หมวดหลัก (EN)', 'หมวดหมู่หลัก EN', 'หมวดหมู่หลักEN', 'CatEN', 'Cat EN'
+      ]);
+      if (val) return val;
+
+      for (let key in item) {
+        const kLower = key.toLowerCase();
+        if ((kLower.includes('category') || kLower.includes('หมวด')) && kLower.includes('en')) {
+          if (item[key] && String(item[key]).trim() !== '') {
+            return String(item[key]).trim();
+          }
+        }
+      }
+      return '';
     }
 
     function getSubCategoryTH(item) {
       return getProp(item, ['SubCategory TH', 'SubCategoryTH', 'subCategoryTH', 'subCategory_th', 'หมวดย่อย', 'subCategory']) || 'ทั่วไป';
     }
 
+    // ฟังก์ชันดึงชื่อหมวดย่อยภาษาอังกฤษแบบค้นหาอัจฉริยะ
     function getSubCategoryEN(item) {
-      return getProp(item, ['SubCategoryEN', 'Sub Category EN', 'subCategoryEN', 'subCategory_en', 'หมวดย่อย EN', 'หมวดย่อยEN', 'หมวดย่อย (EN)', 'หมวดหมู่ย่อย EN']);
+      if (!item) return '';
+      let val = getProp(item, [
+        'SubCategoryEN', 'Sub Category EN', 'SubCategory_EN', 'subCategoryEN', 'subCategory_en', 'subcategoryen',
+        'หมวดย่อย EN', 'หมวดย่อยEN', 'หมวดย่อย (EN)', 'หมวดหมู่ย่อย EN', 'หมวดหมู่ย่อยEN', 'SubCatEN', 'Sub Cat EN'
+      ]);
+      if (val) return val;
+
+      for (let key in item) {
+        const kLower = key.toLowerCase();
+        if ((kLower.includes('sub') || kLower.includes('ย่อย')) && kLower.includes('en')) {
+          if (item[key] && String(item[key]).trim() !== '') {
+            return String(item[key]).trim();
+          }
+        }
+      }
+      return '';
     }
 
     function getCategoryImageUrl(items, isSubCategory = false, subCatName = '') {
       for (let item of items) {
         if (isSubCategory && getSubCategoryTH(item) !== subCatName) continue;
         
-        let rawUrl = '';
-        if (isSubCategory) {
-          rawUrl = getProp(item, ['รูปหมวดย่อย', 'subCategoryImg', 'SubCategoryImg', 'รูปสินค้า', 'productImg', 'image', 'img']);
-        } else {
-          rawUrl = getProp(item, ['รูปหมวดหลัก', 'categoryImg', 'CategoryImg', 'รูปหมวดย่อย', 'subCategoryImg', 'รูปสินค้า', 'productImg', 'image', 'img']);
-        }
+        let rawUrl = isSubCategory 
+          ? getProp(item, ['รูปหมวดย่อย', 'subCategoryImg', 'SubCategoryImg', 'รูปสินค้า', 'productImg', 'image', 'img'])
+          : getProp(item, ['รูปหมวดหลัก', 'categoryImg', 'CategoryImg', 'รูปหมวดย่อย', 'subCategoryImg', 'รูปสินค้า', 'productImg', 'image', 'img']);
 
-        if (rawUrl) {
-          return fixImageUrl(rawUrl);
-        }
+        if (rawUrl) return fixImageUrl(rawUrl);
       }
       return '';
     }
@@ -446,7 +489,7 @@
 
       const script = document.createElement('script');
       script.id = 'jsonp-script';
-      script.src = `${GAS_WEB_APP_URL}?action=getCatalog&callback=onCatalogLoaded&nocache=1`;
+      script.src = `${GAS_WEB_APP_URL}?action=getCatalog&callback=onCatalogLoaded&nocache=${Date.now()}`;
       script.onerror = () => {
         Swal.fire({ icon: 'error', title: 'การเชื่อมต่อขัดข้อง', text: 'ไม่สามารถดึงข้อมูลจาก Google Sheet ได้', confirmButtonColor: '#1C2382' });
       };
@@ -457,6 +500,9 @@
       Swal.close();
       if (response && response.success && Array.isArray(response.data)) {
         catalog = response.data;
+        if (currentPage === 2 && currentStepNav === 1) {
+          renderStep1MainCategories();
+        }
       } else {
         Swal.fire({ icon: 'warning', title: 'ไม่พบข้อมูล', text: 'ไม่มีรายการสินค้าในระบบ', confirmButtonColor: '#1C2382' });
       }
@@ -473,7 +519,7 @@
       renderStep1MainCategories();
     }
 
-    // 1. หมวดหมู่หลัก
+    // 1. Render หมวดหมู่หลัก (รูปแบบตรงตามภาพที่ 2)
     function renderStep1MainCategories() {
       currentStepNav = 1;
       updateHeaderUI();
@@ -508,11 +554,14 @@
           ? `<img src="${cat.img}" class="img-fluid" alt="${cat.name}" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/679/679821.png';">`
           : `<div class="mb-2" style="font-size:3rem;">📦</div>`;
 
+        // ตรงตามภาพที่ 2: แสดงภาษาอังกฤษในวงเล็บ (Brass Fittings) ใต้ชื่อภาษาไทย
+        const enHtml = cat.nameEN ? `<div class="text-muted small mt-1" style="font-size: 0.85rem; color: #6c757d;">(${cat.nameEN})</div>` : '';
+
         html += `
           <div class="item-category-card" onclick="selectMainCategory('${cat.name}')">
             ${imgHtml}
-            <div class="fw-bold text-dark fs-5">${cat.name}</div>
-            ${cat.nameEN ? `<div class="text-muted small mt-1" style="font-size:0.9rem;">${cat.nameEN}</div>` : ''}
+            <div class="fw-bold text-dark fs-5 mb-0">${cat.name}</div>
+            ${enHtml}
           </div>
         `;
       });
@@ -521,14 +570,12 @@
 
     function selectMainCategory(catName) {
       selectedCategory = catName;
-      // หาชื่อภาษาอังกฤษมาเก็บไว้
       const foundItem = catalog.find(i => getCategoryTH(i) === catName);
       selectedCategoryEN = foundItem ? getCategoryEN(foundItem) : '';
-      
       renderStep2SubCategories(catName);
     }
 
-    // 2. หมวดย่อย
+    // 2. Render หมวดย่อย
     function renderStep2SubCategories(mainCatName) {
       currentStepNav = 2;
       updateHeaderUI();
@@ -564,11 +611,13 @@
           ? `<img src="${sub.img}" class="img-fluid" alt="${sub.name}" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/679/679821.png';">`
           : `<div class="mb-2" style="font-size:3rem; color:var(--brand-yellow);"><i class="bi bi-box-fill"></i></div>`;
 
+        const enHtml = sub.nameEN ? `<div class="text-muted small mt-1" style="font-size: 0.85rem; color: #6c757d;">(${sub.nameEN})</div>` : '';
+
         html += `
           <div class="item-category-card" onclick="selectSubCategory('${sub.name}')">
             ${imgHtml}
-            <div class="fw-bold text-dark fs-5">${sub.name}</div>
-            ${sub.nameEN ? `<div class="text-muted small mt-1" style="font-size:0.9rem;">${sub.nameEN}</div>` : ''}
+            <div class="fw-bold text-dark fs-5 mb-0">${sub.name}</div>
+            ${enHtml}
           </div>
         `;
       });
@@ -577,10 +626,8 @@
 
     function selectSubCategory(subCatName) {
       selectedSubCategory = subCatName;
-      // หาชื่อภาษาอังกฤษมาเก็บไว้
       const foundItem = catalog.find(i => getCategoryTH(i) === selectedCategory && getSubCategoryTH(i) === subCatName);
       selectedSubCategoryEN = foundItem ? getSubCategoryEN(foundItem) : '';
-      
       renderStep3Items();
     }
 
@@ -594,9 +641,7 @@
       document.getElementById('step3ItemView').style.display = 'block';
 
       const filteredItems = catalog.filter(item => {
-        const catMatch = getCategoryTH(item) === selectedCategory;
-        const subCatMatch = getSubCategoryTH(item) === selectedSubCategory;
-        return catMatch && subCatMatch;
+        return getCategoryTH(item) === selectedCategory && getSubCategoryTH(item) === selectedSubCategory;
       });
 
       renderProductCards(filteredItems);
@@ -604,7 +649,6 @@
 
     function handleSearch(keyword) {
       const searchVal = keyword.trim().toLowerCase();
-      // แก้ไขปัญหาเวลาลบคำค้นหาจนว่าง แล้วหน้าจอไม่กลับไปค่าเดิม
       if (searchVal === '') {
         if (currentStepNav === 3) renderStep3Items();
         else if (currentStepNav === 2) renderStep2SubCategories(selectedCategory);
@@ -635,8 +679,8 @@
         const partId = getProp(item, ['partId', 'PartID', 'PartId', 'รหัสสินค้า']);
         
         const groupKey = nameTH || nameEN || partId;
-        const pImg = fixImageUrl(getProp(item, ['รูปสินค้า', 'productImg', 'ProductImg', 'image', 'img', 'picture']));
-        
+        const pImg = fixImageUrl(getProp(item, ['รูปสินค้า', 'productImg', 'ProductImg', 'image', 'img']));
+
         if (!grouped[groupKey]) {
           grouped[groupKey] = {
             nameTH: nameTH,
@@ -666,7 +710,7 @@
       groupedData.forEach((group, groupIndex) => {
         const cardId = `group-card-${groupIndex}`;
         let optionsHtml = '';
-        
+
         group.variants.forEach((v) => {
           const partId = getProp(v, ['partId', 'PartID', 'PartId', 'รหัสสินค้า']);
           const size = getProp(v, ['size', 'Size', 'ขนาด']);
@@ -791,11 +835,8 @@
 
       if (newQty < 0) newQty = 0;
 
-      if (newQty === 0) {
-        delete cart[partId];
-      } else {
-        cart[partId] = newQty;
-      }
+      if (newQty === 0) delete cart[partId];
+      else cart[partId] = newQty;
 
       const qtyDisplay = document.getElementById(`display-qty-${cardId}`);
       if (qtyDisplay) qtyDisplay.innerText = newQty;
@@ -821,9 +862,9 @@
 
     function updateCartUI() {
       const totalCount = Object.values(cart).reduce((a, b) => a + b, 0);
-      const counterEl = document.getElementById('cartCountTotal');
-      if (counterEl) {
-        counterEl.innerText = totalCount;
+      const btnSubmit = document.getElementById('btnSubmitMain');
+      if (btnSubmit && currentPage === 2) {
+        btnSubmit.innerText = totalCount > 0 ? `ยืนยันรายการ (${totalCount})` : 'ยืนยันรายการ';
       }
     }
 
@@ -832,26 +873,22 @@
       const btnBack = document.getElementById('btnNavBackHeader');
 
       if (currentStepNav === 1) {
-        titleEl.innerHTML = `<span class="text-warning me-1">👑</span> 2. เลือกหมวดหมู่หลัก`;
+        titleEl.innerHTML = `<span class="me-1">👑</span> 2. เลือกหมวดหมู่หลัก`;
         btnBack.style.display = 'none';
       } else if (currentStepNav === 2) {
-        // เพิ่มภาษาอังกฤษต่อท้ายถ้ามี
-        let textEN = selectedCategoryEN ? ` <span class="text-muted fw-normal" style="font-size:0.85rem;">| ${selectedCategoryEN}</span>` : '';
-        titleEl.innerHTML = `<i class="bi bi-box-fill text-warning me-1"></i> ${selectedCategory}${textEN}`;
+        let textEN = selectedCategoryEN ? ` <span class="text-muted fw-normal" style="font-size:0.9rem;">(${selectedCategoryEN})</span>` : '';
+        titleEl.innerHTML = `<i class="bi bi-box-fill text-warning me-1"></i> ${selectedCategory} ${textEN}`;
         btnBack.style.display = 'inline-block';
       } else if (currentStepNav === 3) {
-        // เพิ่มภาษาอังกฤษต่อท้ายถ้ามี
-        let textEN = selectedSubCategoryEN ? ` <span class="text-muted fw-normal" style="font-size:0.85rem;">| ${selectedSubCategoryEN}</span>` : '';
-        titleEl.innerHTML = `<i class="bi bi-list-nested me-1 text-warning"></i> ${selectedSubCategory}${textEN}`;
+        let textEN = selectedSubCategoryEN ? ` <span class="text-muted fw-normal" style="font-size:0.9rem;">(${selectedSubCategoryEN})</span>` : '';
+        titleEl.innerHTML = `<i class="bi bi-list-nested me-1 text-warning"></i> ${selectedSubCategory} ${textEN}`;
         btnBack.style.display = 'inline-block';
       }
     }
 
     function handleBackStep() {
       const searchInput = document.getElementById('searchItem');
-      if (searchInput && searchInput.value !== '') {
-        searchInput.value = '';
-      }
+      if (searchInput) searchInput.value = '';
 
       if (currentPage === 3) {
         goToPage(2);
@@ -984,7 +1021,7 @@
         });
         document.getElementById('slipItemsList').innerHTML = itemsHtml;
       })
-      .catch(error => {
+      .catch(() => {
         Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: 'ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่', confirmButtonColor: '#1C2382' });
       });
     }
@@ -993,7 +1030,7 @@
       currentPage = pageNumber;
       document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
       let targetPage = document.getElementById('page' + pageNumber);
-      if (targetPage) { targetPage.classList.add('active'); }
+      if (targetPage) targetPage.classList.add('active');
 
       const bottomBar = document.getElementById('bottomActionBar');
       if (pageNumber === 2 || pageNumber === 3) {
@@ -1002,9 +1039,7 @@
         if (pageNumber === 3) {
           btnSubmit.innerText = 'ยืนยันการเบิกสินค้า';
         } else {
-          // แก้ไขบักปุ่มเพื่อไม่ให้ span id="cartCountTotal" หายไป
-          const totalQty = Object.values(cart).reduce((a, b) => a + b, 0);
-          btnSubmit.innerHTML = `ยืนยันรายการ (<span id="cartCountTotal">${totalQty}</span>)`;
+          updateCartUI();
         }
       } else {
         bottomBar.style.display = 'none';
