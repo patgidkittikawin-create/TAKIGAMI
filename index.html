@@ -440,6 +440,7 @@
       renderStep1MainCategories();
     }
 
+    // 1. หมวดหมู่หลัก (ดึงชื่อ TH + EN)
     function renderStep1MainCategories() {
       currentStepNav = 1;
       updateHeaderUI();
@@ -452,16 +453,18 @@
       const mainCatMap = new Map();
       catalog.forEach(item => {
         const catName = item.categoryTH || item.category || item['หมวดหลัก'] || 'หมวดทั่วไป';
+        const catNameEN = item.categoryEN || item['หมวดหลัก EN'] || item['หมวดหลักEN'] || '';
+
         if (!mainCatMap.has(catName)) {
           const itemsInCat = catalog.filter(i => (i.categoryTH || i.category || i['หมวดหลัก'] || 'หมวดทั่วไป') === catName);
           const foundImg = getCategoryImageUrl(itemsInCat);
-          mainCatMap.set(catName, { name: catName, img: foundImg });
+          mainCatMap.set(catName, { name: catName, nameEN: catNameEN, img: foundImg });
         }
       });
 
       const container = document.getElementById('mainCategoryContainer');
       let html = '';
-      
+
       mainCatMap.forEach(cat => {
         const imgHtml = cat.img 
           ? `<img src="${cat.img}" class="img-fluid" alt="${cat.name}" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/679/679821.png';">`
@@ -471,6 +474,7 @@
           <div class="item-category-card" onclick="selectMainCategory('${cat.name}')">
             ${imgHtml}
             <div class="fw-bold text-dark">${cat.name}</div>
+            ${cat.nameEN ? `<div class="text-muted small">${cat.nameEN}</div>` : ''}
           </div>
         `;
       });
@@ -482,6 +486,7 @@
       renderStep2SubCategories(catName);
     }
 
+    // 2. หมวดย่อย (ดึงชื่อ TH + EN)
     function renderStep2SubCategories(mainCatName) {
       currentStepNav = 2;
       updateHeaderUI();
@@ -496,9 +501,11 @@
 
       itemsInMainCat.forEach(item => {
         const subCatName = item.subCategoryTH || item.subCategory || item['หมวดย่อย'] || 'ทั่วไป';
+        const subCatNameEN = item.subCategoryEN || item['หมวดย่อย EN'] || item['หมวดย่อยEN'] || '';
+
         if (!subCatMap.has(subCatName)) {
           const foundImg = getCategoryImageUrl(itemsInMainCat, true, subCatName);
-          subCatMap.set(subCatName, { name: subCatName, img: foundImg });
+          subCatMap.set(subCatName, { name: subCatName, nameEN: subCatNameEN, img: foundImg });
         }
       });
 
@@ -514,6 +521,7 @@
           <div class="item-category-card" onclick="selectSubCategory('${sub.name}')">
             ${imgHtml}
             <div class="fw-bold text-dark">${sub.name}</div>
+            ${sub.nameEN ? `<div class="text-muted small">${sub.nameEN}</div>` : ''}
           </div>
         `;
       });
@@ -652,7 +660,6 @@
       container.innerHTML = html;
     }
 
-    // ฟังก์ชันเปลี่ยนขนาดใน Dropdown
     function handleVariantChange(cardId) {
       const selectElement = document.getElementById(`select-size-${cardId}`);
       if (!selectElement) return;
@@ -693,7 +700,6 @@
       }
     }
 
-    // ฟังก์ชันกดเพิ่ม/ลด จำนวน (+ / -) อัปเดตทันที
     function updateCartFromGroup(cardId, change) {
       const selectElement = document.getElementById(`select-size-${cardId}`);
       if (!selectElement) return;
@@ -720,30 +726,25 @@
         cart[partId] = newQty;
       }
 
-      // 1. อัปเดตตัวเลขจำนวนบนการ์ด
       const qtyDisplay = document.getElementById(`display-qty-${cardId}`);
       if (qtyDisplay) qtyDisplay.innerText = newQty;
 
-      // 2. อัปเดตตัวเลขใน Option Dropdown
       const itemSizeText = selectedOption.text.split('(คงเหลือ:')[0].trim();
       const remainingStock = rawStock - newQty;
       selectedOption.text = `${itemSizeText} (คงเหลือ: ${remainingStock})`;
 
-      // 3. อัปเดตป้ายสต็อก
       const stockBadge = document.getElementById(`display-stock-${cardId}`);
       if (stockBadge) {
         stockBadge.innerText = `คลัง: ${remainingStock}`;
         stockBadge.style.backgroundColor = remainingStock > 0 ? '#34A853' : '#EA4335';
       }
 
-      // 4. อัปเดตสถานะปุ่ม +
       const btnAdd = document.getElementById(`btn-add-${cardId}`);
       if (btnAdd) {
         btnAdd.disabled = (remainingStock <= 0);
         btnAdd.style.opacity = (remainingStock <= 0) ? '0.5' : '1';
       }
 
-      // 5. อัปเดตยอดรวมในตะกร้าด้านล่าง
       updateCartUI();
     }
 
