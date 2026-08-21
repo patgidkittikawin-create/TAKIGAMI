@@ -38,7 +38,7 @@
     .page.active { display: block; animation: fadeIn 0.25s ease-in-out; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Top Bar Header (แถบน้ำเงินด้านบนสุดตามภาพที่ 2) */
+    /* Top Bar Header */
     .store-header {
       background-color: var(--brand-blue);
       color: white;
@@ -54,7 +54,7 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
-    /* Main Container Card (กล่องการ์ดหลักขาวมนตามภาพที่ 2) */
+    /* Main Container Card */
     .main-card-container {
       background: #ffffff;
       border-radius: 16px;
@@ -63,7 +63,7 @@
       box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
     }
 
-    /* Category Cards (กล่องหมวดหมู่ตามภาพที่ 2) */
+    /* Category Cards */
     .item-category-card {
       background: #FAFAFA;
       border: 1px solid #EAEAEA;
@@ -104,7 +104,7 @@
       color: #333;
     }
 
-    /* Bottom Action Bar (แถบปุ่มล่างสุดตามภาพที่ 2) */
+    /* Bottom Action Bar */
     .bottom-action-bar {
       position: fixed;
       bottom: 0;
@@ -220,7 +220,7 @@
 </head>
 <body>
 
-  <!-- Top Header Bar (TAKIGAMI STORE) -->
+  <!-- Top Header Bar -->
   <div class="store-header">
     <i class="bi bi-tools"></i> TAKIGAMI (TTC) STORE
   </div>
@@ -358,7 +358,7 @@
     </div>
   </div>
 
-  <!-- BOTTOM ACTION BAR (ย้อนกลับ & ยืนยันรายการ) -->
+  <!-- BOTTOM ACTION BAR -->
   <div id="bottomActionBar" class="bottom-action-bar" style="display: none;">
     <div class="max-width-main">
       <div class="row g-2">
@@ -377,7 +377,7 @@
   <script>
     const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwKZnpO3khPoBqwkaEDqL6f6cZ6XrqQC7IsBl8vPv_dIkkk6btHPAdFH3w4eDbc0qN1/exec';
     
-    // ตารางแผนที่ภาษาอังกฤษสำรอง (Fallback Dictionary) เพื่อให้แสดงข้อความภาษาอังกฤษแบบในภาพที่ 2 เสมอ
+    // ตารางแผนที่หมวดหมู่หลัก (Fallback Dictionary)
     const CATEGORY_EN_FALLBACK = {
       'ข้อต่อทองเหลือง': 'Brass Fittings',
       'วาล์วควบคุม & อุปกรณ์สายลม': 'Control Valves & Pneumatic Lines',
@@ -389,14 +389,32 @@
       'ข้อต่อสวมเร็ว': 'Quick Couplers'
     };
 
+    // ตารางแผนที่หมวดย่อย (Fallback Dictionary รองรับทั้ง Thai -> EN และ EN -> Thai)
+    const SUBCATEGORY_MAP = {
+      'ข้อต่อตรง & นิปเปิ้ลทองเหลือง': { th: 'ข้อต่อตรง & นิปเปิ้ลทองเหลือง', en: 'Straight & Brass Nipples' },
+      'ข้อต่อตรงและนิปเปิ้ลทองเหลือง': { th: 'ข้อต่อตรง & นิปเปิ้ลทองเหลือง', en: 'Straight & Brass Nipples' },
+      'ข้อต่อตรง': { th: 'ข้อต่อตรง', en: 'Straight Fittings' },
+      'ข้อข้องอ': { th: 'ข้อข้องอ', en: 'Elbow Fittings' },
+      'ข้อต่อสามทาง & ทรงพิเศษ': { th: 'ข้อต่อสามทาง & ทรงพิเศษ', en: 'Branch & Shape Unions' },
+      'ข้อต่อตรงมาตรฐาน': { th: 'ข้อต่อตรงมาตรฐาน', en: 'Straight & Standard Unions' },
+      
+      // แปลงจาก English key ใน Sheet เป็น Thai + English
+      'straight fittings': { th: 'ข้อต่อตรง', en: 'Straight Fittings' },
+      'elbow fittings': { th: 'ข้อข้องอ', en: 'Elbow Fittings' },
+      'branch & shape unions': { th: 'ข้อต่อสามทาง & ทรงพิเศษ', en: 'Branch & Shape Unions' },
+      'straight & standard unions': { th: 'ข้อต่อตรงมาตรฐาน', en: 'Straight & Standard Unions' },
+      'straight & brass nipples': { th: 'ข้อต่อตรง & นิปเปิ้ลทองเหลือง', en: 'Straight & Brass Nipples' }
+    };
+
     let catalog = []; 
     let cart = {};
     let currentPage = 1;
     let currentStepNav = 1; 
 
     let selectedCategory = '';
-    let selectedSubCategory = '';
+    let selectedSubCategoryKey = '';
     let selectedCategoryEN = ''; 
+    let selectedSubCategory = '';
     let selectedSubCategoryEN = '';
 
     window.onload = () => {
@@ -455,6 +473,31 @@
       ]);
     }
 
+    // ฟังก์ชั่นช่วยแปลงชื่อหมวดย่อยให้มีทั้งภาษาไทยและอังกฤษแบบสมบูรณ์
+    function parseSubCategoryInfo(item) {
+      const rawTH = getSubCategoryTH(item);
+      const rawEN = getSubCategoryEN(item);
+
+      let finalTH = rawTH;
+      let finalEN = rawEN;
+
+      const normKey = rawTH.trim().toLowerCase();
+
+      if (SUBCATEGORY_MAP[normKey]) {
+        finalTH = SUBCATEGORY_MAP[normKey].th;
+        finalEN = finalEN || SUBCATEGORY_MAP[normKey].en;
+      } else if (SUBCATEGORY_MAP[rawTH]) {
+        finalTH = SUBCATEGORY_MAP[rawTH].th;
+        finalEN = finalEN || SUBCATEGORY_MAP[rawTH].en;
+      }
+
+      return {
+        rawKey: rawTH,
+        nameTH: finalTH,
+        nameEN: finalEN
+      };
+    }
+
     function getCategoryImageUrl(items, isSubCategory = false, subCatName = '') {
       for (let item of items) {
         if (isSubCategory && getSubCategoryTH(item) !== subCatName) continue;
@@ -511,7 +554,7 @@
       renderStep1MainCategories();
     }
 
-    /* Step 1: Render หมวดหมู่หลัก (ตรงตามภาพที่ 2 100%) */
+    /* Step 1: Render หมวดหมู่หลัก */
     function renderStep1MainCategories() {
       currentStepNav = 1;
       updateHeaderUI();
@@ -541,13 +584,12 @@
           ? `<img src="${cat.img}" class="img-fluid" alt="${cat.name}" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/679/679821.png';">`
           : `<div class="mb-2" style="font-size:2.8rem;">📦</div>`;
 
-        // แสดงชื่อภาษาอังกฤษในวงเล็บ เช่น (Brass Fittings) ตามภาพที่ 2
         const enHtml = cat.nameEN 
           ? `<div style="font-size: 0.82rem; color: #6C757D; margin-top: 3px; font-weight: 400;">(${cat.nameEN})</div>` 
           : '';
 
         html += `
-          <div class="item-category-card" onclick="selectMainCategory('${cat.name}')">
+          <div class="item-category-card" onclick="selectMainCategory('${cat.name.replace(/'/g, "\\'")}')">
             ${imgHtml}
             <div class="fw-bold text-dark fs-5 mb-0" style="line-height: 1.2;">${cat.name}</div>
             ${enHtml}
@@ -564,7 +606,7 @@
       renderStep2SubCategories(catName);
     }
 
-    /* Step 2: Render หมวดย่อย */
+    /* Step 2: Render หมวดย่อย (แก้ไขให้ดึงทั้งภาษาไทยและอังกฤษพร้อม Fallback) */
     function renderStep2SubCategories(mainCatName) {
       currentStepNav = 2;
       updateHeaderUI();
@@ -578,12 +620,16 @@
       const itemsInMainCat = catalog.filter(i => getCategoryTH(i) === mainCatName);
 
       itemsInMainCat.forEach(item => {
-        const subCatName = getSubCategoryTH(item);
-        const subCatNameEN = getSubCategoryEN(item);
+        const subInfo = parseSubCategoryInfo(item);
 
-        if (!subCatMap.has(subCatName)) {
-          const foundImg = getCategoryImageUrl(itemsInMainCat, true, subCatName);
-          subCatMap.set(subCatName, { name: subCatName, nameEN: subCatNameEN, img: foundImg });
+        if (!subCatMap.has(subInfo.rawKey)) {
+          const foundImg = getCategoryImageUrl(itemsInMainCat, true, subInfo.rawKey);
+          subCatMap.set(subInfo.rawKey, { 
+            rawKey: subInfo.rawKey,
+            nameTH: subInfo.nameTH, 
+            nameEN: subInfo.nameEN, 
+            img: foundImg 
+          });
         }
       });
 
@@ -592,15 +638,17 @@
 
       subCatMap.forEach(sub => {
         const imgHtml = sub.img 
-          ? `<img src="${sub.img}" class="img-fluid" alt="${sub.name}" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/679/679821.png';">`
+          ? `<img src="${sub.img}" class="img-fluid" alt="${sub.nameTH}" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/679/679821.png';">`
           : `<div class="mb-2" style="font-size:2.8rem; color:var(--brand-yellow);"><i class="bi bi-box-fill"></i></div>`;
 
-        const enHtml = sub.nameEN ? `<div style="font-size: 0.82rem; color: #6C757D; margin-top: 3px; font-weight: 400;">(${sub.nameEN})</div>` : '';
+        const enHtml = sub.nameEN 
+          ? `<div style="font-size: 0.82rem; color: #6C757D; margin-top: 3px; font-weight: 400;">(${sub.nameEN})</div>` 
+          : '';
 
         html += `
-          <div class="item-category-card" onclick="selectSubCategory('${sub.name}')">
+          <div class="item-category-card" onclick="selectSubCategory('${sub.rawKey.replace(/'/g, "\\'")}', '${sub.nameTH.replace(/'/g, "\\'")}', '${(sub.nameEN || '').replace(/'/g, "\\'")}')">
             ${imgHtml}
-            <div class="fw-bold text-dark fs-5 mb-0" style="line-height: 1.2;">${sub.name}</div>
+            <div class="fw-bold text-dark fs-5 mb-0" style="line-height: 1.2;">${sub.nameTH}</div>
             ${enHtml}
           </div>
         `;
@@ -608,10 +656,10 @@
       container.innerHTML = html;
     }
 
-    function selectSubCategory(subCatName) {
-      selectedSubCategory = subCatName;
-      const foundItem = catalog.find(i => getCategoryTH(i) === selectedCategory && getSubCategoryTH(i) === subCatName);
-      selectedSubCategoryEN = getSubCategoryEN(foundItem);
+    function selectSubCategory(rawKey, nameTH, nameEN) {
+      selectedSubCategoryKey = rawKey;
+      selectedSubCategory = nameTH;
+      selectedSubCategoryEN = nameEN;
       renderStep3Items();
     }
 
@@ -626,7 +674,7 @@
       document.getElementById('step3ItemView').style.display = 'block';
 
       const filteredItems = catalog.filter(item => {
-        return getCategoryTH(item) === selectedCategory && getSubCategoryTH(item) === selectedSubCategory;
+        return getCategoryTH(item) === selectedCategory && getSubCategoryTH(item) === selectedSubCategoryKey;
       });
 
       renderProductCards(filteredItems);
