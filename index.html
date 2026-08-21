@@ -25,11 +25,11 @@
       background-color: var(--bg-gray);
       color: var(--text-dark);
       margin: 0;
-      padding-bottom: 100px;
+      padding-bottom: 90px;
     }
 
     .max-width-main {
-      max-width: 850px;
+      max-width: 820px;
       margin-left: auto;
       margin-right: auto;
     }
@@ -38,49 +38,52 @@
     .page.active { display: block; animation: fadeIn 0.25s ease-in-out; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Top Bar Header */
+    /* Top Bar Header (แถบน้ำเงินด้านบนสุดตามภาพที่ 2) */
     .store-header {
       background-color: var(--brand-blue);
       color: white;
       text-align: center;
-      padding: 14px;
+      padding: 12px 16px;
       font-weight: 700;
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
-    /* Main Container Card (ตรงตามภาพที่ 2) */
+    /* Main Container Card (กล่องการ์ดหลักขาวมนตามภาพที่ 2) */
     .main-card-container {
       background: #ffffff;
       border-radius: 16px;
-      padding: 24px;
-      margin-top: 20px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+      padding: 24px 28px;
+      margin-top: 16px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
     }
 
     /* Category Cards (กล่องหมวดหมู่ตามภาพที่ 2) */
     .item-category-card {
       background: #FAFAFA;
       border: 1px solid #EAEAEA;
-      border-radius: 14px;
-      padding: 20px;
-      margin-bottom: 18px;
+      border-radius: 12px;
+      padding: 20px 16px;
+      margin-bottom: 16px;
       cursor: pointer;
       transition: all 0.2s ease-in-out;
       text-align: center;
     }
-    .item-category-card:hover {
-      border-color: var(--brand-blue);
+    .item-category-card:hover, .item-category-card.active-card {
+      border: 1.5px solid var(--brand-blue);
       background: #ffffff;
-      box-shadow: 0 6px 16px rgba(28, 35, 130, 0.08);
-      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(28, 35, 130, 0.08);
     }
     .item-category-card img {
-      height: 110px;
+      height: 95px;
       max-width: 100%;
       object-fit: contain;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     /* Button Reload Data Pill */
@@ -89,8 +92,8 @@
       color: #6C757D;
       border: 1px solid #E9ECEF;
       border-radius: 20px;
-      padding: 4px 12px;
-      font-size: 0.8rem;
+      padding: 3px 12px;
+      font-size: 0.78rem;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
@@ -101,24 +104,24 @@
       color: #333;
     }
 
-    /* Bottom Action Bar */
+    /* Bottom Action Bar (แถบปุ่มล่างสุดตามภาพที่ 2) */
     .bottom-action-bar {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
       background: #ffffff;
-      padding: 14px 20px;
+      padding: 12px 20px;
       box-shadow: 0 -4px 12px rgba(0,0,0,0.06);
       z-index: 1000;
     }
     .btn-action-back {
       border: 1px solid #D0D0D0;
       background: white;
-      color: #444;
+      color: #333;
       font-weight: 500;
       border-radius: 8px;
-      padding: 10px;
+      padding: 9px;
       width: 100%;
     }
     .btn-action-submit {
@@ -127,7 +130,7 @@
       font-weight: 500;
       border: none;
       border-radius: 8px;
-      padding: 10px;
+      padding: 9px;
       width: 100%;
     }
 
@@ -135,13 +138,13 @@
     .product-card {
       background: #ffffff;
       border: 1px solid #EAEAEA;
-      border-radius: 16px;
+      border-radius: 14px;
       padding: 16px;
       margin-bottom: 16px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
     .product-img-box {
-      height: 140px;
+      height: 130px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -167,8 +170,8 @@
       background: #EAEAEA;
       color: #555;
       font-size: 1.2rem;
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -181,8 +184,8 @@
       color: #ffffff;
       font-weight: bold;
       font-size: 1.1rem;
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -193,16 +196,16 @@
     .badge-stock {
       background-color: #34A853;
       color: #ffffff;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 500;
-      padding: 4px 10px;
+      padding: 3px 9px;
       border-radius: 12px;
     }
     .badge-partid {
       background: #F1F3F4;
       color: #3C4043;
       border: 1px solid #DADCE0;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
       padding: 3px 8px;
       border-radius: 6px;
@@ -210,16 +213,16 @@
     }
     .badge-location {
       color: #D93025;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Header Bar -->
+  <!-- Top Header Bar (TAKIGAMI STORE) -->
   <div class="store-header">
-    <i class="bi bi-tools me-1"></i> TAKIGAMI (TTC) STORE
+    <i class="bi bi-tools"></i> TAKIGAMI (TTC) STORE
   </div>
 
   <!-- PAGE 1: ข้อมูลผู้เบิก -->
@@ -246,17 +249,17 @@
     </div>
   </div>
 
-  <!-- PAGE 2: เลือกสินค้า (หมวดหลัก -> หมวดย่อย -> สินค้า) -->
+  <!-- PAGE 2: เลือกสินค้า -->
   <div id="page2" class="page container max-width-main">
     <div class="main-card-container">
 
-      <!-- Head Title inside Card -->
+      <!-- หัวข้อการเลือกหมวดหมู่ -->
       <div class="d-flex align-items-center mb-1">
-        <button id="btnNavBackHeader" class="btn btn-sm btn-light border rounded-circle me-2" onclick="handleBackStep()" style="display:none; width:34px; height:34px;">
+        <button id="btnNavBackHeader" class="btn btn-sm btn-light border rounded-circle me-2" onclick="handleBackStep()" style="display:none; width:32px; height:32px;">
           <i class="bi bi-arrow-left"></i>
         </button>
         <h5 class="fw-bold mb-0 text-dark" id="stepTitle">
-          <span class="me-1">👑</span> 2. เลือกหมวดหมู่หลัก
+          <span class="me-1">👑</span> <span style="color:var(--brand-blue);">2.</span> เลือกหมวดหมู่หลัก
         </h5>
       </div>
 
@@ -266,22 +269,22 @@
         </button>
       </div>
 
-      <!-- SEARCH BOX -->
+      <!-- ค้นหา -->
       <div id="searchWrapper" class="mb-3" style="display: none;">
         <input type="text" id="searchItem" class="form-control form-control-lg" placeholder="ค้นหาชื่อ, รหัสสินค้า, ขนาด..." onkeyup="handleSearch(this.value)">
       </div>
 
-      <!-- STEP 1 -->
+      <!-- Step 1 View: หมวดหมู่หลัก -->
       <div id="step1CategoryView">
         <div id="mainCategoryContainer"></div>
       </div>
 
-      <!-- STEP 2 -->
+      <!-- Step 2 View: หมวดย่อย -->
       <div id="step2SubCategoryView" style="display: none;">
         <div id="subCategoryContainer"></div>
       </div>
 
-      <!-- STEP 3 -->
+      <!-- Step 3 View: รายการสินค้า -->
       <div id="step3ItemView" style="display: none;">
         <div id="itemContainer" class="row g-3"></div>
       </div>
@@ -326,7 +329,7 @@
     </div>
   </div>
 
-  <!-- PAGE 4: สลิปใบเบิก -->
+  <!-- PAGE 4: ใบเบิกสำเร็จ -->
   <div id="page4" class="page container max-width-main">
     <div class="main-card-container text-center">
       <div class="text-success mb-2" style="font-size: 3rem;"><i class="bi bi-check-circle-fill"></i></div>
@@ -355,16 +358,16 @@
     </div>
   </div>
 
-  <!-- BOTTOM ACTION BAR -->
+  <!-- BOTTOM ACTION BAR (ย้อนกลับ & ยืนยันรายการ) -->
   <div id="bottomActionBar" class="bottom-action-bar" style="display: none;">
     <div class="max-width-main">
-      <div class="row g-3">
-        <div class="col-6">
+      <div class="row g-2">
+        <div class="col-4 col-md-3">
           <button class="btn btn-action-back" onclick="handleBackStep()">ย้อนกลับ</button>
         </div>
-        <div class="col-6">
+        <div class="col-8 col-md-9">
           <button id="btnSubmitMain" class="btn btn-action-submit" onclick="handleMainSubmit()">
-            ยืนยันรายการ
+            ยืนยันรายการ (0)
           </button>
         </div>
       </div>
@@ -374,6 +377,18 @@
   <script>
     const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwKZnpO3khPoBqwkaEDqL6f6cZ6XrqQC7IsBl8vPv_dIkkk6btHPAdFH3w4eDbc0qN1/exec';
     
+    // ตารางแผนที่ภาษาอังกฤษสำรอง (Fallback Dictionary) เพื่อให้แสดงข้อความภาษาอังกฤษแบบในภาพที่ 2 เสมอ
+    const CATEGORY_EN_FALLBACK = {
+      'ข้อต่อทองเหลือง': 'Brass Fittings',
+      'วาล์วควบคุม & อุปกรณ์สายลม': 'Control Valves & Pneumatic Lines',
+      'วาล์วควบคุมและอุปกรณ์สายลม': 'Control Valves & Pneumatic Lines',
+      'ข้อต่อประปา & อุปกรณ์เหล็กงานโครงสร้าง': 'Pipe Fittings & Structural Hardware',
+      'ข้อต่อประปาและอุปกรณ์เหล็กงานโครงสร้าง': 'Pipe Fittings & Structural Hardware',
+      'โบลต์-น็อต และชิ้นส่วนฟิกซ์เจอร์': 'Bolts, Nuts & Fixture Parts',
+      'โบลต์-น็อตและชิ้นส่วนฟิกซ์เจอร์': 'Bolts, Nuts & Fixture Parts',
+      'ข้อต่อสวมเร็ว': 'Quick Couplers'
+    };
+
     let catalog = []; 
     let cart = {};
     let currentPage = 1;
@@ -416,51 +431,28 @@
     }
 
     function getCategoryTH(item) {
-      return getProp(item, ['Category TH', 'CategoryTH', 'categoryTH', 'category_th', 'หมวดหลัก', 'category']) || 'หมวดทั่วไป';
+      return getProp(item, ['Category TH', 'CategoryTH', 'categoryTH', 'หมวดหลัก', 'category']) || 'หมวดทั่วไป';
     }
 
-    // ฟังก์ชันดึงชื่อภาษาอังกฤษแบบค้นหาอัจฉริยะ (ดักทุกรูปแบบชื่อคอลัมน์)
-    function getCategoryEN(item) {
-      if (!item) return '';
-      let val = getProp(item, [
-        'CategoryEN', 'Category EN', 'Category_EN', 'categoryEN', 'category_en', 'categoryen',
-        'หมวดหลัก EN', 'หมวดหลักEN', 'หมวดหลัก (EN)', 'หมวดหมู่หลัก EN', 'หมวดหมู่หลักEN', 'CatEN', 'Cat EN'
-      ]);
-      if (val) return val;
-
-      for (let key in item) {
-        const kLower = key.toLowerCase();
-        if ((kLower.includes('category') || kLower.includes('หมวด')) && kLower.includes('en')) {
-          if (item[key] && String(item[key]).trim() !== '') {
-            return String(item[key]).trim();
-          }
-        }
+    function getCategoryEN(item, catTH) {
+      let val = '';
+      if (item) {
+        val = getProp(item, [
+          'CategoryEN', 'Category EN', 'Category_EN', 'categoryEN', 'หมวดหลัก EN', 'หมวดหมู่หลัก EN', 'CatEN'
+        ]);
       }
-      return '';
+      return val || CATEGORY_EN_FALLBACK[catTH] || '';
     }
 
     function getSubCategoryTH(item) {
-      return getProp(item, ['SubCategory TH', 'SubCategoryTH', 'subCategoryTH', 'subCategory_th', 'หมวดย่อย', 'subCategory']) || 'ทั่วไป';
+      return getProp(item, ['SubCategory TH', 'SubCategoryTH', 'subCategoryTH', 'หมวดย่อย', 'subCategory']) || 'ทั่วไป';
     }
 
-    // ฟังก์ชันดึงชื่อหมวดย่อยภาษาอังกฤษแบบค้นหาอัจฉริยะ
     function getSubCategoryEN(item) {
       if (!item) return '';
-      let val = getProp(item, [
-        'SubCategoryEN', 'Sub Category EN', 'SubCategory_EN', 'subCategoryEN', 'subCategory_en', 'subcategoryen',
-        'หมวดย่อย EN', 'หมวดย่อยEN', 'หมวดย่อย (EN)', 'หมวดหมู่ย่อย EN', 'หมวดหมู่ย่อยEN', 'SubCatEN', 'Sub Cat EN'
+      return getProp(item, [
+        'SubCategoryEN', 'Sub Category EN', 'SubCategory_EN', 'subCategoryEN', 'หมวดย่อย EN', 'SubCatEN'
       ]);
-      if (val) return val;
-
-      for (let key in item) {
-        const kLower = key.toLowerCase();
-        if ((kLower.includes('sub') || kLower.includes('ย่อย')) && kLower.includes('en')) {
-          if (item[key] && String(item[key]).trim() !== '') {
-            return String(item[key]).trim();
-          }
-        }
-      }
-      return '';
     }
 
     function getCategoryImageUrl(items, isSubCategory = false, subCatName = '') {
@@ -519,7 +511,7 @@
       renderStep1MainCategories();
     }
 
-    // 1. Render หมวดหมู่หลัก (รูปแบบตรงตามภาพที่ 2)
+    /* Step 1: Render หมวดหมู่หลัก (ตรงตามภาพที่ 2 100%) */
     function renderStep1MainCategories() {
       currentStepNav = 1;
       updateHeaderUI();
@@ -532,17 +524,12 @@
       const mainCatMap = new Map();
       catalog.forEach(item => {
         const catName = getCategoryTH(item);
-        const catNameEN = getCategoryEN(item);
+        const catNameEN = getCategoryEN(item, catName);
 
         if (!mainCatMap.has(catName)) {
           const itemsInCat = catalog.filter(i => getCategoryTH(i) === catName);
           const foundImg = getCategoryImageUrl(itemsInCat);
           mainCatMap.set(catName, { name: catName, nameEN: catNameEN, img: foundImg });
-        } else {
-          const existing = mainCatMap.get(catName);
-          if (!existing.nameEN && catNameEN) {
-            existing.nameEN = catNameEN;
-          }
         }
       });
 
@@ -552,15 +539,17 @@
       mainCatMap.forEach(cat => {
         const imgHtml = cat.img 
           ? `<img src="${cat.img}" class="img-fluid" alt="${cat.name}" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/679/679821.png';">`
-          : `<div class="mb-2" style="font-size:3rem;">📦</div>`;
+          : `<div class="mb-2" style="font-size:2.8rem;">📦</div>`;
 
-        // ตรงตามภาพที่ 2: แสดงภาษาอังกฤษในวงเล็บ (Brass Fittings) ใต้ชื่อภาษาไทย
-        const enHtml = cat.nameEN ? `<div class="text-muted small mt-1" style="font-size: 0.85rem; color: #6c757d;">(${cat.nameEN})</div>` : '';
+        // แสดงชื่อภาษาอังกฤษในวงเล็บ เช่น (Brass Fittings) ตามภาพที่ 2
+        const enHtml = cat.nameEN 
+          ? `<div style="font-size: 0.82rem; color: #6C757D; margin-top: 3px; font-weight: 400;">(${cat.nameEN})</div>` 
+          : '';
 
         html += `
           <div class="item-category-card" onclick="selectMainCategory('${cat.name}')">
             ${imgHtml}
-            <div class="fw-bold text-dark fs-5 mb-0">${cat.name}</div>
+            <div class="fw-bold text-dark fs-5 mb-0" style="line-height: 1.2;">${cat.name}</div>
             ${enHtml}
           </div>
         `;
@@ -571,11 +560,11 @@
     function selectMainCategory(catName) {
       selectedCategory = catName;
       const foundItem = catalog.find(i => getCategoryTH(i) === catName);
-      selectedCategoryEN = foundItem ? getCategoryEN(foundItem) : '';
+      selectedCategoryEN = getCategoryEN(foundItem, catName);
       renderStep2SubCategories(catName);
     }
 
-    // 2. Render หมวดย่อย
+    /* Step 2: Render หมวดย่อย */
     function renderStep2SubCategories(mainCatName) {
       currentStepNav = 2;
       updateHeaderUI();
@@ -595,11 +584,6 @@
         if (!subCatMap.has(subCatName)) {
           const foundImg = getCategoryImageUrl(itemsInMainCat, true, subCatName);
           subCatMap.set(subCatName, { name: subCatName, nameEN: subCatNameEN, img: foundImg });
-        } else {
-          const existing = subCatMap.get(subCatName);
-          if (!existing.nameEN && subCatNameEN) {
-            existing.nameEN = subCatNameEN;
-          }
         }
       });
 
@@ -609,14 +593,14 @@
       subCatMap.forEach(sub => {
         const imgHtml = sub.img 
           ? `<img src="${sub.img}" class="img-fluid" alt="${sub.name}" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/679/679821.png';">`
-          : `<div class="mb-2" style="font-size:3rem; color:var(--brand-yellow);"><i class="bi bi-box-fill"></i></div>`;
+          : `<div class="mb-2" style="font-size:2.8rem; color:var(--brand-yellow);"><i class="bi bi-box-fill"></i></div>`;
 
-        const enHtml = sub.nameEN ? `<div class="text-muted small mt-1" style="font-size: 0.85rem; color: #6c757d;">(${sub.nameEN})</div>` : '';
+        const enHtml = sub.nameEN ? `<div style="font-size: 0.82rem; color: #6C757D; margin-top: 3px; font-weight: 400;">(${sub.nameEN})</div>` : '';
 
         html += `
           <div class="item-category-card" onclick="selectSubCategory('${sub.name}')">
             ${imgHtml}
-            <div class="fw-bold text-dark fs-5 mb-0">${sub.name}</div>
+            <div class="fw-bold text-dark fs-5 mb-0" style="line-height: 1.2;">${sub.name}</div>
             ${enHtml}
           </div>
         `;
@@ -627,10 +611,11 @@
     function selectSubCategory(subCatName) {
       selectedSubCategory = subCatName;
       const foundItem = catalog.find(i => getCategoryTH(i) === selectedCategory && getSubCategoryTH(i) === subCatName);
-      selectedSubCategoryEN = foundItem ? getSubCategoryEN(foundItem) : '';
+      selectedSubCategoryEN = getSubCategoryEN(foundItem);
       renderStep3Items();
     }
 
+    /* Step 3: Render สินค้า */
     function renderStep3Items() {
       currentStepNav = 3;
       updateHeaderUI();
@@ -864,7 +849,7 @@
       const totalCount = Object.values(cart).reduce((a, b) => a + b, 0);
       const btnSubmit = document.getElementById('btnSubmitMain');
       if (btnSubmit && currentPage === 2) {
-        btnSubmit.innerText = totalCount > 0 ? `ยืนยันรายการ (${totalCount})` : 'ยืนยันรายการ';
+        btnSubmit.innerText = `ยืนยันรายการ (${totalCount})`;
       }
     }
 
@@ -873,14 +858,14 @@
       const btnBack = document.getElementById('btnNavBackHeader');
 
       if (currentStepNav === 1) {
-        titleEl.innerHTML = `<span class="me-1">👑</span> 2. เลือกหมวดหมู่หลัก`;
+        titleEl.innerHTML = `<span class="me-1">👑</span> <span style="color:var(--brand-blue);">2.</span> เลือกหมวดหมู่หลัก`;
         btnBack.style.display = 'none';
       } else if (currentStepNav === 2) {
-        let textEN = selectedCategoryEN ? ` <span class="text-muted fw-normal" style="font-size:0.9rem;">(${selectedCategoryEN})</span>` : '';
+        let textEN = selectedCategoryEN ? ` <span class="text-muted fw-normal" style="font-size:0.85rem;">(${selectedCategoryEN})</span>` : '';
         titleEl.innerHTML = `<i class="bi bi-box-fill text-warning me-1"></i> ${selectedCategory} ${textEN}`;
         btnBack.style.display = 'inline-block';
       } else if (currentStepNav === 3) {
-        let textEN = selectedSubCategoryEN ? ` <span class="text-muted fw-normal" style="font-size:0.9rem;">(${selectedSubCategoryEN})</span>` : '';
+        let textEN = selectedSubCategoryEN ? ` <span class="text-muted fw-normal" style="font-size:0.85rem;">(${selectedSubCategoryEN})</span>` : '';
         titleEl.innerHTML = `<i class="bi bi-list-nested me-1 text-warning"></i> ${selectedSubCategory} ${textEN}`;
         btnBack.style.display = 'inline-block';
       }
