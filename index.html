@@ -9,8 +9,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Google Fonts: เปลี่ยนจาก Kanit เป็น Prompt เพื่อให้อ่านง่ายและสวยงามขึ้น -->
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -21,11 +21,17 @@
     }
 
     body {
-      font-family: 'Kanit', sans-serif;
+      font-family: 'Prompt', sans-serif;
       background-color: var(--bg-gray);
       color: var(--text-dark);
       margin: 0;
       padding-bottom: 90px;
+    }
+
+    .max-width-600 {
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .page { display: none; }
@@ -348,7 +354,7 @@
   </div>
 
   <script>
-    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby__YLOH5br1nOdileCqBWKZWV_k5rpruuna5xlqbQYyjd1cKM56ApPTTj3ra0ukZIV/exec';
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwKZnpO3khPoBqwkaEDqL6f6cZ6XrqQC7IsBl8vPv_dIkkk6btHPAdFH3w4eDbc0qN1/exec';
     
     let catalog = []; 
     let cart = {};
@@ -357,6 +363,8 @@
 
     let selectedCategory = '';
     let selectedSubCategory = '';
+    let selectedCategoryEN = ''; 
+    let selectedSubCategoryEN = '';
 
     window.onload = () => {
       goToPage(1);
@@ -396,7 +404,7 @@
     }
 
     function getCategoryEN(item) {
-      return getProp(item, ['CategoryEN', 'Category EN', 'categoryEN', 'category_en', 'หมวดหลัก EN', 'หมวดหลักEN', 'หมวดหลัก (EN)']);
+      return getProp(item, ['CategoryEN', 'Category EN', 'categoryEN', 'category_en', 'หมวดหลัก EN', 'หมวดหลักEN', 'หมวดหลัก (EN)', 'หมวดหมู่หลัก EN']);
     }
 
     function getSubCategoryTH(item) {
@@ -404,7 +412,7 @@
     }
 
     function getSubCategoryEN(item) {
-      return getProp(item, ['SubCategoryEN', 'Sub Category EN', 'subCategoryEN', 'subCategory_en', 'หมวดย่อย EN', 'หมวดย่อยEN', 'หมวดย่อย (EN)']);
+      return getProp(item, ['SubCategoryEN', 'Sub Category EN', 'subCategoryEN', 'subCategory_en', 'หมวดย่อย EN', 'หมวดย่อยEN', 'หมวดย่อย (EN)', 'หมวดหมู่ย่อย EN']);
     }
 
     function getCategoryImageUrl(items, isSubCategory = false, subCatName = '') {
@@ -513,6 +521,10 @@
 
     function selectMainCategory(catName) {
       selectedCategory = catName;
+      // หาชื่อภาษาอังกฤษมาเก็บไว้
+      const foundItem = catalog.find(i => getCategoryTH(i) === catName);
+      selectedCategoryEN = foundItem ? getCategoryEN(foundItem) : '';
+      
       renderStep2SubCategories(catName);
     }
 
@@ -565,6 +577,10 @@
 
     function selectSubCategory(subCatName) {
       selectedSubCategory = subCatName;
+      // หาชื่อภาษาอังกฤษมาเก็บไว้
+      const foundItem = catalog.find(i => getCategoryTH(i) === selectedCategory && getSubCategoryTH(i) === subCatName);
+      selectedSubCategoryEN = foundItem ? getSubCategoryEN(foundItem) : '';
+      
       renderStep3Items();
     }
 
@@ -588,8 +604,11 @@
 
     function handleSearch(keyword) {
       const searchVal = keyword.trim().toLowerCase();
+      // แก้ไขปัญหาเวลาลบคำค้นหาจนว่าง แล้วหน้าจอไม่กลับไปค่าเดิม
       if (searchVal === '') {
-        if(currentStepNav === 3) renderStep3Items();
+        if (currentStepNav === 3) renderStep3Items();
+        else if (currentStepNav === 2) renderStep2SubCategories(selectedCategory);
+        else renderStep1MainCategories();
         return;
       }
 
@@ -802,7 +821,10 @@
 
     function updateCartUI() {
       const totalCount = Object.values(cart).reduce((a, b) => a + b, 0);
-      document.getElementById('cartCountTotal').innerText = totalCount;
+      const counterEl = document.getElementById('cartCountTotal');
+      if (counterEl) {
+        counterEl.innerText = totalCount;
+      }
     }
 
     function updateHeaderUI() {
@@ -813,10 +835,14 @@
         titleEl.innerHTML = `<span class="text-warning me-1">👑</span> 2. เลือกหมวดหมู่หลัก`;
         btnBack.style.display = 'none';
       } else if (currentStepNav === 2) {
-        titleEl.innerHTML = `<i class="bi bi-box-fill text-warning me-1"></i> ${selectedCategory}`;
+        // เพิ่มภาษาอังกฤษต่อท้ายถ้ามี
+        let textEN = selectedCategoryEN ? ` <span class="text-muted fw-normal" style="font-size:0.85rem;">| ${selectedCategoryEN}</span>` : '';
+        titleEl.innerHTML = `<i class="bi bi-box-fill text-warning me-1"></i> ${selectedCategory}${textEN}`;
         btnBack.style.display = 'inline-block';
       } else if (currentStepNav === 3) {
-        titleEl.innerHTML = `<i class="bi bi-list-nested me-1 text-warning"></i> ${selectedSubCategory}`;
+        // เพิ่มภาษาอังกฤษต่อท้ายถ้ามี
+        let textEN = selectedSubCategoryEN ? ` <span class="text-muted fw-normal" style="font-size:0.85rem;">| ${selectedSubCategoryEN}</span>` : '';
+        titleEl.innerHTML = `<i class="bi bi-list-nested me-1 text-warning"></i> ${selectedSubCategory}${textEN}`;
         btnBack.style.display = 'inline-block';
       }
     }
@@ -972,7 +998,14 @@
       const bottomBar = document.getElementById('bottomActionBar');
       if (pageNumber === 2 || pageNumber === 3) {
         bottomBar.style.display = 'block';
-        document.getElementById('btnSubmitMain').innerText = pageNumber === 3 ? 'ยืนยันการเบิกสินค้า' : `ยืนยันรายการ (${Object.keys(cart).length})`;
+        const btnSubmit = document.getElementById('btnSubmitMain');
+        if (pageNumber === 3) {
+          btnSubmit.innerText = 'ยืนยันการเบิกสินค้า';
+        } else {
+          // แก้ไขบักปุ่มเพื่อไม่ให้ span id="cartCountTotal" หายไป
+          const totalQty = Object.values(cart).reduce((a, b) => a + b, 0);
+          btnSubmit.innerHTML = `ยืนยันรายการ (<span id="cartCountTotal">${totalQty}</span>)`;
+        }
       } else {
         bottomBar.style.display = 'none';
       }
