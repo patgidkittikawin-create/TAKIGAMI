@@ -76,7 +76,7 @@
       margin-bottom: 12px;
     }
 
-    /* Product Cards (Step 3 - Grouped Variant) */
+    /* Product Cards (Step 3) */
     .product-card {
       background: #ffffff;
       border: 1px solid #EAEAEA;
@@ -363,6 +363,21 @@
       loadDataFromSheet();
     };
 
+    // ฟังก์ชันอเนกประสงค์สำหรับดึงค่าจาก Object แบบไม่สนตัวพิมพ์เล็ก-ใหญ่ และไม่สนเว้นวรรค
+    function getProp(obj, targetKeys) {
+      if (!obj || typeof obj !== 'object') return '';
+      const keys = Object.keys(obj);
+      for (let target of targetKeys) {
+        const normTarget = target.toLowerCase().replace(/[\s_\(\)]/g, '');
+        const foundKey = keys.find(k => k.toLowerCase().replace(/[\s_\(\)]/g, '') === normTarget);
+        if (foundKey && obj[foundKey] !== undefined && obj[foundKey] !== null) {
+          const val = String(obj[foundKey]).trim();
+          if (val !== '') return val;
+        }
+      }
+      return '';
+    }
+
     function fixImageUrl(url) {
       if (!url || typeof url !== 'string') return '';
       let cleanUrl = url.trim();
@@ -376,24 +391,34 @@
       return cleanUrl;
     }
 
+    function getCategoryTH(item) {
+      return getProp(item, ['Category TH', 'CategoryTH', 'categoryTH', 'category_th', 'หมวดหลัก', 'category']) || 'หมวดทั่วไป';
+    }
+
+    function getCategoryEN(item) {
+      return getProp(item, ['CategoryEN', 'Category EN', 'categoryEN', 'category_en', 'หมวดหลัก EN', 'หมวดหลักEN', 'หมวดหลัก (EN)']);
+    }
+
+    function getSubCategoryTH(item) {
+      return getProp(item, ['SubCategory TH', 'SubCategoryTH', 'subCategoryTH', 'subCategory_th', 'หมวดย่อย', 'subCategory']) || 'ทั่วไป';
+    }
+
+    function getSubCategoryEN(item) {
+      return getProp(item, ['SubCategoryEN', 'Sub Category EN', 'subCategoryEN', 'subCategory_en', 'หมวดย่อย EN', 'หมวดย่อยEN', 'หมวดย่อย (EN)']);
+    }
+
     function getCategoryImageUrl(items, isSubCategory = false, subCatName = '') {
       for (let item of items) {
-        if (isSubCategory && (item.subCategoryTH || item.subCategory || item['หมวดย่อย'] || 'ทั่วไป') !== subCatName) continue;
+        if (isSubCategory && getSubCategoryTH(item) !== subCatName) continue;
         
         let rawUrl = '';
         if (isSubCategory) {
-          rawUrl = item['รูปหมวดย่อย'] || item.subCategoryImg;
-          if (!rawUrl || rawUrl.toString().trim() === '') {
-            rawUrl = item['รูปสินค้า'] || item.productImg || item.image || item.img;
-          }
+          rawUrl = getProp(item, ['รูปหมวดย่อย', 'subCategoryImg', 'SubCategoryImg', 'รูปสินค้า', 'productImg', 'image', 'img']);
         } else {
-          rawUrl = item['รูปหมวดหลัก'] || item.categoryImg;
-          if (!rawUrl || rawUrl.toString().trim() === '') {
-            rawUrl = item['รูปหมวดย่อย'] || item.subCategoryImg || item['รูปสินค้า'] || item.productImg;
-          }
+          rawUrl = getProp(item, ['รูปหมวดหลัก', 'categoryImg', 'CategoryImg', 'รูปหมวดย่อย', 'subCategoryImg', 'รูปสินค้า', 'productImg', 'image', 'img']);
         }
 
-        if (rawUrl && typeof rawUrl === 'string' && rawUrl.trim() !== '') {
+        if (rawUrl) {
           return fixImageUrl(rawUrl);
         }
       }
@@ -440,7 +465,7 @@
       renderStep1MainCategories();
     }
 
-    // 1. หมวดหมู่หลัก (ดึงชื่อ TH + EN)
+    // 1. หมวดหมู่หลัก
     function renderStep1MainCategories() {
       currentStepNav = 1;
       updateHeaderUI();
@@ -452,13 +477,18 @@
 
       const mainCatMap = new Map();
       catalog.forEach(item => {
-        const catName = item.categoryTH || item.category || item['หมวดหลัก'] || 'หมวดทั่วไป';
-        const catNameEN = item.categoryEN || item['หมวดหลัก EN'] || item['หมวดหลักEN'] || '';
+        const catName = getCategoryTH(item);
+        const catNameEN = getCategoryEN(item);
 
         if (!mainCatMap.has(catName)) {
-          const itemsInCat = catalog.filter(i => (i.categoryTH || i.category || i['หมวดหลัก'] || 'หมวดทั่วไป') === catName);
+          const itemsInCat = catalog.filter(i => getCategoryTH(i) === catName);
           const foundImg = getCategoryImageUrl(itemsInCat);
           mainCatMap.set(catName, { name: catName, nameEN: catNameEN, img: foundImg });
+        } else {
+          const existing = mainCatMap.get(catName);
+          if (!existing.nameEN && catNameEN) {
+            existing.nameEN = catNameEN;
+          }
         }
       });
 
@@ -473,8 +503,8 @@
         html += `
           <div class="item-category-card" onclick="selectMainCategory('${cat.name}')">
             ${imgHtml}
-            <div class="fw-bold text-dark">${cat.name}</div>
-            ${cat.nameEN ? `<div class="text-muted small">${cat.nameEN}</div>` : ''}
+            <div class="fw-bold text-dark fs-5">${cat.name}</div>
+            ${cat.nameEN ? `<div class="text-muted small mt-1" style="font-size:0.9rem;">${cat.nameEN}</div>` : ''}
           </div>
         `;
       });
@@ -486,7 +516,7 @@
       renderStep2SubCategories(catName);
     }
 
-    // 2. หมวดย่อย (ดึงชื่อ TH + EN)
+    // 2. หมวดย่อย
     function renderStep2SubCategories(mainCatName) {
       currentStepNav = 2;
       updateHeaderUI();
@@ -497,15 +527,20 @@
       document.getElementById('step3ItemView').style.display = 'none';
 
       const subCatMap = new Map();
-      const itemsInMainCat = catalog.filter(i => (i.categoryTH || i.category || i['หมวดหลัก'] || 'หมวดทั่วไป') === mainCatName);
+      const itemsInMainCat = catalog.filter(i => getCategoryTH(i) === mainCatName);
 
       itemsInMainCat.forEach(item => {
-        const subCatName = item.subCategoryTH || item.subCategory || item['หมวดย่อย'] || 'ทั่วไป';
-        const subCatNameEN = item.subCategoryEN || item['หมวดย่อย EN'] || item['หมวดย่อยEN'] || '';
+        const subCatName = getSubCategoryTH(item);
+        const subCatNameEN = getSubCategoryEN(item);
 
         if (!subCatMap.has(subCatName)) {
           const foundImg = getCategoryImageUrl(itemsInMainCat, true, subCatName);
           subCatMap.set(subCatName, { name: subCatName, nameEN: subCatNameEN, img: foundImg });
+        } else {
+          const existing = subCatMap.get(subCatName);
+          if (!existing.nameEN && subCatNameEN) {
+            existing.nameEN = subCatNameEN;
+          }
         }
       });
 
@@ -520,8 +555,8 @@
         html += `
           <div class="item-category-card" onclick="selectSubCategory('${sub.name}')">
             ${imgHtml}
-            <div class="fw-bold text-dark">${sub.name}</div>
-            ${sub.nameEN ? `<div class="text-muted small">${sub.nameEN}</div>` : ''}
+            <div class="fw-bold text-dark fs-5">${sub.name}</div>
+            ${sub.nameEN ? `<div class="text-muted small mt-1" style="font-size:0.9rem;">${sub.nameEN}</div>` : ''}
           </div>
         `;
       });
@@ -543,8 +578,8 @@
       document.getElementById('step3ItemView').style.display = 'block';
 
       const filteredItems = catalog.filter(item => {
-        const catMatch = (item.categoryTH || item.category || item['หมวดหลัก'] || 'หมวดทั่วไป') === selectedCategory;
-        const subCatMatch = (item.subCategoryTH || item.subCategory || item['หมวดย่อย'] || 'ทั่วไป') === selectedSubCategory;
+        const catMatch = getCategoryTH(item) === selectedCategory;
+        const subCatMatch = getSubCategoryTH(item) === selectedSubCategory;
         return catMatch && subCatMatch;
       });
 
@@ -563,7 +598,11 @@
       document.getElementById('step3ItemView').style.display = 'block';
 
       const matchedItems = catalog.filter(item => {
-        return `${item.nameTH} ${item.nameEN} ${item.partId} ${item.size}`.toLowerCase().includes(searchVal);
+        const nameTH = getProp(item, ['nameTH', 'NameTH', 'ชื่อสินค้า']);
+        const nameEN = getProp(item, ['nameEN', 'NameEN', 'ชื่อสินค้า EN']);
+        const partId = getProp(item, ['partId', 'PartID', 'PartId', 'รหัสสินค้า']);
+        const size = getProp(item, ['size', 'Size', 'ขนาด']);
+        return `${nameTH} ${nameEN} ${partId} ${size}`.toLowerCase().includes(searchVal);
       });
 
       renderProductCards(matchedItems);
@@ -572,13 +611,17 @@
     function groupCatalogData(dataToGroup) {
       const grouped = {};
       dataToGroup.forEach(item => {
-        const groupKey = item.nameTH || item.nameEN || item.partId;
-        const pImg = fixImageUrl(item['รูปสินค้า'] || item.productImg || item.image || item.img || item.picture);
+        const nameTH = getProp(item, ['nameTH', 'NameTH', 'ชื่อสินค้า']);
+        const nameEN = getProp(item, ['nameEN', 'NameEN', 'ชื่อสินค้า EN']);
+        const partId = getProp(item, ['partId', 'PartID', 'PartId', 'รหัสสินค้า']);
+        
+        const groupKey = nameTH || nameEN || partId;
+        const pImg = fixImageUrl(getProp(item, ['รูปสินค้า', 'productImg', 'ProductImg', 'image', 'img', 'picture']));
         
         if (!grouped[groupKey]) {
           grouped[groupKey] = {
-            nameTH: item.nameTH,
-            nameEN: item.nameEN,
+            nameTH: nameTH,
+            nameEN: nameEN,
             productImg: pImg,
             variants: []
           };
@@ -606,27 +649,36 @@
         let optionsHtml = '';
         
         group.variants.forEach((v) => {
-          const qtyInCart = cart[v.partId] || 0;
-          const rawStock = parseInt(v.stock || 0);
-          const remainingStock = rawStock - qtyInCart;
-          const variantImg = fixImageUrl(v['รูปสินค้า'] || v.productImg || v.image || v.img || v.picture || group.productImg);
+          const partId = getProp(v, ['partId', 'PartID', 'PartId', 'รหัสสินค้า']);
+          const size = getProp(v, ['size', 'Size', 'ขนาด']);
+          const stock = getProp(v, ['stock', 'Stock', 'จำนวน']);
+          const location = getProp(v, ['location', 'Location', 'สถานที่จัดเก็บ']);
 
-          optionsHtml += `<option value="${v.partId}" data-stock="${rawStock}" data-location="${v.location || '-'}" data-img="${variantImg}">
-            ขนาด: ${v.size || '-'} (คงเหลือ: ${remainingStock})
+          const qtyInCart = cart[partId] || 0;
+          const rawStock = parseInt(stock || 0);
+          const remainingStock = rawStock - qtyInCart;
+          const variantImg = fixImageUrl(getProp(v, ['รูปสินค้า', 'productImg', 'image', 'img']) || group.productImg);
+
+          optionsHtml += `<option value="${partId}" data-stock="${rawStock}" data-location="${location || '-'}" data-img="${variantImg}">
+            ขนาด: ${size || '-'} (คงเหลือ: ${remainingStock})
           </option>`;
         });
 
         const defaultVariant = group.variants[0];
-        const defaultQtyInCart = cart[defaultVariant.partId] || 0;
-        const defaultRawStock = parseInt(defaultVariant.stock || 0);
+        const defaultPartId = getProp(defaultVariant, ['partId', 'PartID', 'PartId', 'รหัสสินค้า']);
+        const defaultStock = getProp(defaultVariant, ['stock', 'Stock', 'จำนวน']);
+        const defaultLocation = getProp(defaultVariant, ['location', 'Location', 'สถานที่จัดเก็บ']);
+
+        const defaultQtyInCart = cart[defaultPartId] || 0;
+        const defaultRawStock = parseInt(defaultStock || 0);
         const defaultRemainingStock = defaultRawStock - defaultQtyInCart;
-        const defaultImg = fixImageUrl(defaultVariant['รูปสินค้า'] || defaultVariant.productImg || defaultVariant.image || defaultVariant.img || group.productImg);
+        const defaultImg = fixImageUrl(getProp(defaultVariant, ['รูปสินค้า', 'productImg', 'image', 'img']) || group.productImg);
 
         html += `
           <div class="col-12 col-md-6">
             <div class="product-card">
               <div class="d-flex justify-content-between align-items-center mb-2">
-                <span id="display-partId-${cardId}" class="badge-partid">${defaultVariant.partId}</span>
+                <span id="display-partId-${cardId}" class="badge-partid">${defaultPartId}</span>
                 <span id="display-stock-${cardId}" class="badge-stock" style="background-color: ${defaultRemainingStock > 0 ? '#34A853' : '#EA4335'};">คลัง: ${defaultRemainingStock}</span>
               </div>
 
@@ -645,7 +697,7 @@
                  <select id="select-size-${cardId}" class="form-select form-select-sm border-secondary w-75" onchange="handleVariantChange('${cardId}')">
                    ${optionsHtml}
                  </select>
-                 <span id="display-location-${cardId}" class="badge-location ms-2"><i class="bi bi-geo-alt-fill me-1"></i>${defaultVariant.location || '-'}</span>
+                 <span id="display-location-${cardId}" class="badge-location ms-2"><i class="bi bi-geo-alt-fill me-1"></i>${defaultLocation || '-'}</span>
               </div>
 
               <div class="qty-control-bar">
@@ -806,9 +858,11 @@
       const container = document.getElementById('summaryList');
       let html = '';
       for (const [partId, qty] of Object.entries(cart)) {
-        const item = catalog.find(i => i.partId === partId);
-        const name = item ? (item.nameTH || item.nameEN) : partId;
-        const size = item ? item.size : '-';
+        const item = catalog.find(i => getProp(i, ['partId', 'PartID', 'PartId', 'รหัสสินค้า']) === partId);
+        const nameTH = item ? getProp(item, ['nameTH', 'NameTH', 'ชื่อสินค้า']) : '';
+        const nameEN = item ? getProp(item, ['nameEN', 'NameEN', 'ชื่อสินค้า EN']) : '';
+        const name = nameTH || nameEN || partId;
+        const size = item ? getProp(item, ['size', 'Size', 'ขนาด']) : '-';
         
         html += `
           <div class="d-flex justify-content-between align-items-center p-3 mb-2 bg-light rounded-3 border">
@@ -843,11 +897,15 @@
       
       const cartArray = [];
       for (const [partId, qty] of Object.entries(cart)) {
-        const item = catalog.find(i => i.partId === partId);
+        const item = catalog.find(i => getProp(i, ['partId', 'PartID', 'PartId', 'รหัสสินค้า']) === partId);
+        const nameTH = item ? getProp(item, ['nameTH', 'NameTH', 'ชื่อสินค้า']) : '';
+        const nameEN = item ? getProp(item, ['nameEN', 'NameEN', 'ชื่อสินค้า EN']) : '';
+        const size = item ? getProp(item, ['size', 'Size', 'ขนาด']) : '-';
+
         cartArray.push({
           partId: partId,
-          partName: item ? (item.nameTH || item.nameEN) : '',
-          size: item ? item.size : '-',
+          partName: nameTH || nameEN || partId,
+          size: size,
           qty: qty
         });
       }
