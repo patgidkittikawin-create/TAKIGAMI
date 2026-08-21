@@ -72,11 +72,12 @@
       <input type="text" id="searchItem" class="form-control border-start-0 form-control-lg" placeholder="ค้นหาชื่อ, รหัส, ขนาด..." onkeyup="renderStep3()">
     </div>
 
-    <!-- หมวดหมู่ (จำลอง) -->
+    <!-- หมวดหมู่ -->
     <div class="mb-3 overflow-auto" style="white-space: nowrap;" id="categoryContainer">
       <button class="btn btn-outline-primary active me-2" onclick="setActiveCategory('ทั้งหมด', this)">ทั้งหมด</button>
       <button class="btn btn-outline-primary me-2" onclick="setActiveCategory('เครื่องมือเจาะ', this)">เครื่องมือเจาะ</button>
       <button class="btn btn-outline-primary me-2" onclick="setActiveCategory('ข้อต่อ', this)">ข้อต่อ</button>
+      <!-- สามารถเพิ่มหมวดหมู่อื่นๆ ตรงนี้ได้เลย -->
     </div>
 
     <!-- รายการสินค้า -->
@@ -140,7 +141,6 @@
   <!-- PAGE 4: สลิปใบเบิก -->
   <div id="page4" class="page container pb-5">
     <div class="card border-0 shadow rounded-4 p-4 position-relative overflow-hidden">
-      <!-- แถบสีตกแต่งสลิป -->
       <div style="position: absolute; top: 0; left: 0; width: 100%; height: 8px; background-color: var(--navy);"></div>
       
       <div class="text-center mb-4 mt-2">
@@ -179,31 +179,53 @@
   <!-- ================= JAVASCRIPT ================= -->
   <script>
     // ---------------------------------------------------------
-    // 1. ตัวแปรและข้อมูลตั้งต้น
+    // 1. การตั้งค่าและตัวแปรเริ่มต้น
     // ---------------------------------------------------------
+    // ลิงก์ Web App URL ถูกใส่ให้แล้วที่นี่ครับ
     const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzlUiTB5ZofEWNJmusE_XgRiRFyznx4m3ViTmgwU8QKgdDCPqD9-z3gtRVsehfJzK45/exec';
     
-    // ข้อมูลจำลอง (Mock Data) สำหรับทดสอบระบบการรวมกลุ่ม
-    // ถ้าคุณเชื่อม API แล้ว ให้เอาข้อมูลจาก API มาใส่ตัวแปร catalog แทนได้เลย
-    let catalog = [
-      { partId: 'DRILL-001', nameTH: 'ดอกสว่าน SHANK TWIST DRILLS', nameEN: 'Twist Drill', category: 'เครื่องมือเจาะ', size: '2.0 mm', location: 'A-01', stock: 71, image: '' },
-      { partId: 'DRILL-002', nameTH: 'ดอกสว่าน SHANK TWIST DRILLS', nameEN: 'Twist Drill', category: 'เครื่องมือเจาะ', size: '2.5 mm', location: 'A-01', stock: 72, image: '' },
-      { partId: 'DRILL-003', nameTH: 'ดอกสว่าน SHANK TWIST DRILLS', nameEN: 'Twist Drill', category: 'เครื่องมือเจาะ', size: '3.0 mm', location: 'A-01', stock: 0, image: '' }, // สต็อกหมด
-      { partId: 'P-001', nameTH: 'ข้อต่อตรงเกลียวนอกทองเหลือง', nameEN: 'NIPPLE (BRASS)', category: 'ข้อต่อ', size: 'PT1/8"', location: '1C-06', stock: 12, image: '' },
-      { partId: 'P-002', nameTH: 'ข้อต่อตรงเกลียวนอกทองเหลือง', nameEN: 'NIPPLE (BRASS)', category: 'ข้อต่อ', size: 'PT1/4"', location: '1C-06', stock: 5, image: '' }
-    ];
-
+    // ตั้งค่าเป็น Array ว่าง เพื่อรอรับข้อมูลจริงจาก Google Sheet
+    let catalog = []; 
     let cart = {};
     let activeCategory = 'ทั้งหมด';
 
-    // โหลดข้อมูลครั้งแรก
+    // ---------------------------------------------------------
+    // 2. โหลดข้อมูลจาก Google Sheet เมื่อเปิดเว็บ
+    // ---------------------------------------------------------
     window.onload = () => {
-      // TODO: ถ้ามีการ Fetch ข้อมูลจาก GAS ให้ใส่ตรงนี้
-      renderStep3();
+      loadDataFromSheet();
     };
 
+    function loadDataFromSheet() {
+      // แสดงหน้าต่างโหลดข้อมูล
+      Swal.fire({
+        title: 'กำลังโหลดข้อมูลสินค้า...',
+        text: 'กรุณารอสักครู่',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+      });
+
+      // ทำการดึงข้อมูลจาก GAS 
+      fetch(GAS_WEB_APP_URL + "?action=getProducts")
+        .then(response => response.json())
+        .then(data => {
+          catalog = data; // นำข้อมูลที่ได้ใส่ใน catalog
+          renderStep3();  // สั่งวาดหน้าจอ
+          Swal.close();   // ปิดหน้าต่างโหลด
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+          Swal.fire({ 
+            icon: 'error', 
+            title: 'โหลดข้อมูลไม่สำเร็จ', 
+            text: 'ไม่สามารถเชื่อมต่อกับ Google Sheet ได้',
+            confirmButtonColor: '#1D2088'
+          });
+        });
+    }
+
     // ---------------------------------------------------------
-    // 2. ระบบจัดกลุ่มสินค้า (NEW ฟีเจอร์ที่ขอเพิ่ม)
+    // 3. ระบบจัดกลุ่มสินค้า และ Render หน้าจอ (เลือกขนาด)
     // ---------------------------------------------------------
     function groupCatalogData(dataToGroup) {
       const grouped = {};
@@ -234,7 +256,7 @@
       const container = document.getElementById('itemContainer');
       const searchInput = document.getElementById('searchItem').value.toLowerCase();
       
-      // กรองข้อมูล
+      // กรองข้อมูลตามการค้นหาและหมวดหมู่
       let filtered = catalog.filter(item => {
         if (activeCategory !== 'ทั้งหมด' && item.category !== activeCategory) return false;
         if (searchInput && !`${item.nameTH} ${item.nameEN} ${item.partId} ${item.size}`.toLowerCase().includes(searchInput)) return false;
@@ -242,11 +264,11 @@
       });
 
       if (filtered.length === 0) {
-        container.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="bi bi-box fs-1 mb-2"></i><br>ไม่พบสินค้าที่ค้นหา</div>';
+        container.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="bi bi-box fs-1 mb-2"></i><br>ไม่พบสินค้าที่ค้นหา หรือคลังสินค้ายังว่างเปล่า</div>';
         return;
       }
 
-      // จัดกลุ่ม
+      // จัดกลุ่มข้อมูล
       const groupedData = groupCatalogData(filtered);
       let html = '';
       
@@ -254,6 +276,7 @@
         const cardId = `group-card-${groupIndex}`;
         let optionsHtml = '';
         
+        // สร้าง Dropdown สำหรับขนาดต่างๆ ในกลุ่ม
         group.variants.forEach((v) => {
           const qtyInCart = cart[v.partId] || 0;
           const remainingStock = parseInt(v.stock || 0) - qtyInCart;
@@ -262,6 +285,7 @@
           </option>`;
         });
 
+        // กำหนดค่าเริ่มต้นตามตัวเลือกแรก
         const defaultVariant = group.variants[0];
         const defaultQtyInCart = cart[defaultVariant.partId] || 0;
         const defaultStock = parseInt(defaultVariant.stock || 0) - defaultQtyInCart;
@@ -320,6 +344,7 @@
       updateCartTotalUI();
     }
 
+    // เมื่อผู้ใช้เปลี่ยน Dropdown ขนาด
     function handleVariantChange(cardId) {
       const selectElement = document.getElementById(`select-size-${cardId}`);
       const selectedOption = selectElement.options[selectElement.selectedIndex];
@@ -345,8 +370,9 @@
       const partId = selectElement.value;
       
       updateCart(partId, change);
-      renderStep3(); 
+      renderStep3(); // ให้หน้าจออัปเดตสต็อกคงเหลือ
       
+      // บังคับให้ Dropdown กลับมาเลือกค่าเดิมหลังจากหน้าจอวาดใหม่
       setTimeout(() => {
         const newSelectElement = document.getElementById(`select-size-${cardId}`);
         if(newSelectElement) {
@@ -357,7 +383,7 @@
     }
 
     // ---------------------------------------------------------
-    // 3. ระบบจัดการตะกร้าสินค้า
+    // 4. ระบบจัดการตะกร้าสินค้า
     // ---------------------------------------------------------
     function updateCart(partId, change) {
       if (!cart[partId]) cart[partId] = 0;
@@ -389,7 +415,7 @@
     }
 
     // ---------------------------------------------------------
-    // 4. โค้ดส่วนที่ 4 (สรุปรายการ, ส่งฟอร์ม, หน้าสลิป)
+    // 5. ระบบสรุปรายการ, ส่งฟอร์ม, และหน้าสลิป
     // ---------------------------------------------------------
     function toggleTimeSelect() {
       const isLater = document.getElementById('receiveLater').checked;
@@ -478,6 +504,7 @@
         }
       };
 
+      // บันทึกข้อมูลลง Google Sheet ผ่าน no-cors
       fetch(GAS_WEB_APP_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -518,6 +545,7 @@
       });
     }
 
+    // ฟังก์ชันเปลี่ยนหน้า
     function goToPage(pageNumber) {
       document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
       let targetPage = document.getElementById('page' + pageNumber);
