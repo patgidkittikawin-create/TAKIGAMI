@@ -86,7 +86,7 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
     .product-img-box {
-      height: 120px;
+      height: 140px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -96,6 +96,7 @@
       max-height: 100%;
       max-width: 100%;
       object-fit: contain;
+      transition: all 0.2s ease-in-out;
     }
 
     /* Quantity Controls Bar */
@@ -200,7 +201,7 @@
   </div>
 
   <!-- ================= PAGE 1: ข้อมูลผู้เบิก ================= -->
-  <div id="page1" class="page active container max-width-600">
+  <div id="page1" class="page container max-width-600">
     <div class="main-card-container">
       <h5 class="fw-bold text-primary mb-4"><i class="bi bi-person-vcard"></i> กรอกข้อมูลผู้เบิก</h5>
       <div class="mb-3">
@@ -349,8 +350,7 @@
 
   <!-- ================= JAVASCRIPT LOGIC ================= -->
   <script>
-    // ⚠️ ลิงก์ Web App ของคุณ (ถ้านำไปใช้ใหม่ ให้เปลี่ยนเป็นลิงก์ล่าสุด)
-    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzmZWyRbJ_tE_sjcYLdN5ne2Y01mc2nFXReA0X__fw2JEcn7yMLBFgJ0Zxdh59YNcg0/exec';
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby__YLOH5br1nOdileCqBWKZWV_k5rpruuna5xlqbQYyjd1cKM56ApPTTj3ra0ukZIV/exec';
     
     let catalog = []; 
     let cart = {};
@@ -361,11 +361,11 @@
     let selectedSubCategory = '';
 
     window.onload = () => {
-      goToPage(1); // บังคับให้โชว์หน้า 1 ก่อนเสมอ
+      goToPage(1);
       loadDataFromSheet();
     };
 
-    // ฟังก์ชันแปลง URL จาก Google Drive ให้ดึงเป็นรูปภาพ Direct Link ทะลุบล็อก
+    // ฟังก์ชันแปลง URL รูปภาพให้แสดงผลเสถียรที่สุด
     function fixImageUrl(url) {
       if (!url || typeof url !== 'string') return '';
       let cleanUrl = url.trim();
@@ -379,17 +379,23 @@
       return cleanUrl;
     }
 
-    // ฟังก์ชันค้นหารูปภาพของหมวดหมู่ (รองรับภาษาไทย)
+    // ฟังก์ชันค้นหารูปภาพของหมวดหมู่
     function getCategoryImageUrl(items, isSubCategory = false, subCatName = '') {
       for (let item of items) {
         if (isSubCategory && (item.subCategoryTH || item.subCategory || item['หมวดย่อย'] || 'ทั่วไป') !== subCatName) continue;
         
-        let rawUrl = isSubCategory 
-          ? (item['รูปหมวดย่อย'] || item.subCategoryImg || item['รูปหมวดหลัก'] || item.categoryImg)
-          : (item['รูปหมวดหลัก'] || item.categoryImg || item['รูปหมวดย่อย'] || item.subCategoryImg);
-
-        if (!rawUrl || rawUrl.toString().trim() === '') {
-          rawUrl = item['รูปสินค้า'] || item.productImg || item.image || item.img;
+        let rawUrl = '';
+        
+        if (isSubCategory) {
+          rawUrl = item['รูปหมวดย่อย'] || item.subCategoryImg;
+          if (!rawUrl || rawUrl.toString().trim() === '') {
+            rawUrl = item['รูปสินค้า'] || item.productImg || item.image || item.img;
+          }
+        } else {
+          rawUrl = item['รูปหมวดหลัก'] || item.categoryImg;
+          if (!rawUrl || rawUrl.toString().trim() === '') {
+            rawUrl = item['รูปหมวดย่อย'] || item.subCategoryImg || item['รูปสินค้า'] || item.productImg;
+          }
         }
 
         if (rawUrl && typeof rawUrl === 'string' && rawUrl.trim() !== '') {
@@ -609,10 +615,13 @@
         const cardId = `group-card-${groupIndex}`;
         let optionsHtml = '';
         
+        // วนลูปสร้างตัวเลือกแต่ละขนาด และฝาก URL รูปภาพประจำขนาดไว้ใน data-img
         group.variants.forEach((v) => {
           const qtyInCart = cart[v.partId] || 0;
           const remainingStock = parseInt(v.stock || 0) - qtyInCart;
-          optionsHtml += `<option value="${v.partId}" data-stock="${remainingStock}" data-location="${v.location || '-'}">
+          const variantImg = fixImageUrl(v['รูปสินค้า'] || v.productImg || v.image || v.img || v.picture || group.productImg);
+
+          optionsHtml += `<option value="${v.partId}" data-stock="${remainingStock}" data-location="${v.location || '-'}" data-img="${variantImg}">
             ขนาด: ${v.size || '-'} (คงเหลือ: ${remainingStock})
           </option>`;
         });
@@ -620,6 +629,7 @@
         const defaultVariant = group.variants[0];
         const defaultQtyInCart = cart[defaultVariant.partId] || 0;
         const defaultStock = parseInt(defaultVariant.stock || 0) - defaultQtyInCart;
+        const defaultImg = fixImageUrl(defaultVariant['รูปสินค้า'] || defaultVariant.productImg || defaultVariant.image || defaultVariant.img || group.productImg);
 
         html += `
           <div class="col-12 col-md-6">
@@ -629,8 +639,9 @@
                 <span id="display-stock-${cardId}" class="badge-stock">คลัง: ${defaultStock}</span>
               </div>
 
+              <!-- กรอบรูปภาพสินค้าประจำการ์ด -->
               <div class="product-img-box">
-                <img src="${group.productImg || 'https://via.placeholder.com/150?text=No+Image'}" 
+                <img id="display-img-${cardId}" src="${defaultImg || 'https://via.placeholder.com/150?text=No+Image'}" 
                      onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=No+Image'" 
                      alt="product">
               </div>
@@ -659,6 +670,7 @@
       container.innerHTML = html;
     }
 
+    // ฟังก์ชันทำงานเมื่อผู้ใช้เปลี่ยนขนาดสินค้าใน Dropdown
     function handleVariantChange(cardId) {
       const selectElement = document.getElementById(`select-size-${cardId}`);
       const selectedOption = selectElement.options[selectElement.selectedIndex];
@@ -666,12 +678,20 @@
       const partId = selectedOption.value;
       const currentStock = parseInt(selectedOption.getAttribute('data-stock'));
       const location = selectedOption.getAttribute('data-location');
+      const newImgUrl = selectedOption.getAttribute('data-img');
       const qtyInCart = cart[partId] || 0;
 
+      // อัปเดตรหัสสินค้า, สถานที่ และจำนวน
       document.getElementById(`display-partId-${cardId}`).innerText = partId;
       document.getElementById(`display-location-${cardId}`).innerHTML = `<i class="bi bi-geo-alt-fill me-1"></i>${location}`;
       document.getElementById(`display-qty-${cardId}`).innerText = qtyInCart;
-      
+
+      // 🔴 อัปเดตรูปภาพสินค้าตามขนาดที่เลือก
+      if (newImgUrl && newImgUrl.trim() !== '') {
+        document.getElementById(`display-img-${cardId}`).src = newImgUrl;
+      }
+
+      // อัปเดตสถานะปุ่มและป้ายสต็อก
       const stockBadge = document.getElementById(`display-stock-${cardId}`);
       stockBadge.innerText = `คลัง: ${currentStock}`;
       stockBadge.style.backgroundColor = currentStock > 0 ? '#34A853' : '#EA4335';
