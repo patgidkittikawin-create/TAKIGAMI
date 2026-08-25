@@ -426,8 +426,11 @@
     }
 
     function getCategoryEN(item) {
-      // เพิ่มการดักจับชื่อคอลัมน์ภาษาอังกฤษให้ครอบคลุมขึ้น
-      return getProp(item, ['Category EN', 'หมวดหมู่ EN', 'หมวดหลัก EN', 'CategoryEN', 'Category(EN)']) || '';
+      // เพิ่มการดักจับชื่อคอลัมน์ภาษาอังกฤษให้ครอบคลุมทุกรูปแบบ
+      return getProp(item, [
+        'Category EN', 'หมวดหมู่ EN', 'หมวดหลัก EN', 'CategoryEN', 'Category(EN)', 
+        'Cat EN', 'CatEN', 'Main Category EN', 'MainCategoryEN', 'Category_EN', 'Category_EN'
+      ]) || '';
     }
 
     function getSubCategoryTH(item) {
@@ -435,8 +438,10 @@
     }
 
     function getSubCategoryEN(item) {
-      // เพิ่มการดักจับชื่อคอลัมน์หมวดย่อยภาษาอังกฤษ
-      return getProp(item, ['Sub Category EN', 'หมวดย่อย EN', 'SubCategoryEN', 'SubCategory(EN)']) || '';
+      return getProp(item, [
+        'Sub Category EN', 'หมวดย่อย EN', 'SubCategoryEN', 'SubCategory(EN)', 
+        'Sub Cat EN', 'SubCatEN', 'Sub_Category_EN', 'Sub_Category EN'
+      ]) || '';
     }
 
     function getCategoryImageUrl(items, isSubCategory = false, subCatName = '') {
@@ -495,7 +500,7 @@
       renderStep1MainCategories();
     }
 
-    /* Step 1: Render หมวดหมู่หลัก */
+    /* Step 1: Render หมวดหมู่หลัก (ค้นหา EN จากทุกแถว) */
     function renderStep1MainCategories() {
       currentStepNav = 1;
       updateHeaderUI();
@@ -508,12 +513,14 @@
       const mainCatMap = new Map();
       catalog.forEach(item => {
         const catName = getCategoryTH(item);
-        const catNameEN = getCategoryEN(item);
 
         if (!mainCatMap.has(catName)) {
           const itemsInCat = catalog.filter(i => getCategoryTH(i) === catName);
+          // หาชื่อ EN อันแรกในหมวดหมู่ที่ไม่ว่าง
+          const foundEN = itemsInCat.map(i => getCategoryEN(i)).find(en => en !== '') || '';
           const foundImg = getCategoryImageUrl(itemsInCat);
-          mainCatMap.set(catName, { name: catName, nameEN: catNameEN, img: foundImg });
+          
+          mainCatMap.set(catName, { name: catName, nameEN: foundEN, img: foundImg });
         }
       });
 
@@ -547,7 +554,7 @@
       renderStep2SubCategories(catName);
     }
 
-    /* Step 2: Render หมวดย่อย */
+    /* Step 2: Render หมวดย่อย (ค้นหา EN จากทุกแถว) */
     function renderStep2SubCategories(mainCatName) {
       currentStepNav = 2;
       updateHeaderUI();
@@ -562,13 +569,16 @@
 
       itemsInMainCat.forEach(item => {
         const subTH = getSubCategoryTH(item);
-        const subEN = getSubCategoryEN(item);
 
         if (!subCatMap.has(subTH)) {
+          const itemsInSubCat = itemsInMainCat.filter(i => getSubCategoryTH(i) === subTH);
+          // หาชื่อ EN อันแรกในหมวดย่อยที่ไม่ว่าง
+          const foundEN = itemsInSubCat.map(i => getSubCategoryEN(i)).find(en => en !== '') || '';
           const foundImg = getCategoryImageUrl(itemsInMainCat, true, subTH);
+          
           subCatMap.set(subTH, { 
             nameTH: subTH, 
-            nameEN: subEN, 
+            nameEN: foundEN, 
             img: foundImg 
           });
         }
