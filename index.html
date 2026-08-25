@@ -271,7 +271,7 @@
 
       <!-- ค้นหา -->
       <div id="searchWrapper" class="mb-3" style="display: none;">
-        <input type="text" id="searchItem" class="form-control form-control-lg" placeholder="ค้นหาชื่อ, รหัสสินค้า, ขนาด..." onkeyup="handleSearch(this.value)">
+        <input type="text" id="searchItem" class="form-control form-control-lg" placeholder="ค้นหาชื่อ, รหัสสินค้า, ขนาด..." onkeyup="handleSearch(this.value)" onkeydown="if(event.key==='Enter') event.preventDefault()">
       </div>
 
       <!-- Step 1 View: หมวดหมู่หลัก -->
@@ -422,19 +422,21 @@
 
     // ดึงค่าตามหัวคอลัมน์ใน Sheet เป๊ะๆ
     function getCategoryTH(item) {
-      return getProp(item, ['Category TH']) || 'หมวดทั่วไป';
+      return getProp(item, ['Category TH', 'หมวดหมู่หลัก', 'หมวดหลัก', 'CategoryTH']) || 'หมวดทั่วไป';
     }
 
     function getCategoryEN(item) {
-      return getProp(item, ['Category EN']) || '';
+      // เพิ่มการดักจับชื่อคอลัมน์ภาษาอังกฤษให้ครอบคลุมขึ้น
+      return getProp(item, ['Category EN', 'หมวดหมู่ EN', 'หมวดหลัก EN', 'CategoryEN', 'Category(EN)']) || '';
     }
 
     function getSubCategoryTH(item) {
-      return getProp(item, ['Sub_Category TH']) || 'ทั่วไป';
+      return getProp(item, ['Sub_Category TH', 'Sub Category TH', 'หมวดย่อย', 'SubCategoryTH']) || 'ทั่วไป';
     }
 
     function getSubCategoryEN(item) {
-      return getProp(item, ['Sub Category EN']) || '';
+      // เพิ่มการดักจับชื่อคอลัมน์หมวดย่อยภาษาอังกฤษ
+      return getProp(item, ['Sub Category EN', 'หมวดย่อย EN', 'SubCategoryEN', 'SubCategory(EN)']) || '';
     }
 
     function getCategoryImageUrl(items, isSubCategory = false, subCatName = '') {
@@ -523,8 +525,9 @@
           ? `<img src="${cat.img}" class="img-fluid" alt="${cat.name}" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/679/679821.png';">`
           : `<div class="mb-2" style="font-size:2.8rem;">📦</div>`;
 
+        // ปรับ CSS ให้ภาษาอังกฤษตัวใหญ่ขึ้นและสีชัดเจนขึ้น
         const enHtml = cat.nameEN 
-          ? `<div style="font-size: 0.82rem; color: #6C757D; margin-top: 3px; font-weight: 400;">(${cat.nameEN})</div>` 
+          ? `<div style="font-size: 0.95rem; color: #4A55A2; margin-top: 4px; font-weight: 500;">${cat.nameEN}</div>` 
           : '';
 
         html += `
@@ -579,8 +582,9 @@
           ? `<img src="${sub.img}" class="img-fluid" alt="${sub.nameTH}" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/679/679821.png';">`
           : `<div class="mb-2" style="font-size:2.8rem; color:var(--brand-yellow);"><i class="bi bi-box-fill"></i></div>`;
 
+        // ปรับ CSS ให้ภาษาอังกฤษตัวใหญ่ขึ้นและสีชัดเจนขึ้น
         const enHtml = sub.nameEN 
-          ? `<div style="font-size: 0.82rem; color: #6C757D; margin-top: 3px; font-weight: 400;">(${sub.nameEN})</div>` 
+          ? `<div style="font-size: 0.95rem; color: #4A55A2; margin-top: 4px; font-weight: 500;">${sub.nameEN}</div>` 
           : '';
 
         html += `
