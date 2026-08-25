@@ -2,15 +2,16 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>TAKIGAMI (TTC) STORE</title>
   <!-- Bootstrap 5 & Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <!-- Google Fonts: Noto Sans Thai -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Google Fonts: Kanit -->
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
     :root {
       --brand-blue: #1C2382;
@@ -20,11 +21,16 @@
     }
 
     body {
-      font-family: 'Prompt', sans-serif;
+      font-family: 'Kanit', sans-serif !important;
       background-color: var(--bg-gray);
       color: var(--text-dark);
       margin: 0;
       padding-bottom: 90px;
+    }
+
+    /* ป้องกัน iOS ซูมหน้าจออัตโนมัติเวลาจิ้มพิมพ์ */
+    input, select, textarea {
+      font-size: 16px !important;
     }
 
     .max-width-main {
@@ -43,7 +49,7 @@
       color: white;
       text-align: center;
       padding: 12px 16px;
-      font-weight: 700;
+      font-weight: 500;
       font-size: 1.1rem;
       letter-spacing: 0.5px;
       display: flex;
@@ -57,7 +63,7 @@
     .main-card-container {
       background: #ffffff;
       border-radius: 16px;
-      padding: 24px 28px;
+      padding: 24px 20px;
       margin-top: 16px;
       box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
     }
@@ -92,7 +98,7 @@
       border: 1px solid #E9ECEF;
       border-radius: 20px;
       padding: 3px 12px;
-      font-size: 0.78rem;
+      font-size: 0.85rem;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
@@ -103,6 +109,16 @@
       color: #333;
     }
 
+    /* หัวข้อที่ยาวเกินไปให้ซ่อนเป็น ... */
+    .header-title-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 65vw; 
+      display: inline-block;
+      vertical-align: middle;
+    }
+
     /* Bottom Action Bar */
     .bottom-action-bar {
       position: fixed;
@@ -110,8 +126,8 @@
       left: 0;
       right: 0;
       background: #ffffff;
-      padding: 12px 20px;
-      box-shadow: 0 -4px 12px rgba(0,0,0,0.06);
+      padding: 12px 20px calc(12px + env(safe-area-inset-bottom)) !important; /* รองรับขอบจอด้านล่าง iPhone */
+      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08) !important;
       z-index: 1000;
     }
     .btn-action-back {
@@ -155,6 +171,27 @@
       object-fit: contain;
     }
 
+    /* แก้ Location เบียดกันบนมือถือ */
+    .variant-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: #f8f9fa;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+      margin-bottom: 12px;
+    }
+    .location-tag {
+      align-self: flex-start;
+      font-size: 0.85rem;
+      color: #d32f2f;
+      background-color: #fce4e4;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+
     .qty-control-bar {
       background: #F4F6F9;
       border-radius: 30px;
@@ -195,7 +232,7 @@
     .badge-stock {
       background-color: #34A853;
       color: #ffffff;
-      font-size: 0.78rem;
+      font-size: 0.85rem;
       font-weight: 500;
       padding: 3px 9px;
       border-radius: 12px;
@@ -204,16 +241,10 @@
       background: #F1F3F4;
       color: #3C4043;
       border: 1px solid #DADCE0;
-      font-size: 0.78rem;
-      font-weight: 600;
+      font-size: 0.85rem;
+      font-weight: 500;
       padding: 3px 8px;
       border-radius: 6px;
-      font-family: monospace;
-    }
-    .badge-location {
-      color: #D93025;
-      font-size: 0.82rem;
-      font-weight: 600;
     }
   </style>
 </head>
@@ -237,11 +268,11 @@
         <input type="text" id="dept" class="form-control form-control-lg" placeholder="ระบุแผนก">
       </div>
       <div class="mb-3">
-        <label class="form-label">วัตถุประสงค์การเบิก</label>
+        <label class="form-label fw-medium">วัตถุประสงค์การเบิก</label>
         <input type="text" id="purpose" class="form-control form-control-lg" placeholder="เช่น ซ่อมบำรุง, ไลน์ผลิต">
       </div>
       <div class="mb-4">
-        <label class="form-label">โปรเจกต์ / เครื่องจักร</label>
+        <label class="form-label fw-medium">โปรเจกต์ / เครื่องจักร</label>
         <input type="text" id="project" class="form-control form-control-lg" placeholder="ระบุชื่อโปรเจกต์ (ถ้ามี)">
       </div>
       <button class="btn btn-action-submit btn-lg w-100" onclick="startRequisition()">เข้าสู่หน้าเลือกสินค้า <i class="bi bi-arrow-right"></i></button>
@@ -253,12 +284,12 @@
     <div class="main-card-container">
 
       <!-- หัวข้อการเลือกหมวดหมู่ -->
-      <div class="d-flex align-items-center mb-1">
-        <button id="btnNavBackHeader" class="btn btn-sm btn-light border rounded-circle me-2" onclick="handleBackStep()" style="display:none; width:32px; height:32px;">
+      <div class="d-flex align-items-center mb-2">
+        <button id="btnNavBackHeader" class="btn btn-sm btn-light border rounded-circle me-2" onclick="handleBackStep()" style="display:none; width:36px; height:36px;">
           <i class="bi bi-arrow-left"></i>
         </button>
         <h5 class="fw-bold mb-0 text-dark" id="stepTitle">
-          <span class="me-1">👑</span> <span style="color:var(--brand-blue);">2.</span> เลือกหมวดหมู่หลัก
+          <span class="header-title-text"><span class="me-1">👑</span> <span style="color:var(--brand-blue);">2.</span> เลือกหมวดหมู่หลัก</span>
         </h5>
       </div>
 
@@ -392,7 +423,6 @@
       loadDataFromSheet();
     };
 
-    // ฟังก์ชันอ่านค่า property รองรับทั้งตัวเล็กตัวใหญ่ ช่องว่าง และ _
     function getProp(obj, targetKeys) {
       if (!obj || typeof obj !== 'object') return '';
       const keys = Object.keys(obj);
@@ -419,32 +449,17 @@
       return cleanUrl;
     }
 
-    // --- ส่วนที่อัปเดตใหม่ ให้ตรงกับที่ Code.gs ส่งมา ---
-    function getCategoryTH(item) {
-      return getProp(item, ['categoryTH', 'Category TH', 'หมวดหมู่หลัก', 'หมวดหลัก']) || 'หมวดทั่วไป';
-    }
-
-    function getCategoryEN(item) {
-      return getProp(item, ['category', 'Category EN']) || '';
-    }
-
-    function getSubCategoryTH(item) {
-      return getProp(item, ['subCategoryTH', 'Sub_Category TH', 'หมวดย่อย']) || 'ทั่วไป';
-    }
-
-    function getSubCategoryEN(item) {
-      return getProp(item, ['subCategory', 'Sub Category EN']) || '';
-    }
-    // ---------------------------------------------
+    function getCategoryTH(item) { return getProp(item, ['categoryTH', 'Category TH', 'หมวดหมู่หลัก', 'หมวดหลัก']) || 'หมวดทั่วไป'; }
+    function getCategoryEN(item) { return getProp(item, ['category', 'Category EN']) || ''; }
+    function getSubCategoryTH(item) { return getProp(item, ['subCategoryTH', 'Sub_Category TH', 'หมวดย่อย']) || 'ทั่วไป'; }
+    function getSubCategoryEN(item) { return getProp(item, ['subCategory', 'Sub Category EN']) || ''; }
 
     function getCategoryImageUrl(items, isSubCategory = false, subCatName = '') {
       for (let item of items) {
         if (isSubCategory && getSubCategoryTH(item) !== subCatName) continue;
-        
         let rawUrl = isSubCategory 
           ? getProp(item, ['รูปหมวดย่อย', 'subCategoryImg', 'SubCategoryImg', 'รูปสินค้า', 'productImg', 'image', 'img'])
           : getProp(item, ['รูปหมวดหลัก', 'categoryImg', 'CategoryImg', 'รูปหมวดย่อย', 'subCategoryImg', 'รูปสินค้า', 'productImg', 'image', 'img']);
-
         if (rawUrl) return fixImageUrl(rawUrl);
       }
       return '';
@@ -493,7 +508,6 @@
       renderStep1MainCategories();
     }
 
-    /* Step 1: Render หมวดหมู่หลัก */
     function renderStep1MainCategories() {
       currentStepNav = 1;
       updateHeaderUI();
@@ -506,28 +520,23 @@
       const mainCatMap = new Map();
       catalog.forEach(item => {
         const catName = getCategoryTH(item);
-
         if (!mainCatMap.has(catName)) {
           const itemsInCat = catalog.filter(i => getCategoryTH(i) === catName);
           const foundEN = itemsInCat.map(i => getCategoryEN(i)).find(en => en !== '') || '';
           const foundImg = getCategoryImageUrl(itemsInCat);
-          
           mainCatMap.set(catName, { name: catName, nameEN: foundEN, img: foundImg });
         }
       });
 
       const container = document.getElementById('mainCategoryContainer');
       let html = '';
-
       mainCatMap.forEach(cat => {
         const imgHtml = cat.img 
           ? `<img src="${cat.img}" class="img-fluid" alt="${cat.name}" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/679/679821.png';">`
           : `<div class="mb-2" style="font-size:2.8rem;">📦</div>`;
-
         const enHtml = cat.nameEN 
-          ? `<div style="font-size: 0.95rem; color: #4A55A2; margin-top: 4px; font-weight: 500;">${cat.nameEN}</div>` 
+          ? `<div style="font-size: 0.95rem; color: #4A55A2; margin-top: 4px;">${cat.nameEN}</div>` 
           : '';
-
         html += `
           <div class="item-category-card" onclick="selectMainCategory('${cat.name.replace(/'/g, "\\'")}', '${cat.nameEN.replace(/'/g, "\\'")}')">
             ${imgHtml}
@@ -545,7 +554,6 @@
       renderStep2SubCategories(catName);
     }
 
-    /* Step 2: Render หมวดย่อย */
     function renderStep2SubCategories(mainCatName) {
       currentStepNav = 2;
       updateHeaderUI();
@@ -560,32 +568,23 @@
 
       itemsInMainCat.forEach(item => {
         const subTH = getSubCategoryTH(item);
-
         if (!subCatMap.has(subTH)) {
           const itemsInSubCat = itemsInMainCat.filter(i => getSubCategoryTH(i) === subTH);
           const foundEN = itemsInSubCat.map(i => getSubCategoryEN(i)).find(en => en !== '') || '';
           const foundImg = getCategoryImageUrl(itemsInMainCat, true, subTH);
-          
-          subCatMap.set(subTH, { 
-            nameTH: subTH, 
-            nameEN: foundEN, 
-            img: foundImg 
-          });
+          subCatMap.set(subTH, { nameTH: subTH, nameEN: foundEN, img: foundImg });
         }
       });
 
       const container = document.getElementById('subCategoryContainer');
       let html = '';
-
       subCatMap.forEach(sub => {
         const imgHtml = sub.img 
           ? `<img src="${sub.img}" class="img-fluid" alt="${sub.nameTH}" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/679/679821.png';">`
           : `<div class="mb-2" style="font-size:2.8rem; color:var(--brand-yellow);"><i class="bi bi-box-fill"></i></div>`;
-
         const enHtml = sub.nameEN 
-          ? `<div style="font-size: 0.95rem; color: #4A55A2; margin-top: 4px; font-weight: 500;">${sub.nameEN}</div>` 
+          ? `<div style="font-size: 0.95rem; color: #4A55A2; margin-top: 4px;">${sub.nameEN}</div>` 
           : '';
-
         html += `
           <div class="item-category-card" onclick="selectSubCategory('${sub.nameTH.replace(/'/g, "\\'")}', '${(sub.nameEN || '').replace(/'/g, "\\'")}')">
             ${imgHtml}
@@ -604,7 +603,6 @@
       renderStep3Items();
     }
 
-    /* Step 3: Render สินค้า */
     function renderStep3Items() {
       currentStepNav = 3;
       updateHeaderUI();
@@ -629,7 +627,6 @@
         else renderStep1MainCategories();
         return;
       }
-
       document.getElementById('step1CategoryView').style.display = 'none';
       document.getElementById('step2SubCategoryView').style.display = 'none';
       document.getElementById('step3ItemView').style.display = 'block';
@@ -656,12 +653,7 @@
         const pImg = fixImageUrl(getProp(item, ['รูปสินค้า', 'productImg', 'ProductImg', 'image', 'img']));
 
         if (!grouped[groupKey]) {
-          grouped[groupKey] = {
-            nameTH: nameTH,
-            nameEN: nameEN,
-            productImg: pImg,
-            variants: []
-          };
+          grouped[groupKey] = { nameTH: nameTH, nameEN: nameEN, productImg: pImg, variants: [] };
         } else if (!grouped[groupKey].productImg && pImg) {
           grouped[groupKey].productImg = pImg;
         }
@@ -672,7 +664,6 @@
 
     function renderProductCards(items) {
       const container = document.getElementById('itemContainer');
-      
       if (items.length === 0) {
         container.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="bi bi-inbox fs-1"></i><br>ไม่พบรายการสินค้า</div>';
         return;
@@ -690,7 +681,6 @@
           const size = getProp(v, ['size', 'Size', 'ขนาด']);
           const stock = getProp(v, ['stock', 'Stock', 'จำนวน']);
           const location = getProp(v, ['location', 'Location', 'สถานที่จัดเก็บ']);
-
           const qtyInCart = cart[partId] || 0;
           const rawStock = parseInt(stock || 0);
           const remainingStock = rawStock - qtyInCart;
@@ -705,12 +695,12 @@
         const defaultPartId = getProp(defaultVariant, ['partId', 'PartID', 'PartId', 'รหัสสินค้า']);
         const defaultStock = getProp(defaultVariant, ['stock', 'Stock', 'จำนวน']);
         const defaultLocation = getProp(defaultVariant, ['location', 'Location', 'สถานที่จัดเก็บ']);
-
         const defaultQtyInCart = cart[defaultPartId] || 0;
         const defaultRawStock = parseInt(defaultStock || 0);
         const defaultRemainingStock = defaultRawStock - defaultQtyInCart;
         const defaultImg = fixImageUrl(getProp(defaultVariant, ['รูปสินค้า', 'productImg', 'image', 'img']) || group.productImg);
 
+        /* อัปเดตโครงสร้างจุดนี้ให้เป็น variant-container แบบใหม่ที่แก้ปัญหา UI มือถือ */
         html += `
           <div class="col-12 col-md-6">
             <div class="product-card">
@@ -721,8 +711,7 @@
 
               <div class="product-img-box">
                 <img id="display-img-${cardId}" src="${defaultImg || 'https://via.placeholder.com/150?text=No+Image'}" 
-                     onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=No+Image'" 
-                     alt="product">
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=No+Image'" alt="product">
               </div>
 
               <div class="mb-3 text-start">
@@ -730,11 +719,13 @@
                 <div class="text-muted small">${group.nameEN || ''}</div>
               </div>
 
-              <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded-3 border mb-3">
-                 <select id="select-size-${cardId}" class="form-select form-select-sm border-secondary w-75" onchange="handleVariantChange('${cardId}')">
+              <div class="variant-container">
+                 <select id="select-size-${cardId}" class="form-select form-select-sm border-secondary w-100" onchange="handleVariantChange('${cardId}')">
                    ${optionsHtml}
                  </select>
-                 <span id="display-location-${cardId}" class="badge-location ms-2"><i class="bi bi-geo-alt-fill me-1"></i>${defaultLocation || '-'}</span>
+                 <div id="display-location-${cardId}" class="location-tag">
+                   <i class="bi bi-geo-alt-fill me-1"></i>${defaultLocation || '-'}
+                 </div>
               </div>
 
               <div class="qty-control-bar">
@@ -758,7 +749,6 @@
       const rawStock = parseInt(selectedOption.getAttribute('data-stock') || '0');
       const location = selectedOption.getAttribute('data-location') || '-';
       const newImgUrl = selectedOption.getAttribute('data-img') || '';
-
       const qtyInCart = cart[partId] || 0;
       const remainingStock = rawStock - qtyInCart;
 
@@ -792,7 +782,6 @@
     function updateCartFromGroup(cardId, change) {
       const selectElement = document.getElementById(`select-size-${cardId}`);
       if (!selectElement) return;
-
       const selectedOption = selectElement.options[selectElement.selectedIndex];
       const partId = selectedOption.value;
       const rawStock = parseInt(selectedOption.getAttribute('data-stock') || '0');
@@ -806,7 +795,6 @@
         Swal.fire({ icon: 'warning', title: 'สต็อกไม่พอ', text: 'เบิกเกินจำนวนที่มีในคลังไม่ได้ครับ', confirmButtonColor: '#1C2382' });
         return;
       }
-
       if (newQty < 0) newQty = 0;
 
       if (newQty === 0) delete cart[partId];
@@ -842,20 +830,21 @@
       }
     }
 
+    /* อัปเดตส่วนหัวข้อให้ซ่อนข้อความที่ยาวเกินด้วย header-title-text */
     function updateHeaderUI() {
       const titleEl = document.getElementById('stepTitle');
       const btnBack = document.getElementById('btnNavBackHeader');
 
       if (currentStepNav === 1) {
-        titleEl.innerHTML = `<span class="me-1">👑</span> <span style="color:var(--brand-blue);">2.</span> เลือกหมวดหมู่หลัก`;
+        titleEl.innerHTML = `<span class="header-title-text"><span class="me-1">👑</span> <span style="color:var(--brand-blue);">2.</span> เลือกหมวดหมู่หลัก</span>`;
         btnBack.style.display = 'none';
       } else if (currentStepNav === 2) {
         let textEN = selectedCategoryEN ? ` <span class="text-muted fw-normal" style="font-size:0.85rem;">(${selectedCategoryEN})</span>` : '';
-        titleEl.innerHTML = `<i class="bi bi-box-fill text-warning me-1"></i> ${selectedCategory} ${textEN}`;
+        titleEl.innerHTML = `<span class="header-title-text"><i class="bi bi-box-fill text-warning me-1"></i> ${selectedCategory} ${textEN}</span>`;
         btnBack.style.display = 'inline-block';
       } else if (currentStepNav === 3) {
         let textEN = selectedSubCategoryEN ? ` <span class="text-muted fw-normal" style="font-size:0.85rem;">(${selectedSubCategoryEN})</span>` : '';
-        titleEl.innerHTML = `<i class="bi bi-list-nested me-1 text-warning"></i> ${selectedSubCategory} ${textEN}`;
+        titleEl.innerHTML = `<span class="header-title-text"><i class="bi bi-list-nested me-1 text-warning"></i> ${selectedSubCategory} ${textEN}</span>`;
         btnBack.style.display = 'inline-block';
       }
     }
@@ -931,7 +920,6 @@
       });
 
       const randomReqId = 'REQ-' + Math.floor(100000000000 + Math.random() * 900000000000);
-      
       const cartArray = [];
       for (const [partId, qty] of Object.entries(cart)) {
         const item = catalog.find(i => getProp(i, ['partId', 'PartID', 'PartId', 'รหัสสินค้า']) === partId);
