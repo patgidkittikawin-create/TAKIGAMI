@@ -375,7 +375,7 @@
   </div>
 
   <script>
-    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyoE5bce-5Hf9_r-f5ykwvqRZQWFCNjzolXe5dUdWDTq6CLbt1RJThJN_u3bQxAYaOM/exec';
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzf64ECsO0zdfB9u1nz9FAGuncrZmVj-1S0wx60JSiqoELG9VbnotJsfHsWRzkBcc_3/exec';
     
     let catalog = []; 
     let cart = {};
@@ -420,29 +420,23 @@
       return cleanUrl;
     }
 
-    // ดึงค่าตามหัวคอลัมน์ใน Sheet เป๊ะๆ
+    // --- ส่วนที่อัปเดตใหม่ ให้ตรงกับที่ Code.gs ส่งมา ---
     function getCategoryTH(item) {
-      return getProp(item, ['Category TH', 'หมวดหมู่หลัก', 'หมวดหลัก', 'CategoryTH']) || 'หมวดทั่วไป';
+      return getProp(item, ['categoryTH', 'Category TH', 'หมวดหมู่หลัก', 'หมวดหลัก']) || 'หมวดทั่วไป';
     }
 
     function getCategoryEN(item) {
-      // เพิ่มการดักจับชื่อคอลัมน์ภาษาอังกฤษให้ครอบคลุมทุกรูปแบบ
-      return getProp(item, [
-        'Category EN', 'หมวดหมู่ EN', 'หมวดหลัก EN', 'CategoryEN', 'Category(EN)', 
-        'Cat EN', 'CatEN', 'Main Category EN', 'MainCategoryEN', 'Category_EN', 'Category_EN'
-      ]) || '';
+      return getProp(item, ['category', 'Category EN']) || '';
     }
 
     function getSubCategoryTH(item) {
-      return getProp(item, ['Sub_Category TH', 'Sub Category TH', 'หมวดย่อย', 'SubCategoryTH']) || 'ทั่วไป';
+      return getProp(item, ['subCategoryTH', 'Sub_Category TH', 'หมวดย่อย']) || 'ทั่วไป';
     }
 
     function getSubCategoryEN(item) {
-      return getProp(item, [
-        'Sub Category EN', 'หมวดย่อย EN', 'SubCategoryEN', 'SubCategory(EN)', 
-        'Sub Cat EN', 'SubCatEN', 'Sub_Category_EN', 'Sub_Category EN'
-      ]) || '';
+      return getProp(item, ['subCategory', 'Sub Category EN']) || '';
     }
+    // ---------------------------------------------
 
     function getCategoryImageUrl(items, isSubCategory = false, subCatName = '') {
       for (let item of items) {
@@ -500,7 +494,7 @@
       renderStep1MainCategories();
     }
 
-    /* Step 1: Render หมวดหมู่หลัก (ค้นหา EN จากทุกแถว) */
+    /* Step 1: Render หมวดหมู่หลัก */
     function renderStep1MainCategories() {
       currentStepNav = 1;
       updateHeaderUI();
@@ -516,7 +510,6 @@
 
         if (!mainCatMap.has(catName)) {
           const itemsInCat = catalog.filter(i => getCategoryTH(i) === catName);
-          // หาชื่อ EN อันแรกในหมวดหมู่ที่ไม่ว่าง
           const foundEN = itemsInCat.map(i => getCategoryEN(i)).find(en => en !== '') || '';
           const foundImg = getCategoryImageUrl(itemsInCat);
           
@@ -532,7 +525,6 @@
           ? `<img src="${cat.img}" class="img-fluid" alt="${cat.name}" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/679/679821.png';">`
           : `<div class="mb-2" style="font-size:2.8rem;">📦</div>`;
 
-        // ปรับ CSS ให้ภาษาอังกฤษตัวใหญ่ขึ้นและสีชัดเจนขึ้น
         const enHtml = cat.nameEN 
           ? `<div style="font-size: 0.95rem; color: #4A55A2; margin-top: 4px; font-weight: 500;">${cat.nameEN}</div>` 
           : '';
@@ -554,7 +546,7 @@
       renderStep2SubCategories(catName);
     }
 
-    /* Step 2: Render หมวดย่อย (ค้นหา EN จากทุกแถว) */
+    /* Step 2: Render หมวดย่อย */
     function renderStep2SubCategories(mainCatName) {
       currentStepNav = 2;
       updateHeaderUI();
@@ -572,7 +564,6 @@
 
         if (!subCatMap.has(subTH)) {
           const itemsInSubCat = itemsInMainCat.filter(i => getSubCategoryTH(i) === subTH);
-          // หาชื่อ EN อันแรกในหมวดย่อยที่ไม่ว่าง
           const foundEN = itemsInSubCat.map(i => getSubCategoryEN(i)).find(en => en !== '') || '';
           const foundImg = getCategoryImageUrl(itemsInMainCat, true, subTH);
           
@@ -592,7 +583,6 @@
           ? `<img src="${sub.img}" class="img-fluid" alt="${sub.nameTH}" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/679/679821.png';">`
           : `<div class="mb-2" style="font-size:2.8rem; color:var(--brand-yellow);"><i class="bi bi-box-fill"></i></div>`;
 
-        // ปรับ CSS ให้ภาษาอังกฤษตัวใหญ่ขึ้นและสีชัดเจนขึ้น
         const enHtml = sub.nameEN 
           ? `<div style="font-size: 0.95rem; color: #4A55A2; margin-top: 4px; font-weight: 500;">${sub.nameEN}</div>` 
           : '';
