@@ -396,7 +396,7 @@
   </div>
 
   <script>
-    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwP7HnIagGl9lQbHCXg-i4vbofR35DgFoxV3RS6zZxgmmz0GIqqqwriheXy3WTqzGR4/exec';
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby9DZTLM3k0BaTYOATuDtCf9ujmhaA0E9a9utTmFmntcd7vA85Xg_GleKpRqiB6ldr-/exec';
     
     let catalog = []; 
     let cart = {};
@@ -409,7 +409,7 @@
     let selectedSubCategory = '';
     let selectedSubCategoryEN = '';
 
-    const NO_IMG_SVG = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%23cccccc" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`;
+    const NO_IMG_SVG = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%23cccccc' stroke-width='1.5'><rect x='3' y='3' width='18' height='18' rx='2'/><circle cx='8.5' cy='8.5' r='1.5'/><path d='M21 15l-5-5L5 21'/></svg>`;
 
     window.onload = () => {
       goToPage(1);
@@ -430,9 +430,17 @@
       return '';
     }
 
+    // ปรับปรุงการล้าง URL รูปภาพอย่างเด็ดขาดเพื่อป้องกันโค้ด HTML หลุดมาแสดงผล
     function fixImageUrl(url) {
       if (!url || typeof url !== 'string') return '';
       let cleanUrl = url.trim();
+
+      // ดึงเฉพาะ URL ที่เป็น http/https ที่ถูกต้อง ตัดอัญประกาศและโค้ด HTML ขยะทิ้ง
+      const urlMatch = cleanUrl.match(/https?:\/\/[^\s'"<>]+/i);
+      if (urlMatch) {
+        cleanUrl = urlMatch[0];
+      }
+
       if (cleanUrl.includes('drive.google.com')) {
         const match = cleanUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || cleanUrl.match(/id=([a-zA-Z0-9_-]+)/);
         if (match && match[1]) {
@@ -714,7 +722,7 @@
 
               <div class="product-img-box">
                 <img id="display-img-${cardId}" src="${defaultImg || NO_IMG_SVG}" 
-                     onerror="this.onerror=null; this.src='${NO_IMG_SVG}'" alt="product">
+                     onerror="this.onerror=null; this.src='${NO_IMG_SVG}';" alt="product">
               </div>
 
               <div class="mb-3 text-start">
