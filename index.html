@@ -28,7 +28,6 @@
       padding-bottom: 90px;
     }
 
-    /* ป้องกัน iOS ซูมหน้าจออัตโนมัติเวลาจิ้มพิมพ์ */
     input, select, textarea {
       font-size: 16px !important;
     }
@@ -43,7 +42,6 @@
     .page.active { display: block; animation: fadeIn 0.25s ease-in-out; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Top Bar Header */
     .store-header {
       background-color: var(--brand-blue);
       color: white;
@@ -59,7 +57,6 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
-    /* Main Container Card */
     .main-card-container {
       background: #ffffff;
       border-radius: 16px;
@@ -68,7 +65,6 @@
       box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
     }
 
-    /* Category Cards */
     .item-category-card {
       background: #FAFAFA;
       border: 1px solid #EAEAEA;
@@ -79,7 +75,7 @@
       transition: all 0.2s ease-in-out;
       text-align: center;
     }
-    .item-category-card:hover, .item-category-card.active-card {
+    .item-category-card:hover, .item-category-card:active {
       border: 1.5px solid var(--brand-blue);
       background: #ffffff;
       box-shadow: 0 4px 14px rgba(28, 35, 130, 0.08);
@@ -91,7 +87,6 @@
       margin-bottom: 10px;
     }
 
-    /* Button Reload Data Pill */
     .btn-reload-data {
       background-color: #F1F3F5;
       color: #6C757D;
@@ -104,12 +99,7 @@
       align-items: center;
       gap: 4px;
     }
-    .btn-reload-data:hover {
-      background-color: #E9ECEF;
-      color: #333;
-    }
 
-    /* หัวข้อที่ยาวเกินไปให้ซ่อนเป็น ... */
     .header-title-text {
       white-space: nowrap;
       overflow: hidden;
@@ -119,14 +109,13 @@
       vertical-align: middle;
     }
 
-    /* Bottom Action Bar */
     .bottom-action-bar {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
       background: #ffffff;
-      padding: 12px 20px calc(12px + env(safe-area-inset-bottom)) !important; /* รองรับขอบจอด้านล่าง iPhone */
+      padding: 12px 20px calc(12px + env(safe-area-inset-bottom)) !important;
       box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08) !important;
       z-index: 1000;
     }
@@ -149,7 +138,6 @@
       width: 100%;
     }
 
-    /* Product Cards */
     .product-card {
       background: #ffffff;
       border: 1px solid #EAEAEA;
@@ -171,7 +159,6 @@
       object-fit: contain;
     }
 
-    /* แก้ Location เบียดกันบนมือถือ */
     .variant-container {
       display: flex;
       flex-direction: column;
@@ -230,7 +217,6 @@
     }
 
     .badge-stock {
-      background-color: #34A853;
       color: #ffffff;
       font-size: 0.85rem;
       font-weight: 500;
@@ -256,7 +242,7 @@
   </div>
 
   <!-- PAGE 1: ข้อมูลผู้เบิก -->
-  <div id="page1" class="page container max-width-main">
+  <div id="page1" class="page active container max-width-main">
     <div class="main-card-container">
       <h5 class="fw-bold text-primary mb-4"><i class="bi bi-person-vcard"></i> กรอกข้อมูลผู้เบิก</h5>
       <div class="mb-3">
@@ -299,19 +285,19 @@
         </button>
       </div>
 
-      <!-- ค้นหา -->
+      <!-- ช่องค้นหา -->
       <div id="searchWrapper" class="mb-3" style="display: none;">
-        <input type="text" id="searchItem" class="form-control form-control-lg" placeholder="ค้นหาชื่อ, รหัสสินค้า, ขนาด..." onkeyup="handleSearch(this.value)" onkeydown="if(event.key==='Enter') event.preventDefault()">
+        <input type="text" id="searchItem" class="form-control form-control-lg" placeholder="ค้นหาชื่อ, รหัสสินค้า, ขนาด..." onkeyup="handleSearch(this.value)">
       </div>
 
       <!-- Step 1 View: หมวดหมู่หลัก -->
       <div id="step1CategoryView">
-        <div id="mainCategoryContainer"></div>
+        <div id="mainCategoryContainer" class="row g-3"></div>
       </div>
 
       <!-- Step 2 View: หมวดย่อย -->
       <div id="step2SubCategoryView" style="display: none;">
-        <div id="subCategoryContainer"></div>
+        <div id="subCategoryContainer" class="row g-3"></div>
       </div>
 
       <!-- Step 3 View: รายการสินค้า -->
@@ -355,6 +341,10 @@
             <option value="15:00 - 16:00">15:00 - 16:00</option>
           </select>
         </div>
+
+        <button class="btn btn-action-submit btn-lg w-100 mt-3" onclick="submitRequisition()">
+          <i class="bi bi-send-check me-1"></i> ยืนยันการเบิกสินค้า
+        </button>
       </div>
     </div>
   </div>
@@ -404,8 +394,9 @@
     </div>
   </div>
 
+  <!-- JAVASCRIPT LOGIC -->
   <script>
-    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzf64ECsO0zdfB9u1nz9FAGuncrZmVj-1S0wx60JSiqoELG9VbnotJsfHsWRzkBcc_3/exec';
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxhqrseoHj1J-hCn4QJpZ3Zr7z0So9v2qGaqOXzRX7mslM_r6iEfqsmSQMJGVkZO16G/exec';
     
     let catalog = []; 
     let cart = {};
@@ -449,17 +440,17 @@
       return cleanUrl;
     }
 
-    function getCategoryTH(item) { return getProp(item, ['categoryTH', 'Category TH', 'หมวดหมู่หลัก', 'หมวดหลัก']) || 'หมวดทั่วไป'; }
+    function getCategoryTH(item) { return getProp(item, ['categoryTH', 'Category TH', 'หมวดหมู่หลัก', 'หมวดหลัก', 'Main Category']) || 'หมวดทั่วไป'; }
     function getCategoryEN(item) { return getProp(item, ['category', 'Category EN']) || ''; }
-    function getSubCategoryTH(item) { return getProp(item, ['subCategoryTH', 'Sub_Category TH', 'หมวดย่อย']) || 'ทั่วไป'; }
+    function getSubCategoryTH(item) { return getProp(item, ['subCategoryTH', 'Sub_Category TH', 'หมวดย่อย', 'Sub Category']) || 'ทั่วไป'; }
     function getSubCategoryEN(item) { return getProp(item, ['subCategory', 'Sub Category EN']) || ''; }
 
     function getCategoryImageUrl(items, isSubCategory = false, subCatName = '') {
       for (let item of items) {
         if (isSubCategory && getSubCategoryTH(item) !== subCatName) continue;
         let rawUrl = isSubCategory 
-          ? getProp(item, ['รูปหมวดย่อย', 'subCategoryImg', 'SubCategoryImg', 'รูปสินค้า', 'productImg', 'image', 'img'])
-          : getProp(item, ['รูปหมวดหลัก', 'categoryImg', 'CategoryImg', 'รูปหมวดย่อย', 'subCategoryImg', 'รูปสินค้า', 'productImg', 'image', 'img']);
+          ? getProp(item, ['รูปหมวดย่อย', 'subCategoryImg', 'SubCategoryImg', 'Sub Category Img', 'รูปสินค้า', 'productImg', 'image', 'img'])
+          : getProp(item, ['รูปหมวดหลัก', 'categoryImg', 'CategoryImg', 'Category Img', 'รูปหมวดย่อย', 'subCategoryImg', 'รูปสินค้า', 'productImg', 'image', 'img']);
         if (rawUrl) return fixImageUrl(rawUrl);
       }
       return '';
@@ -532,16 +523,18 @@
       let html = '';
       mainCatMap.forEach(cat => {
         const imgHtml = cat.img 
-          ? `<img src="${cat.img}" class="img-fluid" alt="${cat.name}" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/679/679821.png';">`
+          ? `<img src="${cat.img}" class="img-fluid" alt="${cat.name}" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=No+Img';">`
           : `<div class="mb-2" style="font-size:2.8rem;">📦</div>`;
         const enHtml = cat.nameEN 
           ? `<div style="font-size: 0.95rem; color: #4A55A2; margin-top: 4px;">${cat.nameEN}</div>` 
           : '';
         html += `
-          <div class="item-category-card" onclick="selectMainCategory('${cat.name.replace(/'/g, "\\'")}', '${cat.nameEN.replace(/'/g, "\\'")}')">
-            ${imgHtml}
-            <div class="fw-bold text-dark fs-5 mb-0" style="line-height: 1.2;">${cat.name}</div>
-            ${enHtml}
+          <div class="col-6 col-md-4">
+            <div class="item-category-card h-100" onclick="selectMainCategory('${cat.name.replace(/'/g, "\\'")}', '${cat.nameEN.replace(/'/g, "\\'")}')">
+              ${imgHtml}
+              <div class="fw-bold text-dark fs-6 mb-0" style="line-height: 1.2;">${cat.name}</div>
+              ${enHtml}
+            </div>
           </div>
         `;
       });
@@ -580,16 +573,18 @@
       let html = '';
       subCatMap.forEach(sub => {
         const imgHtml = sub.img 
-          ? `<img src="${sub.img}" class="img-fluid" alt="${sub.nameTH}" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/679/679821.png';">`
+          ? `<img src="${sub.img}" class="img-fluid" alt="${sub.nameTH}" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=No+Img';">`
           : `<div class="mb-2" style="font-size:2.8rem; color:var(--brand-yellow);"><i class="bi bi-box-fill"></i></div>`;
         const enHtml = sub.nameEN 
           ? `<div style="font-size: 0.95rem; color: #4A55A2; margin-top: 4px;">${sub.nameEN}</div>` 
           : '';
         html += `
-          <div class="item-category-card" onclick="selectSubCategory('${sub.nameTH.replace(/'/g, "\\'")}', '${(sub.nameEN || '').replace(/'/g, "\\'")}')">
-            ${imgHtml}
-            <div class="fw-bold text-dark fs-5 mb-0" style="line-height: 1.2;">${sub.nameTH}</div>
-            ${enHtml}
+          <div class="col-6 col-md-4">
+            <div class="item-category-card h-100" onclick="selectSubCategory('${sub.nameTH.replace(/'/g, "\\'")}', '${(sub.nameEN || '').replace(/'/g, "\\'")}')">
+              ${imgHtml}
+              <div class="fw-bold text-dark fs-6 mb-0" style="line-height: 1.2;">${sub.nameTH}</div>
+              ${enHtml}
+            </div>
           </div>
         `;
       });
@@ -632,9 +627,9 @@
       document.getElementById('step3ItemView').style.display = 'block';
 
       const matchedItems = catalog.filter(item => {
-        const nameTH = getProp(item, ['nameTH', 'NameTH', 'ชื่อสินค้า']);
-        const nameEN = getProp(item, ['nameEN', 'NameEN', 'ชื่อสินค้า EN']);
-        const partId = getProp(item, ['partId', 'PartID', 'PartId', 'รหัสสินค้า']);
+        const nameTH = getProp(item, ['nameTH', 'NameTH', 'ชื่อสินค้า', 'Product Name']);
+        const nameEN = getProp(item, ['nameEN', 'NameEN', 'ชื่อสินค้า EN', 'Product Name EN']);
+        const partId = getProp(item, ['partId', 'PartID', 'PartId', 'รหัสสินค้า', 'Part ID']);
         const size = getProp(item, ['size', 'Size', 'ขนาด']);
         return `${nameTH} ${nameEN} ${partId} ${size}`.toLowerCase().includes(searchVal);
       });
@@ -645,12 +640,12 @@
     function groupCatalogData(dataToGroup) {
       const grouped = {};
       dataToGroup.forEach(item => {
-        const nameTH = getProp(item, ['nameTH', 'NameTH', 'ชื่อสินค้า']);
-        const nameEN = getProp(item, ['nameEN', 'NameEN', 'ชื่อสินค้า EN']);
-        const partId = getProp(item, ['partId', 'PartID', 'PartId', 'รหัสสินค้า']);
+        const nameTH = getProp(item, ['nameTH', 'NameTH', 'ชื่อสินค้า', 'Product Name']);
+        const nameEN = getProp(item, ['nameEN', 'NameEN', 'ชื่อสินค้า EN', 'Product Name EN']);
+        const partId = getProp(item, ['partId', 'PartID', 'PartId', 'รหัสสินค้า', 'Part ID']);
         
         const groupKey = nameTH || nameEN || partId;
-        const pImg = fixImageUrl(getProp(item, ['รูปสินค้า', 'productImg', 'ProductImg', 'image', 'img']));
+        const pImg = fixImageUrl(getProp(item, ['รูปสินค้า', 'productImg', 'ProductImg', 'Product Img', 'image', 'img']));
 
         if (!grouped[groupKey]) {
           grouped[groupKey] = { nameTH: nameTH, nameEN: nameEN, productImg: pImg, variants: [] };
@@ -677,14 +672,14 @@
         let optionsHtml = '';
 
         group.variants.forEach((v) => {
-          const partId = getProp(v, ['partId', 'PartID', 'PartId', 'รหัสสินค้า']);
+          const partId = getProp(v, ['partId', 'PartID', 'PartId', 'รหัสสินค้า', 'Part ID']);
           const size = getProp(v, ['size', 'Size', 'ขนาด']);
-          const stock = getProp(v, ['stock', 'Stock', 'จำนวน']);
-          const location = getProp(v, ['location', 'Location', 'สถานที่จัดเก็บ']);
+          const stock = getProp(v, ['stock', 'Stock', 'จำนวน', 'คลัง']);
+          const location = getProp(v, ['location', 'Location', 'สถานที่จัดเก็บ', 'สถานที่']);
           const qtyInCart = cart[partId] || 0;
           const rawStock = parseInt(stock || 0);
           const remainingStock = rawStock - qtyInCart;
-          const variantImg = fixImageUrl(getProp(v, ['รูปสินค้า', 'productImg', 'image', 'img']) || group.productImg);
+          const variantImg = fixImageUrl(getProp(v, ['รูปสินค้า', 'productImg', 'Product Img', 'image', 'img']) || group.productImg);
 
           optionsHtml += `<option value="${partId}" data-stock="${rawStock}" data-location="${location || '-'}" data-img="${variantImg}">
             ขนาด: ${size || '-'} (คงเหลือ: ${remainingStock})
@@ -692,15 +687,14 @@
         });
 
         const defaultVariant = group.variants[0];
-        const defaultPartId = getProp(defaultVariant, ['partId', 'PartID', 'PartId', 'รหัสสินค้า']);
-        const defaultStock = getProp(defaultVariant, ['stock', 'Stock', 'จำนวน']);
-        const defaultLocation = getProp(defaultVariant, ['location', 'Location', 'สถานที่จัดเก็บ']);
+        const defaultPartId = getProp(defaultVariant, ['partId', 'PartID', 'PartId', 'รหัสสินค้า', 'Part ID']);
+        const defaultStock = getProp(defaultVariant, ['stock', 'Stock', 'จำนวน', 'คลัง']);
+        const defaultLocation = getProp(defaultVariant, ['location', 'Location', 'สถานที่จัดเก็บ', 'สถานที่']);
         const defaultQtyInCart = cart[defaultPartId] || 0;
         const defaultRawStock = parseInt(defaultStock || 0);
         const defaultRemainingStock = defaultRawStock - defaultQtyInCart;
-        const defaultImg = fixImageUrl(getProp(defaultVariant, ['รูปสินค้า', 'productImg', 'image', 'img']) || group.productImg);
+        const defaultImg = fixImageUrl(getProp(defaultVariant, ['รูปสินค้า', 'productImg', 'Product Img', 'image', 'img']) || group.productImg);
 
-        /* อัปเดตโครงสร้างจุดนี้ให้เป็น variant-container แบบใหม่ที่แก้ปัญหา UI มือถือ */
         html += `
           <div class="col-12 col-md-6">
             <div class="product-card">
@@ -797,8 +791,11 @@
       }
       if (newQty < 0) newQty = 0;
 
-      if (newQty === 0) delete cart[partId];
-      else cart[partId] = newQty;
+      if (newQty === 0) {
+        delete cart[partId];
+      } else {
+        cart[partId] = newQty;
+      }
 
       const qtyDisplay = document.getElementById(`display-qty-${cardId}`);
       if (qtyDisplay) qtyDisplay.innerText = newQty;
@@ -830,7 +827,6 @@
       }
     }
 
-    /* อัปเดตส่วนหัวข้อให้ซ่อนข้อความที่ยาวเกินด้วย header-title-text */
     function updateHeaderUI() {
       const titleEl = document.getElementById('stepTitle');
       const btnBack = document.getElementById('btnNavBackHeader');
@@ -864,7 +860,7 @@
 
     function handleMainSubmit() {
       if (currentPage === 2) {
-        if(Object.keys(cart).length === 0) {
+        if (Object.keys(cart).length === 0) {
           Swal.fire({icon: 'info', title: 'ตะกร้าว่างเปล่า', text: 'กรุณาเลือกสินค้าอย่างน้อย 1 ชิ้น', confirmButtonColor: '#1C2382'});
           return;
         }
@@ -884,9 +880,9 @@
       const container = document.getElementById('summaryList');
       let html = '';
       for (const [partId, qty] of Object.entries(cart)) {
-        const item = catalog.find(i => getProp(i, ['partId', 'PartID', 'PartId', 'รหัสสินค้า']) === partId);
-        const nameTH = item ? getProp(item, ['nameTH', 'NameTH', 'ชื่อสินค้า']) : '';
-        const nameEN = item ? getProp(item, ['nameEN', 'NameEN', 'ชื่อสินค้า EN']) : '';
+        const item = catalog.find(i => getProp(i, ['partId', 'PartID', 'PartId', 'รหัสสินค้า', 'Part ID']) === partId);
+        const nameTH = item ? getProp(item, ['nameTH', 'NameTH', 'ชื่อสินค้า', 'Product Name']) : '';
+        const nameEN = item ? getProp(item, ['nameEN', 'NameEN', 'ชื่อสินค้า EN', 'Product Name EN']) : '';
         const name = nameTH || nameEN || partId;
         const size = item ? getProp(item, ['size', 'Size', 'ขนาด']) : '-';
         
@@ -922,9 +918,9 @@
       const randomReqId = 'REQ-' + Math.floor(100000000000 + Math.random() * 900000000000);
       const cartArray = [];
       for (const [partId, qty] of Object.entries(cart)) {
-        const item = catalog.find(i => getProp(i, ['partId', 'PartID', 'PartId', 'รหัสสินค้า']) === partId);
-        const nameTH = item ? getProp(item, ['nameTH', 'NameTH', 'ชื่อสินค้า']) : '';
-        const nameEN = item ? getProp(item, ['nameEN', 'NameEN', 'ชื่อสินค้า EN']) : '';
+        const item = catalog.find(i => getProp(i, ['partId', 'PartID', 'PartId', 'รหัสสินค้า', 'Part ID']) === partId);
+        const nameTH = item ? getProp(item, ['nameTH', 'NameTH', 'ชื่อสินค้า', 'Product Name']) : '';
+        const nameEN = item ? getProp(item, ['nameEN', 'NameEN', 'ชื่อสินค้า EN', 'Product Name EN']) : '';
         const size = item ? getProp(item, ['size', 'Size', 'ขนาด']) : '-';
 
         cartArray.push({
