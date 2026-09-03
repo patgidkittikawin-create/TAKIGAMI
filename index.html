@@ -55,7 +55,7 @@
       transition: all 0.2s ease-in-out;
       cursor: pointer;
       border: 2px solid transparent;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     .item-category-card:hover, .item-category-card:active {
@@ -65,9 +65,9 @@
 
     .item-category-card img {
       width: 100%;
-      height: 120px;
+      height: 110px;
       object-fit: contain;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     /* Product Card UI */
@@ -213,10 +213,10 @@
           <label class="form-label fw-bold">แผนก <span class="text-danger">*</span></label>
           <select class="form-select" id="dept">
             <option value="" selected disabled>-- เลือกแผนก --</option>
-            <option value="Design">Design</option>
-            <option value="Machine&Factory">Machine&Factory</option>
-            <option value="Assembly">Assembly</option>
-            <option value="Electrical">Electrical</option>
+            <option value="Design">1. Design</option>
+            <option value="Machine&Factory">2. Machine&Factory</option>
+            <option value="Assembly">3. Assembly</option>
+            <option value="Electrical">4. Electrical</option>
           </select>
         </div>
 
@@ -342,8 +342,8 @@
   </div>
 
   <script>
-    // ⚠️ นำ Web App URL ของ Google Apps Script มาใส่ในช่องนี้
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxiiULWFsNLqaRCjIiPM4F6tK4UqJ9Myr48GiOS4BTPkXH1k67GI71NzSbynnCDZdNc/exec";
+    // ⚠️ นำ Web App URL ของ Google Apps Script ของคุณมาใส่ที่นี่
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyBcdUqXwkIiy0tDSe3njCIC013Y97xoxjJAlb7OlQDiqt583w2KQs_73ADwE63SYcb/exec";
 
     let catalog = []; 
     let cart = {};
@@ -365,6 +365,12 @@
 
     function getProp(obj, targetKeys) {
       if (!obj || typeof obj !== 'object') return '';
+      for (let target of targetKeys) {
+        if (obj[target] !== undefined && obj[target] !== null) {
+          const val = String(obj[target]).trim();
+          if (val !== '') return val;
+        }
+      }
       const keys = Object.keys(obj);
       for (let target of targetKeys) {
         const normTarget = target.toLowerCase().replace(/[\s_\(\)]/g, '');
@@ -383,10 +389,10 @@
       const urlMatch = cleanUrl.match(/https?:\/\/[^\s'"<>]+/i);
       if (urlMatch) cleanUrl = urlMatch[0];
 
-      if (cleanUrl.includes('drive.google.com')) {
+      if (cleanUrl.includes('drive.google.com') || cleanUrl.includes('drive.usercontent.google.com')) {
         const match = cleanUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || cleanUrl.match(/id=([a-zA-Z0-9_-]+)/);
         if (match && match[1]) {
-          return `https://lh3.googleusercontent.com/d/${match[1]}`;
+          return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w500`;
         }
       }
       return cleanUrl;
@@ -399,7 +405,7 @@
 
     function getMainCatImageUrl(items) {
       for (let item of items) {
-        let rawUrl = getProp(item, ['Category Img', 'categoryImg', 'CategoryImg', 'รูปหมวดหลัก', 'รูปหมวดหมู่หลัก']);
+        let rawUrl = getProp(item, ['categoryImg', 'Category Img', 'CategoryImg', 'category_img', 'รูปหมวดหลัก', 'รูปหมวดหมู่หลัก']);
         if (rawUrl) return fixImageUrl(rawUrl);
       }
       return '';
@@ -408,14 +414,14 @@
     function getSubCatImageUrl(items, subCatName = '') {
       for (let item of items) {
         if (subCatName && getSubCategoryTH(item) !== subCatName) continue;
-        let rawUrl = getProp(item, ['Sub Category Img', 'subCategoryImg', 'SubCategoryImg', 'รูปหมวดย่อย', 'รูปหมวดหมู่ย่อย']);
+        let rawUrl = getProp(item, ['subCategoryImg', 'Sub Category Img', 'SubCategoryImg', 'subCategory_img', 'รูปหมวดย่อย', 'รูปหมวดหมู่ย่อย']);
         if (rawUrl) return fixImageUrl(rawUrl);
       }
       return '';
     }
 
     function getProductImageUrl(item) {
-      let rawUrl = getProp(item, ['Product Img', 'productImg', 'ProductImg', 'รูปสินค้า', 'รูปชิ้นงาน']);
+      let rawUrl = getProp(item, ['productImg', 'Product Img', 'ProductImg', 'product_img', 'รูปสินค้า', 'รูปชิ้นงาน']);
       return fixImageUrl(rawUrl);
     }
 
