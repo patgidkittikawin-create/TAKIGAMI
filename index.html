@@ -2,399 +2,355 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TAKIGAMI (TTC) STORE</title>
-  <!-- Bootstrap 5 & Icons -->
+  
+  <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <!-- Google Fonts: Kanit -->
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
       --brand-blue: #1C2382;
-      --brand-yellow: #EBB400;
-      --bg-gray: #F0F2F5;
-      --text-dark: #2A2A2A;
+      --brand-blue-hover: #141961;
+      --bg-light: #F4F6F9;
     }
 
     body {
-      font-family: 'Kanit', sans-serif !important;
-      background-color: var(--bg-gray);
-      color: var(--text-dark);
-      margin: 0;
+      font-family: 'Prompt', 'Sarabun', sans-serif;
+      background-color: var(--bg-light);
+      color: #333;
       padding-bottom: 90px;
     }
 
-    input, select, textarea {
-      font-size: 16px !important;
+    /* Page Navigation Logic */
+    .page {
+      display: none;
+    }
+    .page.active {
+      display: block;
     }
 
-    .max-width-main {
-      max-width: 820px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .page { display: none; }
-    .page.active { display: block; animation: fadeIn 0.25s ease-in-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
-
-    .store-header {
-      background-color: var(--brand-blue);
-      color: white;
-      text-align: center;
-      padding: 12px 16px;
-      font-weight: 500;
-      font-size: 1.1rem;
-      letter-spacing: 0.5px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-
-    .main-card-container {
+    /* Card & Container Style */
+    .app-card {
       background: #ffffff;
       border-radius: 16px;
-      padding: 24px 20px;
-      margin-top: 16px;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+      margin-bottom: 20px;
+      border: none;
+    }
+
+    .brand-header {
+      background: linear-gradient(135deg, var(--brand-blue), #343A40);
+      color: white;
+      padding: 20px;
+      border-radius: 0 0 20px 20px;
+      margin-bottom: 20px;
+    }
+
+    /* Category Cards Grid */
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 15px;
     }
 
     .item-category-card {
-      background: #FAFAFA;
-      border: 1px solid #EAEAEA;
+      background: #ffffff;
+      border: 1px solid #E2E8F0;
       border-radius: 12px;
-      padding: 20px 16px;
-      margin-bottom: 16px;
-      cursor: pointer;
-      transition: all 0.2s ease-in-out;
+      padding: 15px 10px;
       text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
-    .item-category-card:hover, .item-category-card.active-card {
-      border: 1.5px solid var(--brand-blue);
-      background: #ffffff;
-      box-shadow: 0 4px 14px rgba(28, 35, 130, 0.08);
+
+    .item-category-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      border-color: var(--brand-blue);
     }
+
     .item-category-card img {
-      height: 95px;
-      max-width: 100%;
+      width: 60px;
+      height: 60px;
       object-fit: contain;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
-    .btn-reload-data {
-      background-color: #F1F3F5;
-      color: #6C757D;
-      border: 1px solid #E9ECEF;
-      border-radius: 20px;
-      padding: 3px 12px;
-      font-size: 0.85rem;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .btn-reload-data:hover {
-      background-color: #E9ECEF;
-      color: #333;
-    }
-
-    .header-title-text {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 65vw; 
-      display: inline-block;
-      vertical-align: middle;
-    }
-
-    .bottom-action-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #ffffff;
-      padding: 12px 20px calc(12px + env(safe-area-inset-bottom)) !important;
-      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08) !important;
-      z-index: 1000;
-    }
-    .btn-action-back {
-      border: 1px solid #D0D0D0;
-      background: white;
-      color: #333;
-      font-weight: 500;
-      border-radius: 8px;
-      padding: 9px;
-      width: 100%;
-    }
-    .btn-action-submit {
-      background: var(--brand-blue);
-      color: white;
-      font-weight: 500;
-      border: none;
-      border-radius: 8px;
-      padding: 9px;
-      width: 100%;
-    }
-
+    /* Product Cards Grid */
     .product-card {
       background: #ffffff;
-      border: 1px solid #EAEAEA;
-      border-radius: 14px;
-      padding: 16px;
-      margin-bottom: 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
     }
+
     .product-img-box {
-      height: 130px;
+      height: 120px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
+
     .product-img-box img {
       max-height: 100%;
       max-width: 100%;
       object-fit: contain;
     }
 
-    .variant-container {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      background: #f8f9fa;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #dee2e6;
-      margin-bottom: 12px;
-    }
-    .location-tag {
-      align-self: flex-start;
-      font-size: 0.85rem;
-      color: #d32f2f;
-      background-color: #fce4e4;
+    .badge-partid {
+      background-color: #E2E8F0;
+      color: #4A5568;
+      font-size: 0.75rem;
       padding: 4px 8px;
       border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .badge-stock {
+      color: white;
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .variant-container {
+      background: #F8FAFC;
+      border-radius: 8px;
+      padding: 8px;
+      margin-bottom: 10px;
+    }
+
+    .location-tag {
+      font-size: 0.8rem;
+      color: #E53E3E;
+      margin-top: 4px;
       font-weight: 500;
     }
 
     .qty-control-bar {
-      background: #F4F6F9;
-      border-radius: 30px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 4px 8px;
-      border: 1px solid #E2E8F0;
-    }
-    .btn-qty-minus {
-      border: none;
-      background: #EAEAEA;
-      color: #555;
-      font-size: 1.2rem;
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-    .btn-qty-plus {
-      border: none;
-      background: var(--brand-blue);
-      color: #ffffff;
-      font-weight: bold;
-      font-size: 1.1rem;
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
+      background: #EDF2F7;
+      border-radius: 8px;
+      padding: 4px;
     }
 
-    .badge-stock {
-      background-color: #34A853;
-      color: #ffffff;
-      font-size: 0.85rem;
-      font-weight: 500;
-      padding: 3px 9px;
-      border-radius: 12px;
-    }
-    .badge-partid {
-      background: #F1F3F4;
-      color: #3C4043;
-      border: 1px solid #DADCE0;
-      font-size: 0.85rem;
-      font-weight: 500;
-      padding: 3px 8px;
+    .btn-qty-minus, .btn-qty-plus {
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: white;
       border-radius: 6px;
+      font-weight: bold;
+      color: var(--brand-blue);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* Floating Bottom Action Bar */
+    .bottom-action-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      padding: 12px 20px;
+      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      display: none;
+    }
+
+    .btn-brand {
+      background-color: var(--brand-blue);
+      color: white;
+      font-weight: 600;
+      border-radius: 10px;
+      padding: 10px 20px;
+      border: none;
+    }
+
+    .btn-brand:hover {
+      background-color: var(--brand-blue-hover);
+      color: white;
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Header Bar -->
-  <div class="store-header">
-    <i class="bi bi-tools"></i> TAKIGAMI (TTC) STORE
+  <!-- Top Header -->
+  <div class="brand-header text-center">
+    <h4 class="m-0 fw-bold"><i class="bi bi-tools me-2"></i>TAKIGAMI (TTC) STORE</h4>
   </div>
 
-  <!-- PAGE 1: ข้อมูลผู้เบิก -->
-  <div id="page1" class="page container max-width-main">
-    <div class="main-card-container">
-      <h5 class="fw-bold text-primary mb-4"><i class="bi bi-person-vcard"></i> กรอกข้อมูลผู้เบิก</h5>
-      <div class="mb-3">
-        <label class="form-label fw-medium">ชื่อ-นามสกุล <span class="text-danger">*</span></label>
-        <input type="text" id="userName" class="form-control form-control-lg" placeholder="ระบุชื่อผู้เบิก">
-      </div>
-      <div class="mb-3">
-        <label class="form-label fw-medium">แผนก <span class="text-danger">*</span></label>
-        <input type="text" id="dept" class="form-control form-control-lg" placeholder="ระบุแผนก">
-      </div>
-      <div class="mb-3">
-        <label class="form-label fw-medium">วัตถุประสงค์การเบิก</label>
-        <input type="text" id="purpose" class="form-control form-control-lg" placeholder="เช่น ซ่อมบำรุง, ไลน์ผลิต">
-      </div>
-      <div class="mb-4">
-        <label class="form-label fw-medium">โปรเจกต์ / เครื่องจักร</label>
-        <input type="text" id="project" class="form-control form-control-lg" placeholder="ระบุชื่อโปรเจกต์ (ถ้ามี)">
-      </div>
-      <button class="btn btn-action-submit btn-lg w-100" onclick="startRequisition()">เข้าสู่หน้าเลือกสินค้า <i class="bi bi-arrow-right"></i></button>
-    </div>
-  </div>
+  <div class="container max-width-md">
 
-  <!-- PAGE 2: เลือกสินค้า -->
-  <div id="page2" class="page container max-width-main">
-    <div class="main-card-container">
-
-      <!-- หัวข้อการเลือกหมวดหมู่ -->
-      <div class="d-flex align-items-center mb-2">
-        <button id="btnNavBackHeader" class="btn btn-sm btn-light border rounded-circle me-2" onclick="handleBackStep()" style="display:none; width:36px; height:36px;">
-          <i class="bi bi-arrow-left"></i>
-        </button>
-        <h5 class="fw-bold mb-0 text-dark" id="stepTitle">
-          <span class="header-title-text"><span class="me-1">👑</span> <span style="color:var(--brand-blue);">2.</span> เลือกหมวดหมู่หลัก</span>
-        </h5>
-      </div>
-
-      <div class="mb-4">
-        <button class="btn btn-reload-data" onclick="loadDataFromSheet()">
-          <i class="bi bi-arrow-clockwise"></i> ดึงข้อมูลล่าสุด
-        </button>
-      </div>
-
-      <!-- ค้นหา -->
-      <div id="searchWrapper" class="mb-3" style="display: none;">
-        <input type="text" id="searchItem" class="form-control form-control-lg" placeholder="ค้นหาชื่อ, รหัสสินค้า, ขนาด..." onkeyup="handleSearch(this.value)" onkeydown="if(event.key==='Enter') event.preventDefault()">
-      </div>
-
-      <!-- Step 1 View: หมวดหมู่หลัก -->
-      <div id="step1CategoryView">
-        <div id="mainCategoryContainer"></div>
-      </div>
-
-      <!-- Step 2 View: หมวดย่อย -->
-      <div id="step2SubCategoryView" style="display: none;">
-        <div id="subCategoryContainer"></div>
-      </div>
-
-      <!-- Step 3 View: รายการสินค้า -->
-      <div id="step3ItemView" style="display: none;">
-        <div id="itemContainer" class="row g-3"></div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- PAGE 3: สรุปรายการ -->
-  <div id="page3" class="page container max-width-main">
-    <div class="main-card-container">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-cart-check"></i> สรุปรายการเบิก</h5>
-        <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="goToPage(2)">+ เลือกของเพิ่ม</button>
-      </div>
-
-      <div id="summaryList" class="mb-4"></div>
-
-      <div class="border-top pt-3">
-        <h6 class="fw-bold mb-3">รูปแบบการรับของ</h6>
-        <div class="form-check mb-2">
-          <input class="form-check-input" type="radio" name="receiveMode" id="receiveNow" value="รับทันทีที่คลัง" onchange="toggleTimeSelect()" checked>
-          <label class="form-check-label" for="receiveNow">รับทันทีที่คลัง (Walk-in)</label>
+    <!-- PAGE 1: User Profile Form -->
+    <div id="page1" class="page active">
+      <div class="app-card">
+        <h5 class="fw-bold mb-3 text-primary"><i class="bi bi-person-lines-fill me-2"></i>กรอกข้อมูลผู้เบิก</h5>
+        
+        <div class="mb-3">
+          <label class="form-label fw-medium">ชื่อ-นามสกุล <span class="text-danger">*</span></label>
+          <input type="text" id="userName" class="form-control" placeholder="ระบุชื่อ-นามสกุล">
         </div>
-        <div class="form-check mb-3">
-          <input class="form-check-input" type="radio" name="receiveMode" id="receiveLater" value="นัดเวลารับล่วงหน้า" onchange="toggleTimeSelect()">
-          <label class="form-check-label" for="receiveLater">นัดเวลารับล่วงหน้า (จัดเตรียมไว้ให้)</label>
+
+        <!-- แผนก (Dropdown) -->
+        <div class="mb-3">
+          <label class="form-label fw-medium">แผนก <span class="text-danger">*</span></label>
+          <select id="dept" class="form-select">
+            <option value="" selected disabled>-- เลือกแผนก --</option>
+            <option value="Design">Design</option>
+            <option value="Machine&Factory">Machine&Factory</option>
+            <option value="Assembly">Assembly</option>
+            <option value="Electrical">Electrical</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-medium">โปรเจกต์ / เครื่องจักร</label>
+          <input type="text" id="project" class="form-control" placeholder="ระบุชื่อโปรเจกต์หรือเครื่องจักร">
+        </div>
+
+        <hr class="my-4">
+
+        <h5 class="fw-bold mb-3 text-primary"><i class="bi bi-clock-history me-2"></i>รูปแบบการรับสินค้า</h5>
+        <div class="mb-3">
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="radio" name="receiveMode" id="receiveImmediate" value="รับทันทีที่คลัง" checked onchange="toggleTimeSelect()">
+            <label class="form-check-label fw-medium" for="receiveImmediate">รับทันทีที่คลัง</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="receiveMode" id="receiveLater" value="นัดเวลารับล่วงหน้า" onchange="toggleTimeSelect()">
+            <label class="form-check-label fw-medium" for="receiveLater">นัดเวลารับล่วงหน้า</label>
+          </div>
         </div>
 
         <div id="timeSelectWrapper" class="mb-3" style="display: none;">
-          <label class="form-label small text-muted">เลือกช่วงเวลาที่สะดวกมารับ</label>
+          <label class="form-label fw-medium text-danger">เลือกช่วงเวลามารับของ <span class="text-danger">*</span></label>
           <select id="timeSlot" class="form-select">
-            <option value="">-- เลือกช่วงเวลา --</option>
-            <option value="08:00 - 09:00">08:00 - 09:00</option>
-            <option value="09:00 - 10:00">09:00 - 10:00</option>
-            <option value="10:00 - 11:00">10:00 - 11:00</option>
-            <option value="13:00 - 14:00">13:00 - 14:00</option>
-            <option value="14:00 - 15:00">14:00 - 15:00</option>
-            <option value="15:00 - 16:00">15:00 - 16:00</option>
+            <option selected>-- เลือกช่วงเวลา --</option>
+            <option value="09:00 - 10:00 น.">09:00 - 10:00 น.</option>
+            <option value="10:00 - 12:00 น.">10:00 - 12:00 น.</option>
+            <option value="13:00 - 15:00 น.">13:00 - 15:00 น.</option>
+            <option value="15:00 - 17:00 น.">15:00 - 17:00 น.</option>
           </select>
         </div>
+
+        <button class="btn btn-brand w-100 mt-3 fs-5" onclick="startRequisition()">
+          เข้าสู่หน้าเลือกสินค้า <i class="bi bi-arrow-right-circle ms-1"></i>
+        </button>
       </div>
     </div>
-  </div>
 
-  <!-- PAGE 4: ใบเบิกสำเร็จ -->
-  <div id="page4" class="page container max-width-main">
-    <div class="main-card-container text-center">
-      <div class="text-success mb-2" style="font-size: 3rem;"><i class="bi bi-check-circle-fill"></i></div>
-      <h4 class="fw-bold text-success mb-1">เบิกสินค้าสำเร็จ</h4>
-      <p class="text-muted small mb-4">แสดงหน้าจอนี้แก่เจ้าหน้าที่คลังสินค้าเพื่อรับของ</p>
-
-      <div class="bg-light p-3 rounded-3 mb-4 text-start border">
-        <div class="text-center mb-3">
-          <small class="text-muted d-block">รหัสใบเบิก (Order ID)</small>
-          <span id="slipId" class="fw-bold fs-5 text-primary font-monospace">-</span>
-        </div>
-        <hr>
-        <div class="row g-2 small">
-          <div class="col-5 text-muted">ชื่อผู้เบิก:</div><div id="slipUser" class="col-7 text-end fw-medium">-</div>
-          <div class="col-5 text-muted">แผนก:</div><div id="slipDept" class="col-7 text-end fw-medium">-</div>
-          <div class="col-5 text-muted">โปรเจกต์:</div><div id="slipProject" class="col-7 text-end fw-medium">-</div>
-          <div class="col-5 text-muted" id="slipTimeLabel">รูปแบบการรับ:</div><div id="slipTime" class="col-7 text-end fw-medium text-primary">-</div>
+    <!-- PAGE 2: Catalog Nav & Selection -->
+    <div id="page2" class="page">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <button id="btnNavBackHeader" class="btn btn-outline-secondary btn-sm rounded-pill px-3" onclick="handleBackStep()" style="display:none;">
+          <i class="bi bi-chevron-left me-1"></i>ย้อนกลับ
+        </button>
+        <div id="stepTitle" class="fw-bold fs-5 text-truncate">
+          <!-- Step Title Javascript Injected -->
         </div>
       </div>
 
-      <h6 class="fw-bold text-start mb-2">รายการสินค้าที่เบิก</h6>
-      <div id="slipItemsList" class="mb-4 text-start"></div>
-
-      <button class="btn btn-outline-dark w-100 mb-2" onclick="window.print()"><i class="bi bi-printer"></i> พิมพ์ / บันทึกสลิป</button>
-      <button class="btn btn-action-submit w-100" onclick="location.reload()">ทำรายการใหม่</button>
-    </div>
-  </div>
-
-  <!-- BOTTOM ACTION BAR -->
-  <div id="bottomActionBar" class="bottom-action-bar" style="display: none;">
-    <div class="max-width-main">
-      <div class="row g-2">
-        <div class="col-4 col-md-3">
-          <button class="btn btn-action-back" onclick="handleBackStep()">ย้อนกลับ</button>
+      <!-- Search Input -->
+      <div id="searchWrapper" class="mb-3" style="display: none;">
+        <div class="input-group">
+          <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+          <input type="text" id="searchItem" class="form-control" placeholder="ค้นหาชื่อสินค้า, รหัส, ขนาด..." onkeyup="handleSearch(this.value)">
         </div>
-        <div class="col-8 col-md-9">
-          <button id="btnSubmitMain" class="btn btn-action-submit" onclick="handleMainSubmit()">
-            ยืนยันรายการ (0)
-          </button>
+      </div>
+
+      <!-- Step 1: Main Category Cards -->
+      <div id="step1CategoryView">
+        <div id="mainCategoryContainer" class="category-grid"></div>
+      </div>
+
+      <!-- Step 2: Sub Category Cards -->
+      <div id="step2SubCategoryView" style="display: none;">
+        <div id="subCategoryContainer" class="category-grid"></div>
+      </div>
+
+      <!-- Step 3: Product List Cards -->
+      <div id="step3ItemView" style="display: none;">
+        <div id="itemContainer" class="row g-3"></div>
+      </div>
+    </div>
+
+    <!-- PAGE 3: Requisition Cart Summary -->
+    <div id="page3" class="page">
+      <div class="app-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold text-primary m-0"><i class="bi bi-cart-check-fill me-2"></i>สรุปรายการเบิก</h5>
+          <button class="btn btn-sm btn-outline-secondary" onclick="handleBackStep()">+ เพิ่มรายการ</button>
+        </div>
+        <div id="summaryList" class="mb-3">
+          <!-- Cart items rendered here -->
         </div>
       </div>
     </div>
+
+    <!-- PAGE 4: Requisition Slip / Success Page -->
+    <div id="page4" class="page">
+      <div class="app-card text-center py-4">
+        <i class="bi bi-check-circle-fill text-success display-1 mb-2"></i>
+        <h4 class="fw-bold text-dark">บันทึกการเบิกสำเร็จ!</h4>
+        <p class="text-muted small">ระบบได้ทำการบันทึกข้อมูลและตัดสต็อกเรียบร้อยแล้ว</p>
+        
+        <div class="card border-dashed text-start p-3 bg-light my-3">
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">เลขที่ใบเบิก:</span>
+            <span id="slipId" class="fw-bold text-primary"></span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">ผู้ทำรายการ:</span>
+            <span id="slipUser" class="fw-medium"></span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">แผนก:</span>
+            <span id="slipDept" class="fw-medium"></span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">โครงการ/เครื่องจักร:</span>
+            <span id="slipProject" class="fw-medium"></span>
+          </div>
+          <div class="d-flex justify-content-between mb-3">
+            <span id="slipTimeLabel" class="text-muted">รูปแบบการรับ:</span>
+            <span id="slipTime" class="fw-bold text-danger"></span>
+          </div>
+          
+          <hr>
+          <div class="fw-bold mb-2">รายการสินค้า:</div>
+          <div id="slipItemsList"></div>
+        </div>
+
+        <button class="btn btn-brand w-100" onclick="window.location.reload();">
+          <i class="bi bi-arrow-repeat me-1"></i> ทำรายการเบิกใหม่
+        </button>
+      </div>
+    </div>
+
   </div>
 
+  <!-- Floating Bottom Action Bar -->
+  <div id="bottomActionBar" class="bottom-action-bar">
+    <div class="container d-flex justify-content-between align-items-center max-width-md">
+      <button class="btn btn-outline-secondary" onclick="handleBackStep()">ย้อนกลับ</button>
+      <button id="btnSubmitMain" class="btn btn-brand" onclick="handleMainSubmit()">ยืนยันรายการ (0)</button>
+    </div>
+  </div>
+
+  <!-- JavaScript Code Section -->
   <script>
     const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzjMDhVdjW1fpA4w2XO7baVlOvXa3C50nqaESVU9EPZy4YqpfCpG9Sgc03mmZwK2Q4m/exec';
     
@@ -430,12 +386,10 @@
       return '';
     }
 
-    // ปรับปรุงการล้าง URL รูปภาพอย่างเด็ดขาดเพื่อป้องกันโค้ด HTML หลุดมาแสดงผล
     function fixImageUrl(url) {
       if (!url || typeof url !== 'string') return '';
       let cleanUrl = url.trim();
 
-      // ดึงเฉพาะ URL ที่เป็น http/https ที่ถูกต้อง ตัดอัญประกาศและโค้ด HTML ขยะทิ้ง
       const urlMatch = cleanUrl.match(/https?:\/\/[^\s'"<>]+/i);
       if (urlMatch) {
         cleanUrl = urlMatch[0];
@@ -511,9 +465,10 @@
 
     function startRequisition() {
       const userName = document.getElementById('userName').value.trim();
-      const dept = document.getElementById('dept').value.trim();
+      const dept = document.getElementById('dept').value;
+
       if (!userName || !dept) {
-        Swal.fire({ icon: 'warning', title: 'ข้อมูลไม่ครบถ้วน', text: 'กรุณากรอก ชื่อ-นามสกุล และ แผนก ก่อนทำรายการ', confirmButtonColor: '#1C2382' });
+        Swal.fire({ icon: 'warning', title: 'ข้อมูลไม่ครบถ้วน', text: 'กรุณากรอก ชื่อ-นามสกุล และ เลือกแผนก ก่อนทำรายการ', confirmButtonColor: '#1C2382' });
         return;
       }
       goToPage(2);
@@ -928,11 +883,14 @@
       delete cart[partId];
       renderSummary();
       updateCartUI();
+      if (Object.keys(cart).length === 0) {
+        goToPage(2);
+      }
     }
 
     function submitRequisition() {
       const userName = document.getElementById('userName').value.trim();
-      const dept = document.getElementById('dept').value.trim();
+      const dept = document.getElementById('dept').value;
       const receiveMode = document.querySelector('input[name="receiveMode"]:checked').value;
       const timeSlot = document.getElementById('timeSelectWrapper').style.display === 'block' ? document.getElementById('timeSlot').value : '-';
 
@@ -971,7 +929,6 @@
           orderId: randomReqId,
           userName: userName,
           dept: dept,
-          purpose: document.getElementById('purpose').value,
           project: document.getElementById('project').value,
           pickupType: receiveMode,
           timeSlot: timeSlot,
@@ -981,43 +938,60 @@
 
       fetch(GAS_WEB_APP_URL, {
         method: 'POST',
-        mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload)
       })
-      .then(() => {
+      .then(res => res.json())
+      .then(res => {
         Swal.close();
-        goToPage(4);
+        if (res.status === 'success') {
+          // ตัดสต็อกสินค้าใน catalog Memory ของเบราว์เซอร์
+          cartArray.forEach(cItem => {
+            const found = catalog.find(i => getProp(i, ['partId', 'PartID', 'PartId', 'รหัสสินค้า']) === cItem.partId);
+            if (found) {
+              const currentStk = Number(getProp(found, ['stock', 'Stock', 'จำนวน'])) || 0;
+              found.stock = Math.max(0, currentStk - cItem.qty);
+            }
+          });
 
-        document.getElementById('slipId').innerText = randomReqId;
-        document.getElementById('slipUser').innerText = payload.formData.userName;
-        document.getElementById('slipDept').innerText = payload.formData.dept;
-        document.getElementById('slipProject').innerText = payload.formData.project || '-';
-        
-        if (receiveMode === 'นัดเวลารับล่วงหน้า') {
-          document.getElementById('slipTimeLabel').innerText = 'เวลารับของ:';
-          document.getElementById('slipTime').innerText = timeSlot;
-        } else {
-          document.getElementById('slipTimeLabel').innerText = 'รูปแบบการรับ:';
-          document.getElementById('slipTime').innerText = 'รับทันทีที่คลัง';
-        }
+          // เคลียร์ตะกร้าสินค้า
+          cart = {};
 
-        let itemsHtml = '';
-        cartArray.forEach(item => {
-          itemsHtml += `
-            <div class="d-flex justify-content-between align-items-center bg-light rounded-3 p-2 mb-2 border small">
-              <div>
-                <span class="text-dark fw-medium">${item.partName} (${item.size})</span>
-                <div class="text-muted" style="font-size: 0.75rem;">รหัส: ${item.partId} | ล็อก: ${item.location}</div>
+          goToPage(4);
+
+          document.getElementById('slipId').innerText = randomReqId;
+          document.getElementById('slipUser').innerText = payload.formData.userName;
+          document.getElementById('slipDept').innerText = payload.formData.dept;
+          document.getElementById('slipProject').innerText = payload.formData.project || '-';
+          
+          if (receiveMode === 'นัดเวลารับล่วงหน้า') {
+            document.getElementById('slipTimeLabel').innerText = 'เวลารับของ:';
+            document.getElementById('slipTime').innerText = timeSlot;
+          } else {
+            document.getElementById('slipTimeLabel').innerText = 'รูปแบบการรับ:';
+            document.getElementById('slipTime').innerText = 'รับทันทีที่คลัง';
+          }
+
+          let itemsHtml = '';
+          cartArray.forEach(item => {
+            itemsHtml += `
+              <div class="d-flex justify-content-between align-items-center bg-light rounded-3 p-2 mb-2 border small">
+                <div>
+                  <span class="text-dark fw-medium">${item.partName} (${item.size})</span>
+                  <div class="text-muted" style="font-size: 0.75rem;">รหัส: ${item.partId} | ล็อก: ${item.location}</div>
+                </div>
+                <span class="fw-bold text-primary">x${item.qty}</span>
               </div>
-              <span class="fw-bold text-primary">x${item.qty}</span>
-            </div>
-          `;
-        });
-        document.getElementById('slipItemsList').innerHTML = itemsHtml;
+            `;
+          });
+          document.getElementById('slipItemsList').innerHTML = itemsHtml;
+        } else {
+          Swal.fire({ icon: 'error', title: 'บันทึกไม่สำเร็จ', text: res.message || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล', confirmButtonColor: '#1C2382' });
+        }
       })
-      .catch(() => {
-        Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: 'ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่', confirmButtonColor: '#1C2382' });
+      .catch(err => {
+        Swal.close();
+        Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: 'ไม่สามารถเชื่อมต่อกับระบบได้ กรุณาลองใหม่อีกครั้ง', confirmButtonColor: '#1C2382' });
       });
     }
 
@@ -1043,5 +1017,8 @@
       window.scrollTo(0, 0);
     }
   </script>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
