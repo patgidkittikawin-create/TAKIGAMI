@@ -254,14 +254,18 @@
         <label class="form-label fw-medium">ชื่อ-นามสกุล <span class="text-danger">*</span></label>
         <input type="text" id="userName" class="form-control form-control-lg" placeholder="ระบุชื่อผู้เบิก">
       </div>
+      <!-- เปลี่ยนช่องแผนกเป็น Dropdown -->
       <div class="mb-3">
         <label class="form-label fw-medium">แผนก <span class="text-danger">*</span></label>
-        <input type="text" id="dept" class="form-control form-control-lg" placeholder="ระบุแผนก">
+        <select id="dept" class="form-select form-select-lg">
+          <option value="" selected disabled>-- เลือกแผนก --</option>
+          <option value="Design">Design</option>
+          <option value="Machine&Factory">Machine&Factory</option>
+          <option value="Assembly">Assembly</option>
+          <option value="Electrical">Electrical</option>
+        </select>
       </div>
-      <div class="mb-3">
-        <label class="form-label fw-medium">วัตถุประสงค์การเบิก</label>
-        <input type="text" id="purpose" class="form-control form-control-lg" placeholder="เช่น ซ่อมบำรุง, ไลน์ผลิต">
-      </div>
+      <!-- ลบวัตถุประสงค์การเบิกออกแล้ว -->
       <div class="mb-4">
         <label class="form-label fw-medium">โปรเจกต์ / เครื่องจักร</label>
         <input type="text" id="project" class="form-control form-control-lg" placeholder="ระบุชื่อโปรเจกต์ (ถ้ามี)">
@@ -430,12 +434,10 @@
       return '';
     }
 
-    // ปรับปรุงการล้าง URL รูปภาพอย่างเด็ดขาดเพื่อป้องกันโค้ด HTML หลุดมาแสดงผล
     function fixImageUrl(url) {
       if (!url || typeof url !== 'string') return '';
       let cleanUrl = url.trim();
 
-      // ดึงเฉพาะ URL ที่เป็น http/https ที่ถูกต้อง ตัดอัญประกาศและโค้ด HTML ขยะทิ้ง
       const urlMatch = cleanUrl.match(/https?:\/\/[^\s'"<>]+/i);
       if (urlMatch) {
         cleanUrl = urlMatch[0];
@@ -511,9 +513,9 @@
 
     function startRequisition() {
       const userName = document.getElementById('userName').value.trim();
-      const dept = document.getElementById('dept').value.trim();
+      const dept = document.getElementById('dept').value;
       if (!userName || !dept) {
-        Swal.fire({ icon: 'warning', title: 'ข้อมูลไม่ครบถ้วน', text: 'กรุณากรอก ชื่อ-นามสกุล และ แผนก ก่อนทำรายการ', confirmButtonColor: '#1C2382' });
+        Swal.fire({ icon: 'warning', title: 'ข้อมูลไม่ครบถ้วน', text: 'กรุณากรอก ชื่อ-นามสกุล และ เลือกแผนก ก่อนทำรายการ', confirmButtonColor: '#1C2382' });
         return;
       }
       goToPage(2);
@@ -932,7 +934,7 @@
 
     function submitRequisition() {
       const userName = document.getElementById('userName').value.trim();
-      const dept = document.getElementById('dept').value.trim();
+      const dept = document.getElementById('dept').value;
       const receiveMode = document.querySelector('input[name="receiveMode"]:checked').value;
       const timeSlot = document.getElementById('timeSelectWrapper').style.display === 'block' ? document.getElementById('timeSlot').value : '-';
 
@@ -971,7 +973,6 @@
           orderId: randomReqId,
           userName: userName,
           dept: dept,
-          purpose: document.getElementById('purpose').value,
           project: document.getElementById('project').value,
           pickupType: receiveMode,
           timeSlot: timeSlot,
