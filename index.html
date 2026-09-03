@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TAKIGAMI (TTC) STORE</title>
   
+  <!-- Google Fonts: Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
@@ -14,16 +19,84 @@
 
   <style>
     :root {
-      --brand-blue: #1C2382;
-      --brand-blue-hover: #141961;
-      --bg-light: #F4F6F9;
+      --brand-blue: #1C2474;
+      --brand-blue-hover: #131956;
+      --bg-gray: #EEF2F6;
     }
 
     body {
-      font-family: 'Prompt', 'Sarabun', sans-serif;
-      background-color: var(--bg-light);
-      color: #333;
-      padding-bottom: 90px;
+      font-family: 'Prompt', sans-serif;
+      background-color: var(--bg-gray);
+      color: #333333;
+      margin: 0;
+      padding-bottom: 80px;
+    }
+
+    /* Top Navbar Header */
+    .top-header {
+      background-color: var(--brand-blue);
+      color: #ffffff;
+      padding: 14px 20px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 1.15rem;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    /* Form Container & Card */
+    .app-container {
+      max-width: 580px;
+      margin: 35px auto;
+      padding: 0 16px;
+    }
+
+    .app-card {
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+      padding: 32px 36px;
+      border: none;
+    }
+
+    /* Form Inputs & Selects */
+    .form-label {
+      font-weight: 600;
+      color: #2D3748;
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+    }
+
+    .form-control, .form-select {
+      border-radius: 10px;
+      padding: 10px 14px;
+      border: 1px solid #E2E8F0;
+      font-size: 0.95rem;
+      color: #2D3748;
+      transition: all 0.2s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--brand-blue);
+      box-shadow: 0 0 0 3px rgba(28, 36, 116, 0.15);
+    }
+
+    /* Buttons */
+    .btn-brand-primary {
+      background-color: var(--brand-blue);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 1.05rem;
+      border-radius: 12px;
+      padding: 12px;
+      border: none;
+      width: 100%;
+      transition: background-color 0.2s ease;
+    }
+
+    .btn-brand-primary:hover {
+      background-color: var(--brand-blue-hover);
+      color: #ffffff;
     }
 
     /* Page Navigation Logic */
@@ -34,25 +107,7 @@
       display: block;
     }
 
-    /* Card & Container Style */
-    .app-card {
-      background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-      padding: 20px;
-      margin-bottom: 20px;
-      border: none;
-    }
-
-    .brand-header {
-      background: linear-gradient(135deg, var(--brand-blue), #343A40);
-      color: white;
-      padding: 20px;
-      border-radius: 0 0 20px 20px;
-      margin-bottom: 20px;
-    }
-
-    /* Category Cards Grid */
+    /* Product & Category Grids */
     .category-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -63,7 +118,7 @@
       background: #ffffff;
       border: 1px solid #E2E8F0;
       border-radius: 12px;
-      padding: 15px 10px;
+      padding: 16px 12px;
       text-align: center;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -71,7 +126,7 @@
 
     .item-category-card:hover {
       transform: translateY(-3px);
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
       border-color: var(--brand-blue);
     }
 
@@ -82,14 +137,13 @@
       margin-bottom: 8px;
     }
 
-    /* Product Cards Grid */
     .product-card {
       background: #ffffff;
       border: 1px solid #E2E8F0;
       border-radius: 12px;
-      padding: 15px;
+      padding: 16px;
       margin-bottom: 15px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
     }
 
     .product-img-box {
@@ -107,7 +161,7 @@
     }
 
     .badge-partid {
-      background-color: #E2E8F0;
+      background-color: #EDF2F7;
       color: #4A5568;
       font-size: 0.75rem;
       padding: 4px 8px;
@@ -124,7 +178,7 @@
     }
 
     .variant-container {
-      background: #F8FAFC;
+      background: #F7FAFC;
       border-radius: 8px;
       padding: 8px;
       margin-bottom: 10px;
@@ -157,7 +211,6 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
-    /* Floating Bottom Action Bar */
     .bottom-action-bar {
       position: fixed;
       bottom: 0;
@@ -165,102 +218,68 @@
       right: 0;
       background: white;
       padding: 12px 20px;
-      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08);
       z-index: 1000;
       display: none;
-    }
-
-    .btn-brand {
-      background-color: var(--brand-blue);
-      color: white;
-      font-weight: 600;
-      border-radius: 10px;
-      padding: 10px 20px;
-      border: none;
-    }
-
-    .btn-brand:hover {
-      background-color: var(--brand-blue-hover);
-      color: white;
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Header -->
-  <div class="brand-header text-center">
-    <h4 class="m-0 fw-bold"><i class="bi bi-tools me-2"></i>TAKIGAMI (TTC) STORE</h4>
+  <!-- Header Banner -->
+  <div class="top-header">
+    <i class="bi bi-tools me-2"></i>TAKIGAMI (TTC) STORE
   </div>
 
-  <div class="container max-width-md">
+  <div class="app-container">
 
-    <!-- PAGE 1: User Profile Form -->
+    <!-- PAGE 1: Form (ตรงตามรูปภาพ image_e9863f.png) -->
     <div id="page1" class="page active">
       <div class="app-card">
-        <h5 class="fw-bold mb-3 text-primary"><i class="bi bi-person-lines-fill me-2"></i>กรอกข้อมูลผู้เบิก</h5>
+        <h5 class="fw-bold mb-4 text-primary d-flex align-items-center">
+          <i class="bi bi-card-heading fs-4 me-2"></i>กรอกข้อมูลผู้เบิก
+        </h5>
         
-        <div class="mb-3">
-          <label class="form-label fw-medium">ชื่อ-นามสกุล <span class="text-danger">*</span></label>
-          <input type="text" id="userName" class="form-control" placeholder="ระบุชื่อ-นามสกุล">
-        </div>
-
-        <!-- แผนก (Dropdown) -->
-        <div class="mb-3">
-          <label class="form-label fw-medium">แผนก <span class="text-danger">*</span></label>
-          <select id="dept" class="form-select">
-            <option value="" selected disabled>-- เลือกแผนก --</option>
-            <option value="Design">Design</option>
-            <option value="Machine&Factory">Machine&Factory</option>
-            <option value="Assembly">Assembly</option>
-            <option value="Electrical">Electrical</option>
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label fw-medium">โปรเจกต์ / เครื่องจักร</label>
-          <input type="text" id="project" class="form-control" placeholder="ระบุชื่อโปรเจกต์หรือเครื่องจักร">
-        </div>
-
-        <hr class="my-4">
-
-        <h5 class="fw-bold mb-3 text-primary"><i class="bi bi-clock-history me-2"></i>รูปแบบการรับสินค้า</h5>
-        <div class="mb-3">
-          <div class="form-check mb-2">
-            <input class="form-check-input" type="radio" name="receiveMode" id="receiveImmediate" value="รับทันทีที่คลัง" checked onchange="toggleTimeSelect()">
-            <label class="form-check-label fw-medium" for="receiveImmediate">รับทันทีที่คลัง</label>
+        <form onsubmit="event.preventDefault(); startRequisition();">
+          <!-- 1. ชื่อ-นามสกุล -->
+          <div class="mb-3">
+            <label class="form-label">ชื่อ-นามสกุล <span class="text-danger">*</span></label>
+            <input type="text" id="userName" class="form-control" placeholder="ระบุชื่อ-นามสกุล" required>
           </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="receiveMode" id="receiveLater" value="นัดเวลารับล่วงหน้า" onchange="toggleTimeSelect()">
-            <label class="form-check-label fw-medium" for="receiveLater">นัดเวลารับล่วงหน้า</label>
+
+          <!-- 2. แผนก (Dropdown) -->
+          <div class="mb-3">
+            <label class="form-label">แผนก <span class="text-danger">*</span></label>
+            <select id="dept" class="form-select" required>
+              <option value="" selected disabled>-- เลือกแผนก --</option>
+              <option value="Design">Design</option>
+              <option value="Machine&Factory">Machine&Factory</option>
+              <option value="Assembly">Assembly</option>
+              <option value="Electrical">Electrical</option>
+            </select>
           </div>
-        </div>
 
-        <div id="timeSelectWrapper" class="mb-3" style="display: none;">
-          <label class="form-label fw-medium text-danger">เลือกช่วงเวลามารับของ <span class="text-danger">*</span></label>
-          <select id="timeSlot" class="form-select">
-            <option selected>-- เลือกช่วงเวลา --</option>
-            <option value="09:00 - 10:00 น.">09:00 - 10:00 น.</option>
-            <option value="10:00 - 12:00 น.">10:00 - 12:00 น.</option>
-            <option value="13:00 - 15:00 น.">13:00 - 15:00 น.</option>
-            <option value="15:00 - 17:00 น.">15:00 - 17:00 น.</option>
-          </select>
-        </div>
+          <!-- 3. โปรเจกต์ / เครื่องจักร -->
+          <div class="mb-4">
+            <label class="form-label">โปรเจกต์ / เครื่องจักร</label>
+            <input type="text" id="project" class="form-control" placeholder="ระบุโปรเจกต์ หรือ เครื่องจักร">
+          </div>
 
-        <button class="btn btn-brand w-100 mt-3 fs-5" onclick="startRequisition()">
-          เข้าสู่หน้าเลือกสินค้า <i class="bi bi-arrow-right-circle ms-1"></i>
-        </button>
+          <!-- Submit Button -->
+          <button type="submit" class="btn btn-brand-primary mt-2">
+            เข้าสู่หน้าเลือกสินค้า <i class="bi bi-arrow-right ms-1"></i>
+          </button>
+        </form>
       </div>
     </div>
 
-    <!-- PAGE 2: Catalog Nav & Selection -->
+    <!-- PAGE 2: Catalog Categories & Products -->
     <div id="page2" class="page">
       <div class="d-flex align-items-center justify-content-between mb-3">
         <button id="btnNavBackHeader" class="btn btn-outline-secondary btn-sm rounded-pill px-3" onclick="handleBackStep()" style="display:none;">
           <i class="bi bi-chevron-left me-1"></i>ย้อนกลับ
         </button>
-        <div id="stepTitle" class="fw-bold fs-5 text-truncate">
-          <!-- Step Title Javascript Injected -->
-        </div>
+        <div id="stepTitle" class="fw-bold fs-5 text-truncate"></div>
       </div>
 
       <!-- Search Input -->
@@ -271,17 +290,17 @@
         </div>
       </div>
 
-      <!-- Step 1: Main Category Cards -->
+      <!-- Main Categories -->
       <div id="step1CategoryView">
         <div id="mainCategoryContainer" class="category-grid"></div>
       </div>
 
-      <!-- Step 2: Sub Category Cards -->
+      <!-- Sub Categories -->
       <div id="step2SubCategoryView" style="display: none;">
         <div id="subCategoryContainer" class="category-grid"></div>
       </div>
 
-      <!-- Step 3: Product List Cards -->
+      <!-- Product Items -->
       <div id="step3ItemView" style="display: none;">
         <div id="itemContainer" class="row g-3"></div>
       </div>
@@ -294,13 +313,11 @@
           <h5 class="fw-bold text-primary m-0"><i class="bi bi-cart-check-fill me-2"></i>สรุปรายการเบิก</h5>
           <button class="btn btn-sm btn-outline-secondary" onclick="handleBackStep()">+ เพิ่มรายการ</button>
         </div>
-        <div id="summaryList" class="mb-3">
-          <!-- Cart items rendered here -->
-        </div>
+        <div id="summaryList" class="mb-3"></div>
       </div>
     </div>
 
-    <!-- PAGE 4: Requisition Slip / Success Page -->
+    <!-- PAGE 4: Success / Slip View -->
     <div id="page4" class="page">
       <div class="app-card text-center py-4">
         <i class="bi bi-check-circle-fill text-success display-1 mb-2"></i>
@@ -320,13 +337,9 @@
             <span class="text-muted">แผนก:</span>
             <span id="slipDept" class="fw-medium"></span>
           </div>
-          <div class="d-flex justify-content-between mb-2">
+          <div class="d-flex justify-content-between mb-3">
             <span class="text-muted">โครงการ/เครื่องจักร:</span>
             <span id="slipProject" class="fw-medium"></span>
-          </div>
-          <div class="d-flex justify-content-between mb-3">
-            <span id="slipTimeLabel" class="text-muted">รูปแบบการรับ:</span>
-            <span id="slipTime" class="fw-bold text-danger"></span>
           </div>
           
           <hr>
@@ -334,7 +347,7 @@
           <div id="slipItemsList"></div>
         </div>
 
-        <button class="btn btn-brand w-100" onclick="window.location.reload();">
+        <button class="btn btn-brand-primary mt-2" onclick="window.location.reload();">
           <i class="bi bi-arrow-repeat me-1"></i> ทำรายการเบิกใหม่
         </button>
       </div>
@@ -346,11 +359,11 @@
   <div id="bottomActionBar" class="bottom-action-bar">
     <div class="container d-flex justify-content-between align-items-center max-width-md">
       <button class="btn btn-outline-secondary" onclick="handleBackStep()">ย้อนกลับ</button>
-      <button id="btnSubmitMain" class="btn btn-brand" onclick="handleMainSubmit()">ยืนยันรายการ (0)</button>
+      <button id="btnSubmitMain" class="btn btn-brand-primary w-auto px-4" onclick="handleMainSubmit()">ยืนยันรายการ (0)</button>
     </div>
   </div>
 
-  <!-- JavaScript Code Section -->
+  <!-- JavaScript Logic -->
   <script>
     const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzjMDhVdjW1fpA4w2XO7baVlOvXa3C50nqaESVU9EPZy4YqpfCpG9Sgc03mmZwK2Q4m/exec';
     
@@ -389,11 +402,8 @@
     function fixImageUrl(url) {
       if (!url || typeof url !== 'string') return '';
       let cleanUrl = url.trim();
-
       const urlMatch = cleanUrl.match(/https?:\/\/[^\s'"<>]+/i);
-      if (urlMatch) {
-        cleanUrl = urlMatch[0];
-      }
+      if (urlMatch) cleanUrl = urlMatch[0];
 
       if (cleanUrl.includes('drive.google.com')) {
         const match = cleanUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || cleanUrl.match(/id=([a-zA-Z0-9_-]+)/);
@@ -432,13 +442,6 @@
     }
 
     function loadDataFromSheet() {
-      Swal.fire({
-        title: 'กำลังโหลดข้อมูล...',
-        text: 'กรุณารอสักครู่',
-        allowOutsideClick: false,
-        didOpen: () => { Swal.showLoading(); }
-      });
-
       const oldScript = document.getElementById('jsonp-script');
       if (oldScript) oldScript.remove();
 
@@ -446,20 +449,17 @@
       script.id = 'jsonp-script';
       script.src = `${GAS_WEB_APP_URL}?action=getCatalog&callback=onCatalogLoaded&nocache=${Date.now()}`;
       script.onerror = () => {
-        Swal.fire({ icon: 'error', title: 'การเชื่อมต่อขัดข้อง', text: 'ไม่สามารถดึงข้อมูลจาก Google Sheet ได้', confirmButtonColor: '#1C2382' });
+        Swal.fire({ icon: 'error', title: 'การเชื่อมต่อขัดข้อง', text: 'ไม่สามารถดึงข้อมูลจาก Google Sheet ได้', confirmButtonColor: '#1C2474' });
       };
       document.body.appendChild(script);
     }
 
     function onCatalogLoaded(response) {
-      Swal.close();
       if (response && response.success && Array.isArray(response.data)) {
         catalog = response.data;
         if (currentPage === 2 && currentStepNav === 1) {
           renderStep1MainCategories();
         }
-      } else {
-        Swal.fire({ icon: 'warning', title: 'ไม่พบข้อมูล', text: 'ไม่มีรายการสินค้าในระบบ', confirmButtonColor: '#1C2382' });
       }
     }
 
@@ -468,7 +468,7 @@
       const dept = document.getElementById('dept').value;
 
       if (!userName || !dept) {
-        Swal.fire({ icon: 'warning', title: 'ข้อมูลไม่ครบถ้วน', text: 'กรุณากรอก ชื่อ-นามสกุล และ เลือกแผนก ก่อนทำรายการ', confirmButtonColor: '#1C2382' });
+        Swal.fire({ icon: 'warning', title: 'ข้อมูลไม่ครบถ้วน', text: 'กรุณากรอก ชื่อ-นามสกุล และ เลือกแผนก', confirmButtonColor: '#1C2474' });
         return;
       }
       goToPage(2);
@@ -500,14 +500,14 @@
       mainCatMap.forEach(cat => {
         const imgHtml = cat.img 
           ? `<img src="${cat.img}" class="img-fluid" alt="${cat.name}" onerror="this.onerror=null; this.src='${NO_IMG_SVG}';">`
-          : `<div class="py-2"><i class="bi bi-box-seam text-primary display-4"></i></div>`;
+          : `<div class="py-2"><i class="bi bi-box-seam text-primary display-5"></i></div>`;
         const enHtml = cat.nameEN 
-          ? `<div style="font-size: 0.95rem; color: #4A55A2; margin-top: 4px;">${cat.nameEN}</div>` 
+          ? `<div style="font-size: 0.85rem; color: #4A55A2; margin-top: 4px;">${cat.nameEN}</div>` 
           : '';
         html += `
           <div class="item-category-card" onclick="selectMainCategory('${cat.name.replace(/'/g, "\\'")}', '${cat.nameEN.replace(/'/g, "\\'")}')">
             ${imgHtml}
-            <div class="fw-bold text-dark fs-5 mb-0" style="line-height: 1.2;">${cat.name}</div>
+            <div class="fw-bold text-dark fs-6 mb-0" style="line-height: 1.2;">${cat.name}</div>
             ${enHtml}
           </div>
         `;
@@ -548,14 +548,14 @@
       subCatMap.forEach(sub => {
         const imgHtml = sub.img 
           ? `<img src="${sub.img}" class="img-fluid" alt="${sub.nameTH}" onerror="this.onerror=null; this.src='${NO_IMG_SVG}';">`
-          : `<div class="py-2"><i class="bi bi-boxes text-warning display-4"></i></div>`;
+          : `<div class="py-2"><i class="bi bi-boxes text-warning display-5"></i></div>`;
         const enHtml = sub.nameEN 
-          ? `<div style="font-size: 0.95rem; color: #4A55A2; margin-top: 4px;">${sub.nameEN}</div>` 
+          ? `<div style="font-size: 0.85rem; color: #4A55A2; margin-top: 4px;">${sub.nameEN}</div>` 
           : '';
         html += `
           <div class="item-category-card" onclick="selectSubCategory('${sub.nameTH.replace(/'/g, "\\'")}', '${(sub.nameEN || '').replace(/'/g, "\\'")}')">
             ${imgHtml}
-            <div class="fw-bold text-dark fs-5 mb-0" style="line-height: 1.2;">${sub.nameTH}</div>
+            <div class="fw-bold text-dark fs-6 mb-0" style="line-height: 1.2;">${sub.nameTH}</div>
             ${enHtml}
           </div>
         `;
@@ -680,7 +680,7 @@
                      onerror="this.onerror=null; this.src='${NO_IMG_SVG}';" alt="product">
               </div>
 
-              <div class="mb-3 text-start">
+              <div class="mb-2 text-start">
                 <div class="fw-bold text-dark fs-6 mb-0">${group.nameTH || group.nameEN}</div>
                 <div class="text-muted small">${group.nameEN || ''}</div>
               </div>
@@ -756,7 +756,7 @@
       let newQty = currentQty + change;
 
       if (newQty > rawStock) {
-        Swal.fire({ icon: 'warning', title: 'สต็อกไม่พอ', text: 'เบิกเกินจำนวนที่มีในคลังไม่ได้ครับ', confirmButtonColor: '#1C2382' });
+        Swal.fire({ icon: 'warning', title: 'สต็อกไม่พอ', text: 'เบิกเกินจำนวนที่มีในคลังไม่ได้ครับ', confirmButtonColor: '#1C2474' });
         return;
       }
       if (newQty < 0) newQty = 0;
@@ -831,7 +831,7 @@
     function handleMainSubmit() {
       if (currentPage === 2) {
         if (Object.keys(cart).length === 0) {
-          Swal.fire({ icon: 'info', title: 'ตะกร้าว่างเปล่า', text: 'กรุณาเลือกสินค้าอย่างน้อย 1 ชิ้น', confirmButtonColor: '#1C2382' });
+          Swal.fire({ icon: 'info', title: 'ตะกร้าว่างเปล่า', text: 'กรุณาเลือกสินค้าอย่างน้อย 1 ชิ้น', confirmButtonColor: '#1C2474' });
           return;
         }
         renderSummary();
@@ -839,11 +839,6 @@
       } else if (currentPage === 3) {
         submitRequisition();
       }
-    }
-
-    function toggleTimeSelect() {
-      const isLater = document.getElementById('receiveLater').checked;
-      document.getElementById('timeSelectWrapper').style.display = isLater ? 'block' : 'none';
     }
 
     function renderSummary() {
@@ -891,13 +886,6 @@
     function submitRequisition() {
       const userName = document.getElementById('userName').value.trim();
       const dept = document.getElementById('dept').value;
-      const receiveMode = document.querySelector('input[name="receiveMode"]:checked').value;
-      const timeSlot = document.getElementById('timeSelectWrapper').style.display === 'block' ? document.getElementById('timeSlot').value : '-';
-
-      if (receiveMode === 'นัดเวลารับล่วงหน้า' && (!timeSlot || timeSlot === '-- เลือกช่วงเวลา --')) {
-        Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณาเลือกช่วงเวลามารับของ', confirmButtonColor: '#1C2382' });
-        return;
-      }
 
       Swal.fire({
         title: 'กำลังบันทึกและตัดสต็อก...',
@@ -930,8 +918,6 @@
           userName: userName,
           dept: dept,
           project: document.getElementById('project').value,
-          pickupType: receiveMode,
-          timeSlot: timeSlot,
           cart: cartArray
         }
       };
@@ -945,7 +931,6 @@
       .then(res => {
         Swal.close();
         if (res.status === 'success') {
-          // ตัดสต็อกสินค้าใน catalog Memory ของเบราว์เซอร์
           cartArray.forEach(cItem => {
             const found = catalog.find(i => getProp(i, ['partId', 'PartID', 'PartId', 'รหัสสินค้า']) === cItem.partId);
             if (found) {
@@ -954,23 +939,13 @@
             }
           });
 
-          // เคลียร์ตะกร้าสินค้า
           cart = {};
-
           goToPage(4);
 
           document.getElementById('slipId').innerText = randomReqId;
           document.getElementById('slipUser').innerText = payload.formData.userName;
           document.getElementById('slipDept').innerText = payload.formData.dept;
           document.getElementById('slipProject').innerText = payload.formData.project || '-';
-          
-          if (receiveMode === 'นัดเวลารับล่วงหน้า') {
-            document.getElementById('slipTimeLabel').innerText = 'เวลารับของ:';
-            document.getElementById('slipTime').innerText = timeSlot;
-          } else {
-            document.getElementById('slipTimeLabel').innerText = 'รูปแบบการรับ:';
-            document.getElementById('slipTime').innerText = 'รับทันทีที่คลัง';
-          }
 
           let itemsHtml = '';
           cartArray.forEach(item => {
@@ -986,12 +961,12 @@
           });
           document.getElementById('slipItemsList').innerHTML = itemsHtml;
         } else {
-          Swal.fire({ icon: 'error', title: 'บันทึกไม่สำเร็จ', text: res.message || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล', confirmButtonColor: '#1C2382' });
+          Swal.fire({ icon: 'error', title: 'บันทึกไม่สำเร็จ', text: res.message || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล', confirmButtonColor: '#1C2474' });
         }
       })
       .catch(err => {
         Swal.close();
-        Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: 'ไม่สามารถเชื่อมต่อกับระบบได้ กรุณาลองใหม่อีกครั้ง', confirmButtonColor: '#1C2382' });
+        Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: 'ไม่สามารถเชื่อมต่อกับระบบได้ กรุณาลองใหม่อีกครั้ง', confirmButtonColor: '#1C2474' });
       });
     }
 
