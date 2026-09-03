@@ -246,38 +246,30 @@
     <i class="bi bi-tools"></i> TAKIGAMI (TTC) STORE
   </div>
 
-  <!-- PAGE 1: User Info -->
-    <div id="page1" class="page active">
-      <div class="card card-custom p-4">
-        <h5 class="fw-bold mb-3 text-primary"><i class="bi bi-person-badge me-2"></i>กรอกข้อมูลผู้เบิก</h5>
-        
-        <div class="mb-3">
-          <label class="form-label fw-bold">ชื่อ-นามสกุล <span class="text-danger">*</span></label>
-          <input type="text" class="form-control" id="userName" placeholder="ระบุชื่อผู้เบิก">
-        </div>
-
-        <!-- Dropdown เลือกแผนก -->
-        <div class="mb-3">
-          <label class="form-label fw-bold">แผนก <span class="text-danger">*</span></label>
-          <select class="form-select" id="dept">
-            <option value="" selected disabled>-- เลือกแผนก --</option>
-            <option value="Design">1. Design</option>
-            <option value="Machine&Factory">2. Machine&Factory</option>
-            <option value="Assembly">3. Assembly</option>
-            <option value="Electrical">4. Electrical</option>
-          </select>
-        </div>
-
-        <div class="mb-4">
-          <label class="form-label fw-bold">โปรเจกต์ / เครื่องจักร</label>
-          <input type="text" class="form-control" id="project" placeholder="ระบุชื่อโปรเจกต์ (ถ้ามี)">
-        </div>
-
-        <button class="btn btn-brand w-100 py-3 fs-6" onclick="startRequisition()">
-          เข้าสู่หน้าเลือกสินค้า <i class="bi bi-arrow-right ms-1"></i>
-        </button>
+  <!-- PAGE 1: ข้อมูลผู้เบิก -->
+  <div id="page1" class="page container max-width-main">
+    <div class="main-card-container">
+      <h5 class="fw-bold text-primary mb-4"><i class="bi bi-person-vcard"></i> กรอกข้อมูลผู้เบิก</h5>
+      <div class="mb-3">
+        <label class="form-label fw-medium">ชื่อ-นามสกุล <span class="text-danger">*</span></label>
+        <input type="text" id="userName" class="form-control form-control-lg" placeholder="ระบุชื่อผู้เบิก">
       </div>
+      <div class="mb-3">
+        <label class="form-label fw-medium">แผนก <span class="text-danger">*</span></label>
+        <input type="text" id="dept" class="form-control form-control-lg" placeholder="ระบุแผนก">
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-medium">วัตถุประสงค์การเบิก</label>
+        <input type="text" id="purpose" class="form-control form-control-lg" placeholder="เช่น ซ่อมบำรุง, ไลน์ผลิต">
+      </div>
+      <div class="mb-4">
+        <label class="form-label fw-medium">โปรเจกต์ / เครื่องจักร</label>
+        <input type="text" id="project" class="form-control form-control-lg" placeholder="ระบุชื่อโปรเจกต์ (ถ้ามี)">
+      </div>
+      <button class="btn btn-action-submit btn-lg w-100" onclick="startRequisition()">เข้าสู่หน้าเลือกสินค้า <i class="bi bi-arrow-right"></i></button>
     </div>
+  </div>
+
   <!-- PAGE 2: เลือกสินค้า -->
   <div id="page2" class="page container max-width-main">
     <div class="main-card-container">
